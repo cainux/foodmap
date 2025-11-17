@@ -53,3 +53,15 @@ https://maps.app.goo.gl/FQi7Z1HbkiZYRCvY9
 Little Green Vietnamese
 https://maps.app.goo.gl/MYYMkUczYDHkzHL16
 51.4997017,-0.0232238
+
+Deun Deun Korean Restaurant
+https://maps.app.goo.gl/ZADZ747k6HqTzrRc6
+51.4990987,-0.0207353
+
+Bentore
+https://maps.app.goo.gl/G5SaPSP5ikg4rvQ1A
+51.498308,-0.0159794
+
+3KOBROS Korean Restaurant
+https://maps.app.goo.gl/RyE3LvAFexMCiCvG7
+51.4889259,-0.0224713

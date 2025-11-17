@@ -110,5 +110,29 @@
       "lat": 51.4997017,
       "lng": -0.0232238
     }
+  },
+  {
+    "name": "Deun Deun Korean Restaurant",
+    "url": "https://maps.app.goo.gl/ZADZ747k6HqTzrRc6",
+    "coordinates": {
+      "lat": 51.4990987,
+      "lng": -0.0207353
+    }
+  },
+  {
+    "name": "Bentore",
+    "url": "https://maps.app.goo.gl/G5SaPSP5ikg4rvQ1A",
+    "coordinates": {
+      "lat": 51.498308,
+      "lng": -0.0159794
+    }
+  },
+  {
+    "name": "3KOBROS Korean Restaurant",
+    "url": "https://maps.app.goo.gl/RyE3LvAFexMCiCvG7",
+    "coordinates": {
+      "lat": 51.4889259,
+      "lng": -0.0224713
+    }
   }
 ]

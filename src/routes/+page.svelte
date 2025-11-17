@@ -9,7 +9,7 @@
 <main class="container">
 	<header>
 		<h1>🍽️ Food Map</h1>
-		<p>Discover great restaurants in London</p>
+		<p>Where I like to eat</p>
 	</header>
 
 	<article>
