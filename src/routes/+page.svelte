@@ -2,7 +2,44 @@
 	import RestaurantMap from '$lib/components/RestaurantMap.svelte';
 	import restaurantsData from '$lib/restaurants.json';
 
-	const restaurants = restaurantsData;
+	let sortedRestaurants = $state(restaurantsData);
+	let userLocation = $state<{ lat: number; lng: number } | null>(null);
+
+	function handleLocationUpdate(location: { lat: number; lng: number }) {
+		userLocation = location;
+
+		// Calculate distances and sort restaurants
+		const withDistances = restaurantsData
+			.filter(r => r.coordinates)
+			.map(r => {
+				const distance = calculateDistance(
+					location.lat,
+					location.lng,
+					r.coordinates!.lat,
+					r.coordinates!.lng
+				);
+				return { ...r, distance };
+			})
+			.sort((a, b) => a.distance - b.distance);
+
+		sortedRestaurants = withDistances;
+	}
+
+	// Haversine formula to calculate distance between two points
+	function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+		const R = 6371; // Radius of Earth in km
+		const dLat = toRad(lat2 - lat1);
+		const dLon = toRad(lon2 - lon1);
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return R * c;
+	}
+
+	function toRad(degrees: number): number {
+		return degrees * (Math.PI / 180);
+	}
 </script>
 
 <main class="container">
@@ -12,13 +49,13 @@
 	</header>
 
 	<article>
-		<RestaurantMap {restaurants} />
+		<RestaurantMap restaurants={restaurantsData} onLocationUpdate={handleLocationUpdate} />
 	</article>
 
 	<section>
 		<h2>Restaurants</h2>
 		<div class="restaurant-grid">
-			{#each restaurants as restaurant}
+			{#each sortedRestaurants as restaurant}
 				{#if restaurant.coordinates}
 					<article class="restaurant-card">
 						<h3>{restaurant.name}</h3>

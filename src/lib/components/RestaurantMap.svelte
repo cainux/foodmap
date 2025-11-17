@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Map, Marker } from 'leaflet';
+	import type { Map, Marker, CircleMarker } from 'leaflet';
 
 	interface Restaurant {
 		name: string;
@@ -8,15 +8,26 @@
 		coordinates: { lat: number; lng: number } | null;
 	}
 
-	let { restaurants }: { restaurants: Restaurant[] } = $props();
+	let { restaurants, onLocationUpdate }: {
+		restaurants: Restaurant[];
+		onLocationUpdate: (location: { lat: number; lng: number }) => void;
+	} = $props();
 
 	let mapContainer: HTMLDivElement;
 	let map: Map;
-	let markers: Marker[] = [];
+	let markers: (Marker | CircleMarker)[] = [];
+	let userMarker: CircleMarker | null = null;
+	let hasGeolocation = $state(false);
+	let isLocating = $state(false);
 
 	onMount(async () => {
 		// Dynamically import Leaflet to avoid SSR issues
 		const L = await import('leaflet');
+
+		// Check if geolocation is available
+		if ('geolocation' in navigator) {
+			hasGeolocation = true;
+		}
 
 		// Calculate center of all restaurants
 		const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
@@ -62,13 +73,73 @@
 			map.fitBounds(group.getBounds().pad(0.1));
 		}
 	});
+
+	async function findMyLocation() {
+		if (!navigator.geolocation) return;
+
+		isLocating = true;
+
+		navigator.geolocation.getCurrentPosition(
+			async (position) => {
+				const { latitude, longitude } = position.coords;
+
+				// Import Leaflet again in case it's needed
+				const L = await import('leaflet');
+
+				// Remove existing user marker if any
+				if (userMarker) {
+					userMarker.remove();
+				}
+
+				// Add user location marker
+				userMarker = L.circleMarker([latitude, longitude], {
+					radius: 10,
+					fillColor: '#4285f4',
+					color: '#fff',
+					weight: 3,
+					opacity: 1,
+					fillOpacity: 0.9
+				}).addTo(map);
+
+				userMarker.bindPopup('<strong>You are here</strong>');
+
+				// Move map to user location and zoom to show ~10 minute walk area
+				// 10 minute walk is roughly 800m, which corresponds to zoom level ~15
+				map.setView([latitude, longitude], 15);
+
+				// Notify parent component
+				onLocationUpdate({ lat: latitude, lng: longitude });
+
+				isLocating = false;
+			},
+			(error) => {
+				console.error('Geolocation error:', error);
+				isLocating = false;
+				alert('Unable to get your location. Please check your browser permissions.');
+			}
+		);
+	}
 </script>
 
-<div class="map-container">
-	<div bind:this={mapContainer} class="map"></div>
+<div class="map-wrapper">
+	<div class="map-container">
+		<div bind:this={mapContainer} class="map"></div>
+	</div>
+
+	{#if hasGeolocation}
+		<div class="location-button-container">
+			<button onclick={findMyLocation} disabled={isLocating}>
+				{isLocating ? 'Locating...' : 'Find My Location'}
+			</button>
+		</div>
+	{/if}
 </div>
 
 <style>
+	.map-wrapper {
+		width: 100%;
+	}
+
 	.map-container {
 		width: 100%;
 		height: 600px;
@@ -80,6 +151,23 @@
 	.map {
 		width: 100%;
 		height: 100%;
+	}
+
+	.location-button-container {
+		display: flex;
+		justify-content: center;
+		margin-top: 1rem;
+	}
+
+	.location-button-container button {
+		padding: 0.5rem 1.5rem;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+
+	.location-button-container button:disabled {
+		cursor: wait;
+		opacity: 0.7;
 	}
 
 	:global(.leaflet-popup-content) {
