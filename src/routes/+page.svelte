@@ -3,7 +3,6 @@
 	import restaurantsData from '$lib/restaurants.json';
 
 	const restaurants = restaurantsData;
-	const restaurantCount = restaurants.filter((r) => r.coordinates !== null).length;
 </script>
 
 <main class="container">
@@ -17,7 +16,7 @@
 	</article>
 
 	<section>
-		<h2>Restaurants ({restaurantCount})</h2>
+		<h2>Restaurants</h2>
 		<div class="restaurant-grid">
 			{#each restaurants as restaurant}
 				{#if restaurant.coordinates}
