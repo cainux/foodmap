@@ -37,7 +37,7 @@
 			validRestaurants.length;
 
 		// Initialize map
-		map = L.map(mapContainer).setView([avgLat, avgLng], 13);
+		map = L.map(mapContainer, { zoomControl: false }).setView([avgLat, avgLng], 13);
 
 		// Add OpenStreetMap tiles
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
