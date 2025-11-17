@@ -1,67 +1,67 @@
 Grounded London
 https://maps.app.goo.gl/mTG2MTWQWzVsuGE89
-51.5163842,-0.0693367
+51°30'59.0"N 0°4'18.9"W
 
 Pizza Union
 https://maps.app.goo.gl/E6s3Tma5Y9ii5Wpu5
-51.5139088,-0.0728799
+51°30'50.1"N 0°4'22.4"W
 
 Sushinoen (Japanese)
 https://maps.app.goo.gl/FoHeA91P96ZncT8XA
-51.5159954,-0.0717026
+51°30'57.6"N 0°4'18.1"W
 
 Bari Bari (Korean)
 https://maps.app.goo.gl/g9dsuQ2AnZguY1jF7
-51.5153749,-0.0712724
+51°30'55.3"N 0°4'16.6"W
 
 Bento Bab (Korean)
 https://maps.app.goo.gl/CkZtHM7o1McDu9Fb8
-51.5157529,-0.0745426
+51°30'56.7"N 0°4'28.4"W
 
 DanDan (Chinese)
 https://maps.app.goo.gl/ZqokZt26F2YC1zD18
-51.5140462,-0.0720878
+51°30'50.6"N 0°4'19.5"W
 
 Xi'an Biang Biang (Chinese)
 https://maps.app.goo.gl/676otiTF4T3LSsch6
-51.5168315,-0.0737694
+51°31'0.6"N 0°4'25.6"W
 
 Yeye's Noodle & Dumpling (Chinese)
 https://maps.app.goo.gl/A1LU7Y1vbdDmf1pu6
-51.5168368,-0.0740085
+51°31'0.6"N 0°4'26.4"W
 
 Three Uncles (Chinese place that Kev loves)
 https://maps.app.goo.gl/S6w85Mfp9AkDRX9n6
-51.5169108,-0.082651
+51°31'0.9"N 0°4'48.3"W
 
 Kova Aldgate
 https://maps.app.goo.gl/sCJCw3aEXshmLgQn7
-51.5138943,-0.0684875
+51°30'50.0"N 0°4'6.6"W
 
 Mr Wang's Aldgate
 https://maps.app.goo.gl/ksTBwqg1pxecBgLs7
-51.5136324,-0.0761379
+51°30'49.1"N 0°4'34.1"W
 
 Xi Home Dumpling
 https://maps.app.goo.gl/4BpmRFQnWxVT4gdH7
-51.521647,-0.0799163
+51°31'17.9"N 0°4'47.7"W
 
 JWD Lamian
 https://maps.app.goo.gl/FQi7Z1HbkiZYRCvY9
-51.5025376,-0.0219861
+51°30'9.1"N 0°1'19.1"W
 
 Little Green Vietnamese
 https://maps.app.goo.gl/MYYMkUczYDHkzHL16
-51.4997017,-0.0232238
+51°29'58.9"N 0°1'23.6"W
 
 Deun Deun Korean Restaurant
 https://maps.app.goo.gl/ZADZ747k6HqTzrRc6
-51.4990987,-0.0207353
+51°29'56.8"N 0°1'14.6"W
 
 Bentore
 https://maps.app.goo.gl/G5SaPSP5ikg4rvQ1A
-51.498308,-0.0159794
+51°29'53.9"N 0°0'57.5"W
 
 3KOBROS Korean Restaurant
 https://maps.app.goo.gl/RyE3LvAFexMCiCvG7
-51.4889259,-0.0224713
+51°29'20.1"N 0°1'20.9"W
