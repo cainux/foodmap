@@ -52,6 +52,14 @@
 		margin-top: 0;
 	}
 
+	section {
+		margin-top: 2rem;
+	}
+
+	section h2 {
+		margin-bottom: 1rem;
+	}
+
 	.restaurant-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
