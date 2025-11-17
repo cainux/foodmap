@@ -1,8 +1,18 @@
 # Extracting Real Coordinates
 
-The current `src/lib/restaurants.json` file contains placeholder coordinates. To extract real coordinates from the Google Maps URLs, you have a few options:
+The current `src/lib/restaurants.json` file contains **placeholder coordinates**. To extract real coordinates from the Google Maps URLs, you have a few options:
 
-## Option 1: Manual Extraction (Most Accurate)
+## Option 1: Use the Helper Tool (Easiest)
+
+1. Open `coordinate-extractor.html` in your browser
+2. Click each restaurant link to open in Google Maps
+3. Look for coordinates in the URL (format: `@51.5155,-0.0922`)
+4. Copy and paste the coordinates into the input field
+5. Click "Generate JSON" and copy the output
+6. Replace the contents of `src/lib/restaurants.json` with the generated JSON
+7. Rebuild: `pnpm build`
+
+## Option 2: Manual Extraction
 
 1. Open each Google Maps URL from `data/restaurants.md` in your browser
 2. Right-click on the map and select "What's here?"
