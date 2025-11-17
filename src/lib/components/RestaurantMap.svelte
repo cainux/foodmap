@@ -53,10 +53,10 @@
 			const marker = L.circleMarker([restaurant.coordinates!.lat, restaurant.coordinates!.lng], {
 				radius: 8,
 				fillColor: '#ff6b6b',
-				color: '#fff',
+				color: '#1095c1',
 				weight: 2,
 				opacity: 1,
-				fillOpacity: 0.8
+				fillOpacity: 1
 			}).addTo(map);
 
 			// Add popup with restaurant name and link
@@ -110,10 +110,10 @@
 				userMarker = L.circleMarker([latitude, longitude], {
 					radius: 10,
 					fillColor: '#4285f4',
-					color: '#fff',
+					color: '#1095c1',
 					weight: 3,
 					opacity: 1,
-					fillOpacity: 0.9
+					fillOpacity: 1
 				}).addTo(map);
 
 				userMarker.bindPopup('<strong>You are here</strong>');
