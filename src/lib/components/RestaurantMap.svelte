@@ -19,6 +19,7 @@
 	let userMarker: CircleMarker | null = null;
 	let hasGeolocation = $state(false);
 	let isLocating = $state(false);
+	let moveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	onMount(async () => {
 		// Dynamically import Leaflet to avoid SSR issues
@@ -72,6 +73,20 @@
 			const group = L.featureGroup(markers);
 			map.fitBounds(group.getBounds().pad(0.1));
 		}
+
+		// Add moveend listener to update sorting when map is moved
+		map.on('moveend', () => {
+			// Clear existing timeout
+			if (moveTimeout) {
+				clearTimeout(moveTimeout);
+			}
+
+			// Set new timeout to update sorting 500ms after movement stops
+			moveTimeout = setTimeout(() => {
+				const center = map.getCenter();
+				onLocationUpdate({ lat: center.lat, lng: center.lng });
+			}, 500);
+		});
 	});
 
 	async function findMyLocation() {
