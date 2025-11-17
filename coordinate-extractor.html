@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Coordinate Extractor</title>
+  <style>
+    body { font-family: system-ui; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .restaurant { margin: 1rem 0; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+    .restaurant h3 { margin: 0 0 0.5rem 0; }
+    input { width: 100%; padding: 0.5rem; font-family: monospace; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    pre { background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+    .instructions { background: #fffbcc; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>🍽️ Restaurant Coordinate Extractor</h1>
+
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Click each restaurant's Google Maps link (opens in new tab)</li>
+      <li>In the URL bar, look for coordinates in format: <code>@51.5155,-0.0922</code></li>
+      <li>Copy just the two numbers (latitude, longitude)</li>
+      <li>Paste into the input field below</li>
+      <li>When done, click "Generate JSON" and copy the result</li>
+    </ol>
+  </div>
+
+  <div id="restaurants"></div>
+
+  <button onclick="generateJSON()">Generate JSON</button>
+
+  <h2>Result:</h2>
+  <pre id="output">Enter coordinates above, then click Generate JSON</pre>
+
+  <script>
+    const restaurants = [
+      { name: "Grounded London", url: "https://maps.app.goo.gl/mTG2MTWQWzVsuGE89" },
+      { name: "Pizza Union", url: "https://maps.app.goo.gl/E6s3Tma5Y9ii5Wpu5" },
+      { name: "Sushinoen (Japanese)", url: "https://maps.app.goo.gl/FoHeA91P96ZncT8XA" },
+      { name: "Bari Bari (Korean)", url: "https://maps.app.goo.gl/g9dsuQ2AnZguY1jF7" },
+      { name: "Bento Bab (Korean)", url: "https://maps.app.goo.gl/CkZtHM7o1McDu9Fb8" },
+      { name: "DanDan (Chinese)", url: "https://maps.app.goo.gl/ZqokZt26F2YC1zD18" },
+      { name: "Xi'an Biang Biang (Chinese)", url: "https://maps.app.goo.gl/676otiTF4T3LSsch6" },
+      { name: "Yeye's Noodle & Dumpling (Chinese)", url: "https://maps.app.goo.gl/A1LU7Y1vbdDmf1pu6" },
+      { name: "Three Uncles (Chinese place that Kev loves)", url: "https://maps.app.goo.gl/S6w85Mfp9AkDRX9n6" },
+      { name: "Kova Aldgate", url: "https://maps.app.goo.gl/sCJCw3aEXshmLgQn7" },
+      { name: "Mr Wang's Aldgate", url: "https://maps.app.goo.gl/ksTBwqg1pxecBgLs7" },
+      { name: "Xi Home Dumpling", url: "https://maps.app.goo.gl/4BpmRFQnWxVT4gdH7" },
+      { name: "JWD Lamian", url: "https://maps.app.goo.gl/FQi7Z1HbkiZYRCvY9" },
+      { name: "Little Green Vietnamese", url: "https://maps.app.goo.gl/MYYMkUczYDHkzHL16" }
+    ];
+
+    const container = document.getElementById('restaurants');
+
+    restaurants.forEach((r, i) => {
+      const div = document.createElement('div');
+      div.className = 'restaurant';
+      div.innerHTML = `
+        <h3>${i + 1}. ${r.name}</h3>
+        <a href="${r.url}" target="_blank">Open in Google Maps →</a><br><br>
+        <input
+          type="text"
+          id="coords-${i}"
+          placeholder="Paste coordinates here (e.g., 51.5155,-0.0922)"
+          onpaste="handlePaste(event, ${i})"
+        />
+      `;
+      container.appendChild(div);
+    });
+
+    function handlePaste(event, index) {
+      setTimeout(() => {
+        const input = document.getElementById(`coords-${index}`);
+        let value = input.value.trim();
+
+        // Extract coordinates from various formats
+        const match = value.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+        if (match) {
+          input.value = `${match[1]},${match[2]}`;
+          input.style.background = '#d4edda';
+        }
+      }, 10);
+    }
+
+    function generateJSON() {
+      const result = restaurants.map((r, i) => {
+        const input = document.getElementById(`coords-${i}`);
+        const value = input.value.trim();
+        const match = value.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+
+        if (match) {
+          return {
+            name: r.name,
+            url: r.url,
+            coordinates: {
+              lat: parseFloat(match[1]),
+              lng: parseFloat(match[2])
+            }
+          };
+        } else {
+          return {
+            name: r.name,
+            url: r.url,
+            coordinates: null
+          };
+        }
+      });
+
+      document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+    }
+  </script>
+</body>
+</html>
