@@ -60,6 +60,12 @@
 		margin-bottom: 1rem;
 	}
 
+	@media (max-width: 768px) {
+		section h2 {
+			text-align: center;
+		}
+	}
+
 	.restaurant-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
