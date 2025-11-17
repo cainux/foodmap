@@ -18,15 +18,6 @@
 		// Dynamically import Leaflet to avoid SSR issues
 		const L = await import('leaflet');
 
-		// Fix for default marker icon in Leaflet with bundlers
-		// @ts-ignore
-		delete L.Icon.Default.prototype._getIconUrl;
-		L.Icon.Default.mergeOptions({
-			iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-			iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-			shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
-		});
-
 		// Calculate center of all restaurants
 		const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
 		const avgLat =
@@ -45,11 +36,16 @@
 				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
-		// Add markers for each restaurant
+		// Add circle markers for each restaurant
 		validRestaurants.forEach((restaurant) => {
-			const marker = L.marker([restaurant.coordinates!.lat, restaurant.coordinates!.lng]).addTo(
-				map
-			);
+			const marker = L.circleMarker([restaurant.coordinates!.lat, restaurant.coordinates!.lng], {
+				radius: 8,
+				fillColor: '#ff6b6b',
+				color: '#fff',
+				weight: 2,
+				opacity: 1,
+				fillOpacity: 0.8
+			}).addTo(map);
 
 			// Add popup with restaurant name and link
 			marker.bindPopup(`
