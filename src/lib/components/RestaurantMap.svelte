@@ -163,6 +163,12 @@
 		box-shadow: var(--pico-card-box-shadow);
 	}
 
+	@media (max-width: 768px) {
+		.map-container {
+			height: 400px;
+		}
+	}
+
 	.map {
 		width: 100%;
 		height: 100%;
