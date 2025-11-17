@@ -52,8 +52,8 @@
 		validRestaurants.forEach((restaurant) => {
 			const marker = L.circleMarker([restaurant.coordinates!.lat, restaurant.coordinates!.lng], {
 				radius: 8,
-				fillColor: '#ff6b6b',
-				color: '#1095c1',
+				fillColor: '#1095c1',
+				color: '#fff',
 				weight: 2,
 				opacity: 1,
 				fillOpacity: 1
@@ -109,8 +109,8 @@
 				// Add user location marker
 				userMarker = L.circleMarker([latitude, longitude], {
 					radius: 10,
-					fillColor: '#4285f4',
-					color: '#1095c1',
+					fillColor: '#1095c1',
+					color: '#fff',
 					weight: 3,
 					opacity: 1,
 					fillOpacity: 1
