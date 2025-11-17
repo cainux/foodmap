@@ -52,11 +52,11 @@
 		validRestaurants.forEach((restaurant) => {
 			const marker = L.circleMarker([restaurant.coordinates!.lat, restaurant.coordinates!.lng], {
 				radius: 8,
-				fillColor: '#ff6b6b',
+				fillColor: '#1095c1',
 				color: '#fff',
 				weight: 2,
 				opacity: 1,
-				fillOpacity: 0.8
+				fillOpacity: 1
 			}).addTo(map);
 
 			// Add popup with restaurant name and link
@@ -109,11 +109,11 @@
 				// Add user location marker
 				userMarker = L.circleMarker([latitude, longitude], {
 					radius: 10,
-					fillColor: '#4285f4',
+					fillColor: '#1095c1',
 					color: '#fff',
 					weight: 3,
 					opacity: 1,
-					fillOpacity: 0.9
+					fillOpacity: 1
 				}).addTo(map);
 
 				userMarker.bindPopup('<strong>You are here</strong>');
@@ -161,6 +161,12 @@
 		border-radius: var(--pico-border-radius);
 		overflow: hidden;
 		box-shadow: var(--pico-card-box-shadow);
+	}
+
+	@media (max-width: 768px) {
+		.map-container {
+			height: 400px;
+		}
 	}
 
 	.map {
