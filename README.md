@@ -1,38 +1,76 @@
-# sv
+# 🍽️ Food Map
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.md` and rendered as pins using Leaflet maps.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- 🗺️ Interactive map using Leaflet
+- 📍 Restaurant pins with popups showing names and links to Google Maps
+- 🎨 Clean, minimal styling with Pico CSS
+- 📱 Responsive design
+- ⚡ Static site generation for fast loading
+- 🔗 Restaurant list with clickable cards
 
+## Tech Stack
+
+- **SvelteKit** - Framework
+- **Leaflet** - Interactive maps
+- **Pico CSS** - Minimal styling
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+
+## Getting Started
+
+1. Install dependencies:
 ```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+pnpm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+2. Start the development server:
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm dev
 ```
+
+3. Open your browser to `http://localhost:5173`
 
 ## Building
 
-To create a production version of your app:
+To create a production build:
 
 ```sh
-npm run build
+pnpm build
 ```
 
-You can preview the production build with `npm run preview`.
+The static site will be generated in the `build/` directory.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+To preview the production build:
+
+```sh
+pnpm preview
+```
+
+## Extracting Real Coordinates
+
+The current coordinates in `src/lib/restaurants.json` are placeholders. See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs.
+
+## Adding Restaurants
+
+1. Edit `data/restaurants.md` following the format:
+   ```
+   Restaurant Name
+   https://maps.app.goo.gl/...
+
+   ```
+
+2. Run the coordinate extraction script or manually add coordinates to `src/lib/restaurants.json`
+
+3. Rebuild the site: `pnpm build`
+
+## Deployment
+
+The static site in the `build/` directory can be deployed to any static hosting service:
+- GitHub Pages
+- Netlify
+- Vercel
+- Cloudflare Pages
+- Or any static web host
