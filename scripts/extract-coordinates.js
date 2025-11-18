@@ -91,7 +91,98 @@ async function extractCoordinates(url, restaurantName) {
       console.log(`  No cookie consent dialog detected`);
     }
 
-    // Strategy 1: Extract from page data (gets full precision)
+    // Strategy 1: Automated right-click on pin (gets full precision from clipboard)
+    console.log(`  Attempting to find and right-click the map pin...`);
+
+    try {
+      // Wait a bit more for all elements to load
+      await page.waitForTimeout(2000);
+
+      // Try multiple methods to find the pin marker
+      let pinClicked = false;
+
+      // Method 1: Find button with the place name in aria-label
+      try {
+        const placeNameShort = restaurantName.split('(')[0].trim().substring(0, 20);
+        console.log(`  Looking for marker with name: ${placeNameShort}`);
+
+        const markerButton = page.locator(`button[aria-label*="${placeNameShort}"]`).first();
+        await markerButton.waitFor({ timeout: 3000 });
+
+        console.log(`  Found marker button, right-clicking...`);
+        await markerButton.click({ button: 'right' });
+        pinClicked = true;
+      } catch (error) {
+        console.log(`  Method 1 failed: ${error.message}`);
+      }
+
+      // Method 2: Find the pin by looking for images with specific attributes
+      if (!pinClicked) {
+        try {
+          console.log(`  Trying to find pin by image element...`);
+          const pinImage = page.locator('img[src*="spotlight-poi"]').first();
+          await pinImage.waitFor({ timeout: 3000 });
+
+          console.log(`  Found pin image, right-clicking...`);
+          await pinImage.click({ button: 'right' });
+          pinClicked = true;
+        } catch (error) {
+          console.log(`  Method 2 failed: ${error.message}`);
+        }
+      }
+
+      // Method 3: Right-click at the center of the viewport where the pin usually is
+      if (!pinClicked) {
+        try {
+          console.log(`  Trying to right-click at center of map...`);
+          const viewportSize = page.viewportSize();
+          const centerX = viewportSize.width * 0.5;
+          const centerY = viewportSize.height * 0.5;
+
+          await page.mouse.click(centerX, centerY, { button: 'right' });
+          pinClicked = true;
+        } catch (error) {
+          console.log(`  Method 3 failed: ${error.message}`);
+        }
+      }
+
+      if (pinClicked) {
+        await page.waitForTimeout(1000);
+
+        // Look for coordinates in context menu
+        try {
+          const coordsMenu = page.locator('[role="menuitem"]').first();
+          await coordsMenu.waitFor({ timeout: 3000 });
+
+          const menuText = await coordsMenu.textContent();
+          console.log(`  Context menu item: ${menuText}`);
+
+          // Click to copy
+          await coordsMenu.click();
+          await page.waitForTimeout(1000);
+
+          // Read from clipboard
+          const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+          const coordinates = clipboardText.replace(/,\s+/, ',').trim();
+
+          if (coordinates && coordinates.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
+            if (hasHighPrecision(coordinates)) {
+              console.log(`  ✓ Got high-precision coordinates via automated right-click: ${coordinates}`);
+              await browser.close();
+              return coordinates;
+            } else {
+              console.log(`  ⚠️  Automated extraction got low-precision coordinates: ${coordinates}`);
+            }
+          }
+        } catch (error) {
+          console.log(`  Failed to get coordinates from context menu: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.log(`  Automated right-click failed: ${error.message}`);
+    }
+
+    // Strategy 2: Extract from page data (fallback)
     console.log(`  Attempting to extract coordinates from page data...`);
 
     try {
@@ -139,8 +230,8 @@ async function extractCoordinates(url, restaurantName) {
       console.log(`  Failed to extract from page data: ${error.message}`);
     }
 
-    // Strategy 2: Manual intervention with clipboard (for full precision)
-    console.log(`\n  ⚠️  Automated extraction failed. Please manually:`);
+    // Strategy 3: Manual intervention with clipboard (for full precision)
+    console.log(`\n  ⚠️  All automated methods failed. Please manually:`);
     console.log(`     1. Right-click on the red pin/marker on the map`);
     console.log(`     2. Click on the coordinates in the context menu (first item) to copy them`);
     console.log(`     3. The script will detect the coordinates automatically...`);
