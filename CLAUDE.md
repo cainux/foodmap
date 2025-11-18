@@ -129,10 +129,8 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 # Install dependencies
 pnpm install
 
-# Parse restaurant data (required before dev/build)
-pnpm parse:restaurants
-
 # Start dev server (http://localhost:5173)
+# Automatically parses restaurant data before starting
 pnpm dev
 ```
 
@@ -144,12 +142,14 @@ pnpm dev
 # 3. Type check (optional during dev)
 pnpm check
 
-# 4. Build for production
+# 4. Build for production (automatically parses restaurant data first)
 pnpm build
 
 # 5. Preview production build
 pnpm preview
 ```
+
+**Note:** `src/lib/restaurants.json` is automatically generated from `data/restaurants.md` when you run `pnpm dev` or `pnpm build`. You never need to manually run `pnpm parse:restaurants`.
 
 ### Adding Restaurants
 
@@ -163,12 +163,12 @@ pnpm preview
    - Format: name, URL, coordinates (lat,lng) on separate lines
    - Blank line separates entries
 
-2. **Parse data**: `pnpm parse:restaurants`
-   - Generates `src/lib/restaurants.json`
+2. **Start dev or build**: `pnpm dev` or `pnpm build`
+   - Automatically generates `src/lib/restaurants.json` from source data
    - Validates coordinate format
    - Reports count of parsed/geocoded restaurants
 
-3. **Rebuild**: `pnpm build`
+**Note:** The `pnpm parse:restaurants` script still exists for manual parsing if needed, but it's automatically run during dev and build.
 
 ### Coordinate Extraction
 
@@ -414,9 +414,9 @@ When committing changes:
 6. **Push**: `git push -u origin <branch-name>`
 
 **Important**:
-- DO NOT commit generated files: `build/`, `node_modules/`, `.svelte-kit/`
+- DO NOT commit generated files: `build/`, `node_modules/`, `.svelte-kit/`, `src/lib/restaurants.json`
 - DO commit source data changes: `data/restaurants.md`
-- GENERATED data is committed: `src/lib/restaurants.json` (product of parse script)
+- `src/lib/restaurants.json` is a build artifact (auto-generated, not tracked in git)
 - NO secrets: Never commit `.env`, `credentials.json`, API keys
 
 ---
@@ -449,8 +449,10 @@ https://maps.app.goo.gl/anotherUrl
 Source Data                Parser                   Application
 ─────────────────         ─────────────            ─────────────
 data/restaurants.md  →  parse-restaurants.js  →  src/lib/restaurants.json
-(human-editable)        (node script)              (consumed by Svelte)
+(human-editable)        (auto-run on dev/build)    (generated build artifact)
 ```
+
+**Automatic Generation**: The parser runs automatically when you execute `pnpm dev` or `pnpm build`. The JSON file is not tracked in git and is regenerated fresh each time.
 
 **Generated JSON Schema**:
 ```json
@@ -490,15 +492,15 @@ coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)
 
 **File locations**:
 - Source: `data/restaurants.md`
-- Script: `scripts/parse-restaurants.js`
-- Output: `src/lib/restaurants.json`
+- Script: `scripts/parse-restaurants.js` (auto-run on dev/build)
+- Output: `src/lib/restaurants.json` (generated build artifact)
 
 **Steps**:
 1. Edit `data/restaurants.md` (add new entries)
-2. Run `pnpm parse:restaurants`
-3. Verify output in console: `✅ Parsed X restaurants`
-4. Rebuild: `pnpm build`
-5. Test: `pnpm preview`
+2. Run `pnpm dev` or `pnpm build`
+   - Parser runs automatically
+   - Verify output in console: `✅ Parsed X restaurants`
+3. Test: `pnpm preview` (if you ran build)
 
 ### Task: Update Map Styling
 
@@ -609,18 +611,18 @@ pnpm preview
 
 ### When Working with Data
 
-1. **NEVER manually edit** `src/lib/restaurants.json` - it's generated
+1. **NEVER manually edit** `src/lib/restaurants.json` - it's auto-generated
 2. **ALWAYS edit** `data/restaurants.md` as the source of truth
-3. **RUN parser** after data changes: `pnpm parse:restaurants`
+3. **Parser runs automatically**: `pnpm dev` and `pnpm build` generate the JSON
 4. **VALIDATE coordinates**: Ensure lat,lng format with no spaces
 
 ### When Committing
 
-1. **Parse data first**: If `restaurants.md` changed, run parse script
-2. **Review diffs**: Check `git diff` before staging
-3. **Clear messages**: Follow imperative mood commit style
-4. **Test build**: Run `pnpm build` before committing
-5. **Push to feature branch**: Never push to main without permission
+1. **Review diffs**: Check `git diff` before staging (should only see `data/restaurants.md` changes)
+2. **Clear messages**: Follow imperative mood commit style
+3. **Test build**: Run `pnpm build` before committing (auto-generates JSON)
+4. **Push to feature branch**: Never push to main without permission
+5. **Don't commit** `src/lib/restaurants.json` - it's in `.gitignore`
 
 ### Common Pitfalls to Avoid
 
@@ -647,7 +649,7 @@ pnpm preview
    - `build/` is gitignored (don't commit)
    - `.svelte-kit/` is gitignored
    - `node_modules/` is gitignored
-   - `src/lib/restaurants.json` IS committed (source for app)
+   - `src/lib/restaurants.json` is gitignored (auto-generated build artifact)
 
 ### Performance Considerations
 
