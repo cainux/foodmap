@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Map, Marker, CircleMarker } from 'leaflet';
+	import type { Map as LeafletMap, Marker, CircleMarker } from 'leaflet';
 
 	interface Restaurant {
 		name: string;
@@ -8,18 +8,20 @@
 		coordinates: { lat: number; lng: number } | null;
 	}
 
-	let { restaurants, onLocationUpdate }: {
+	let { restaurants, onLocationUpdate, onMapReady }: {
 		restaurants: Restaurant[];
 		onLocationUpdate: (location: { lat: number; lng: number }) => void;
+		onMapReady?: (navigateToRestaurant: (coords: { lat: number; lng: number }) => void) => void;
 	} = $props();
 
 	let mapContainer: HTMLDivElement;
-	let map: Map;
-	let markers: (Marker | CircleMarker)[] = [];
+	let map: LeafletMap;
+	let markers: Map<string, CircleMarker> = new Map();
 	let userMarker: CircleMarker | null = null;
 	let hasGeolocation = $state(false);
 	let isLocating = $state(false);
 	let moveTimeout: ReturnType<typeof setTimeout> | null = null;
+	let currentHighlightedMarker: CircleMarker | null = null;
 
 	onMount(async () => {
 		// Dynamically import Leaflet to avoid SSR issues
@@ -65,13 +67,62 @@
 				<a href="${restaurant.url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
 			`);
 
-			markers.push(marker);
+			// Store marker with coordinates as key
+			const key = `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`;
+			markers.set(key, marker);
 		});
 
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
-			const group = L.featureGroup(markers);
+			const group = L.featureGroup(Array.from(markers.values()));
 			map.fitBounds(group.getBounds().pad(0.1));
+		}
+
+		// Function to navigate to and highlight a restaurant marker
+		async function navigateToRestaurant(coords: { lat: number; lng: number }) {
+			const L = await import('leaflet');
+			const key = `${coords.lat},${coords.lng}`;
+			const marker = markers.get(key);
+
+			if (!marker) return;
+
+			// Reset previous highlighted marker
+			if (currentHighlightedMarker) {
+				currentHighlightedMarker.setStyle({
+					radius: 8,
+					fillColor: '#1095c1',
+					color: '#fff',
+					weight: 2,
+					opacity: 1,
+					fillOpacity: 1
+				});
+			}
+
+			// Highlight the new marker
+			marker.setStyle({
+				radius: 12,
+				fillColor: '#ff6b6b',
+				color: '#fff',
+				weight: 3,
+				opacity: 1,
+				fillOpacity: 1
+			});
+
+			currentHighlightedMarker = marker;
+
+			// Move map to marker and zoom in
+			map.setView([coords.lat, coords.lng], 16, {
+				animate: true,
+				duration: 1
+			});
+
+			// Open popup
+			marker.openPopup();
+		}
+
+		// Expose navigation function to parent component
+		if (onMapReady) {
+			onMapReady(navigateToRestaurant);
 		}
 
 		// Add moveend listener to update sorting when map is moved
