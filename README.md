@@ -1,6 +1,6 @@
 # 🍽️ Food Map
 
-A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.md` and rendered as pins using Leaflet maps.
+A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.txt` and rendered as pins using Leaflet maps.
 
 ## Features
 
@@ -31,7 +31,7 @@ pnpm install
 pnpm dev
 ```
 
-The development server automatically generates `src/lib/restaurants.json` from `data/restaurants.md` before starting.
+The development server automatically generates `src/lib/restaurants.json` from `data/restaurants.txt` before starting.
 
 3. Open your browser to `http://localhost:5173`
 
@@ -44,7 +44,7 @@ pnpm build
 ```
 
 The build process automatically:
-1. Parses `data/restaurants.md` and generates `src/lib/restaurants.json`
+1. Parses `data/restaurants.txt` and generates `src/lib/restaurants.json`
 2. Builds the static site to the `build/` directory
 
 To preview the production build:
@@ -57,11 +57,11 @@ pnpm preview
 
 ## Extracting Real Coordinates
 
-See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs in `data/restaurants.md`.
+See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs in `data/restaurants.txt`.
 
 ## Adding Restaurants
 
-1. Edit `data/restaurants.md` following the format:
+1. Edit `data/restaurants.txt` following the format:
    ```
    Restaurant Name
    https://maps.app.goo.gl/...

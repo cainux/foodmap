@@ -6,8 +6,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function extractCoordinates() {
-  // Read the restaurants.md file
-  const dataPath = join(__dirname, '../data/restaurants.md');
+  // Read the restaurants.txt file
+  const dataPath = join(__dirname, '../data/restaurants.txt');
   const content = readFileSync(dataPath, 'utf-8');
 
   // Parse the content

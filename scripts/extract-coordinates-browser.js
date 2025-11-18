@@ -77,7 +77,7 @@ async function processAllRestaurants() {
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
-  console.log('\n\n📄 === NEW restaurants.md FORMAT ===\n');
+  console.log('\n\n📄 === NEW restaurants.txt FORMAT ===\n');
 
   // Output in restaurants.md format
   let output = '';
@@ -92,7 +92,7 @@ async function processAllRestaurants() {
 
   console.log(output);
   console.log('=== END ===\n');
-  console.log('✅ Done! Copy the text above and save it to data/restaurants.md');
+  console.log('✅ Done! Copy the text above and save it to data/restaurants.txt');
 
   return results;
 }
