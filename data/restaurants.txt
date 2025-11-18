@@ -1,4 +1,4 @@
-Grounded London
+Grounded (Aldgate)
 https://maps.app.goo.gl/mTG2MTWQWzVsuGE89
 51.516355592157986,-0.06930076315515116
 
@@ -89,3 +89,15 @@ https://maps.app.goo.gl/WK9rhmzTakXtYhg69
 CoCo Ichibanya
 https://maps.app.goo.gl/RCASEC8DuA5wx2TF9
 51.511815574294666,-0.12788188183630442
+
+Grounded (Bow)
+https://maps.app.goo.gl/7gZVYXiUSP98GrPx8
+51.527859978875355,-0.02132839416299155
+
+Ippudo (Canary Wharf)
+https://maps.app.goo.gl/JMwJN9k5KNh4hAgA8
+51.50620294901556,-0.018113517989150632
+
+Ippudo (Central)
+https://maps.app.goo.gl/hiHtzAafCxRvvex6A
+51.51583116688025,-0.12747188941328272
