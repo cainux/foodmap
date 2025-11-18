@@ -82,10 +82,8 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 │   └── restaurants.txt               # SOURCE restaurant data (SSOT)
 │
 ├── scripts/
-│   ├── parse-restaurants.js          # Parse .md → .json
-│   ├── extract-coordinates.js        # OSM Nominatim geocoding
-│   ├── extract-coordinates-browser.js # Browser-based extraction
-│   └── extract-coords.sh             # Shell wrapper
+│   ├── parse-restaurants.js          # Parse .txt → .json
+│   └── extract-coordinates.js        # Playwright-based manual extraction
 │
 ├── static/
 │   └── robots.txt                    # SEO directives
@@ -172,11 +170,18 @@ pnpm preview
 
 ### Coordinate Extraction
 
-See `COORDINATES.md` for detailed instructions. Key methods:
+See `COORDINATES.md` for detailed instructions.
 
-- **Automated**: `node scripts/extract-coordinates.js` (uses OSM Nominatim API)
-- **Browser Console**: `scripts/extract-coordinates-browser.js` (follow redirects)
-- **Manual UI**: Open `coordinate-extractor.html` in browser
+**Script**: `pnpm extract:coords`
+
+The extraction script uses Playwright to:
+- Open Google Maps URLs in a browser
+- Handle cookie consent automatically
+- Wait for manual coordinate extraction (right-click on pin)
+- Monitor clipboard for high-precision coordinates (10+ decimal places)
+- Validate and update `data/restaurants.txt` automatically
+
+**Manual intervention required**: You must right-click the pin and copy coordinates for each restaurant. The script automates everything else.
 
 ---
 
