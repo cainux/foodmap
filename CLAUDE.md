@@ -79,7 +79,7 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 │       └── +page.svelte              # Home page (main app)
 │
 ├── data/
-│   └── restaurants.md                # SOURCE restaurant data (SSOT)
+│   └── restaurants.txt               # SOURCE restaurant data (SSOT)
 │
 ├── scripts/
 │   ├── parse-restaurants.js          # Parse .md → .json
@@ -114,7 +114,7 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 | `src/routes/+page.svelte` | Main app page | Renders map + restaurant grid, handles sorting |
 | `src/lib/components/RestaurantMap.svelte` | Map component | Leaflet integration, geolocation, markers |
 | `src/lib/restaurants.json` | Restaurant data (GENERATED) | Array of `{name, url, coordinates}` |
-| `data/restaurants.md` | Source data (SSOT) | Human-editable restaurant list |
+| `data/restaurants.txt` | Source data (SSOT) | Human-editable restaurant list |
 | `scripts/parse-restaurants.js` | Data parser | Converts .md → .json format |
 | `src/routes/+layout.ts` | Route config | `export const prerender = true; export const ssr = false;` |
 | `svelte.config.js` | SvelteKit config | Static adapter, build output to `build/` |
@@ -149,11 +149,11 @@ pnpm build
 pnpm preview
 ```
 
-**Note:** `src/lib/restaurants.json` is automatically generated from `data/restaurants.md` when you run `pnpm dev` or `pnpm build`. You never need to manually run `pnpm parse:restaurants`.
+**Note:** `src/lib/restaurants.json` is automatically generated from `data/restaurants.txt` when you run `pnpm dev` or `pnpm build`. You never need to manually run `pnpm parse:restaurants`.
 
 ### Adding Restaurants
 
-1. **Edit source data**: `data/restaurants.md`
+1. **Edit source data**: `data/restaurants.txt`
    ```
    Restaurant Name
    https://maps.app.goo.gl/...
@@ -415,7 +415,7 @@ When committing changes:
 
 **Important**:
 - DO NOT commit generated files: `build/`, `node_modules/`, `.svelte-kit/`, `src/lib/restaurants.json`
-- DO commit source data changes: `data/restaurants.md`
+- DO commit source data changes: `data/restaurants.txt`
 - `src/lib/restaurants.json` is a build artifact (auto-generated, not tracked in git)
 - NO secrets: Never commit `.env`, `credentials.json`, API keys
 
@@ -425,7 +425,7 @@ When committing changes:
 
 ### Single Source of Truth (SSOT)
 
-**`data/restaurants.md`** is the SSOT for restaurant data:
+**`data/restaurants.txt`** is the SSOT for restaurant data:
 
 ```
 Restaurant Name
@@ -448,7 +448,7 @@ https://maps.app.goo.gl/anotherUrl
 ```
 Source Data                Parser                   Application
 ─────────────────         ─────────────            ─────────────
-data/restaurants.md  →  parse-restaurants.js  →  src/lib/restaurants.json
+data/restaurants.txt  →  parse-restaurants.js  →  src/lib/restaurants.json
 (human-editable)        (auto-run on dev/build)    (generated build artifact)
 ```
 
@@ -491,12 +491,12 @@ coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)
 ### Task: Add New Restaurants
 
 **File locations**:
-- Source: `data/restaurants.md`
+- Source: `data/restaurants.txt`
 - Script: `scripts/parse-restaurants.js` (auto-run on dev/build)
 - Output: `src/lib/restaurants.json` (generated build artifact)
 
 **Steps**:
-1. Edit `data/restaurants.md` (add new entries)
+1. Edit `data/restaurants.txt` (add new entries)
 2. Run `pnpm dev` or `pnpm build`
    - Parser runs automatically
    - Verify output in console: `✅ Parsed X restaurants`
@@ -612,13 +612,13 @@ pnpm preview
 ### When Working with Data
 
 1. **NEVER manually edit** `src/lib/restaurants.json` - it's auto-generated
-2. **ALWAYS edit** `data/restaurants.md` as the source of truth
+2. **ALWAYS edit** `data/restaurants.txt` as the source of truth
 3. **Parser runs automatically**: `pnpm dev` and `pnpm build` generate the JSON
 4. **VALIDATE coordinates**: Ensure lat,lng format with no spaces
 
 ### When Committing
 
-1. **Review diffs**: Check `git diff` before staging (should only see `data/restaurants.md` changes)
+1. **Review diffs**: Check `git diff` before staging (should only see `data/restaurants.txt` changes)
 2. **Clear messages**: Follow imperative mood commit style
 3. **Test build**: Run `pnpm build` before committing (auto-generates JSON)
 4. **Push to feature branch**: Never push to main without permission
@@ -682,7 +682,7 @@ Understanding recent commits helps maintain consistency:
 ### File Modification Frequency
 
 **Frequently modified**:
-- `data/restaurants.md` - adding/updating restaurants
+- `data/restaurants.txt` - adding/updating restaurants
 - `src/routes/+page.svelte` - main UI changes
 - `src/lib/components/RestaurantMap.svelte` - map features
 

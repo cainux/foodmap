@@ -14,14 +14,14 @@ The current `src/lib/restaurants.json` file contains **placeholder coordinates**
 
 ## Option 2: Browser-based Extraction Script (Recommended)
 
-This script will automatically extract coordinates and output a new `restaurants.md` format with coordinates included:
+This script will automatically extract coordinates and output a new `restaurants.txt` format with coordinates included:
 
 1. Open any webpage in your browser
 2. Open the browser console (F12 → Console tab)
 3. Copy and paste the entire contents of `scripts/extract-coordinates-browser.js`
 4. Press Enter and wait (takes about 15 seconds)
-5. Copy the output between `=== NEW restaurants.md FORMAT ===` and `=== END ===`
-6. Save to `data/restaurants.md`
+5. Copy the output between `=== NEW restaurants.txt FORMAT ===` and `=== END ===`
+6. Save to `data/restaurants.txt`
 7. Run `pnpm parse:restaurants` to generate `src/lib/restaurants.json`
 8. Run `pnpm build` to rebuild the site
 
@@ -35,10 +35,10 @@ https://maps.app.goo.gl/...
 
 ## Option 3: Manual Extraction
 
-1. Open each Google Maps URL from `data/restaurants.md` in your browser
+1. Open each Google Maps URL from `data/restaurants.txt` in your browser
 2. Right-click on the map and select "What's here?"
 3. Copy the coordinates shown at the bottom
-4. Add them to `data/restaurants.md` as a third line under each URL
+4. Add them to `data/restaurants.txt` as a third line under each URL
 5. Run `pnpm parse:restaurants` to generate `src/lib/restaurants.json`
 
 ## Option 4: Using Node.js Script (If Network Access Available)

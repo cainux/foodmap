@@ -52,7 +52,7 @@ while IFS= read -r name; do
   fi
 
   sleep 0.5
-done < "../data/restaurants.md"
+done < "../data/restaurants.txt"
 
 echo ''
 echo ']'
