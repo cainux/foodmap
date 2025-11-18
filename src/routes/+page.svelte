@@ -4,6 +4,7 @@
 
 	let sortedRestaurants = $state(restaurantsData);
 	let userLocation = $state<{ lat: number; lng: number } | null>(null);
+	let navigateToRestaurant: ((coords: { lat: number; lng: number }) => void) | null = null;
 
 	function handleLocationUpdate(location: { lat: number; lng: number }) {
 		userLocation = location;
@@ -23,6 +24,23 @@
 			.sort((a, b) => a.distance - b.distance);
 
 		sortedRestaurants = withDistances;
+	}
+
+	function handleMapReady(navFunction: (coords: { lat: number; lng: number }) => void) {
+		navigateToRestaurant = navFunction;
+	}
+
+	function handleCardClick(coords: { lat: number; lng: number }) {
+		if (navigateToRestaurant) {
+			navigateToRestaurant(coords);
+		}
+	}
+
+	function handleCardKeyPress(event: KeyboardEvent, coords: { lat: number; lng: number }) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			handleCardClick(coords);
+		}
 	}
 
 	// Haversine formula to calculate distance between two points
@@ -49,7 +67,11 @@
 	</header>
 
 	<article>
-		<RestaurantMap restaurants={restaurantsData} onLocationUpdate={handleLocationUpdate} />
+		<RestaurantMap
+			restaurants={restaurantsData}
+			onLocationUpdate={handleLocationUpdate}
+			onMapReady={handleMapReady}
+		/>
 	</article>
 
 	<section>
@@ -57,12 +79,32 @@
 		<div class="restaurant-grid">
 			{#each sortedRestaurants as restaurant}
 				{#if restaurant.coordinates}
-					<article class="restaurant-card">
-						<h3>{restaurant.name}</h3>
-						<a href={restaurant.url} target="_blank" rel="noopener noreferrer">
-							View on Google Maps →
-						</a>
-					</article>
+					<div
+						class="restaurant-card"
+						onclick={() => handleCardClick(restaurant.coordinates!)}
+						onkeydown={(e) => handleCardKeyPress(e, restaurant.coordinates!)}
+						role="button"
+						tabindex="0"
+					>
+						<div class="card-content">
+							<h3>{restaurant.name}</h3>
+							<a
+								href={restaurant.url}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="maps-button"
+								onclick={(e) => e.stopPropagation()}
+								title="Open in Google Maps"
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+									<path
+										fill="#4285F4"
+										d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+									/>
+								</svg>
+							</a>
+						</div>
+					</div>
 				{/if}
 			{/each}
 		</div>
@@ -112,19 +154,59 @@
 	.restaurant-card {
 		padding: 1rem;
 		margin: 0;
+		cursor: pointer;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		background: var(--pico-card-background-color);
+		border-radius: var(--pico-border-radius);
+		box-shadow: var(--pico-card-box-shadow);
+	}
+
+	.restaurant-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	.restaurant-card:active {
+		transform: translateY(0);
+	}
+
+	.card-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
 	}
 
 	.restaurant-card h3 {
-		margin: 0 0 0.5rem 0;
+		margin: 0;
 		font-size: 1.1rem;
+		flex: 1;
 	}
 
-	.restaurant-card a {
-		font-size: 0.9rem;
+	.maps-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: white;
+		border: 2px solid #e0e0e0;
+		border-radius: 6px;
+		padding: 6px;
 		text-decoration: none;
+		flex-shrink: 0;
+		transition: all 0.2s ease;
 	}
 
-	.restaurant-card a:hover {
-		text-decoration: underline;
+	.maps-button:hover {
+		background: #f5f5f5;
+		border-color: #4285F4;
+		transform: scale(1.05);
+	}
+
+	.maps-button svg {
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 </style>
