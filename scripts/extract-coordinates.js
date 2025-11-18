@@ -56,7 +56,23 @@ async function extractCoordinates(url, restaurantName) {
 
     // Wait for the map to load
     console.log(`  Waiting for map to load...`);
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
+
+    // Handle EU cookie consent if it appears
+    try {
+      console.log(`  Checking for cookie consent dialog...`);
+      const acceptButton = page.locator('button:has-text("Accept all"), button:has-text("Reject all")').first();
+      await acceptButton.waitFor({ timeout: 3000 });
+
+      console.log(`  Cookie consent found, clicking Accept all...`);
+      // Try to find specifically "Accept all" button
+      const acceptAllButton = page.locator('button:has-text("Accept all")').first();
+      await acceptAllButton.click();
+      await page.waitForTimeout(1000);
+      console.log(`  ✓ Cookie consent accepted`);
+    } catch (error) {
+      console.log(`  No cookie consent dialog detected`);
+    }
 
     // Strategy 1: Right-click approach (gets full precision ~15 decimal places)
     console.log(`  Attempting to right-click on the map marker...`);
