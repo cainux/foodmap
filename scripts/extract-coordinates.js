@@ -16,20 +16,40 @@ function parseRestaurants(content) {
 
   while (i < lines.length) {
     const name = lines[i]?.trim();
-    const url = lines[i + 1]?.trim();
-    const coords = lines[i + 2]?.trim();
 
+    // Skip blank lines
+    if (!name) {
+      i++;
+      continue;
+    }
+
+    const url = lines[i + 1]?.trim();
+
+    // Only process if we have a valid name and URL
     if (name && url && url.startsWith('http')) {
+      const potentialCoords = lines[i + 2]?.trim();
+
+      // Check if the third line is coordinates or blank/next entry
+      const hasCoords = potentialCoords && potentialCoords.match(/^-?\d+\.\d+,-?\d+\.\d+$/);
+
       restaurants.push({
         name,
         url,
-        coordinates: coords && coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/) ? coords : null,
-        lineNumber: i
+        coordinates: hasCoords ? potentialCoords : null
       });
-    }
 
-    // Move to next restaurant (skip blank line)
-    i += 4;
+      // Move past name, URL, and optionally coordinates
+      if (hasCoords) {
+        // Has coordinates: name, URL, coords, blank = 4 lines
+        i += 4;
+      } else {
+        // No coordinates: name, URL, blank = 3 lines
+        i += 3;
+      }
+    } else {
+      // Invalid entry, skip to next line
+      i++;
+    }
   }
 
   return restaurants;
