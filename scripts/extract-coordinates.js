@@ -36,6 +36,23 @@ function parseRestaurants(content) {
 }
 
 /**
+ * Validate coordinate precision (must have at least 10 decimal places)
+ */
+function hasHighPrecision(coordString) {
+  const parts = coordString.split(',');
+  if (parts.length !== 2) return false;
+
+  for (const part of parts) {
+    const decimalPart = part.trim().split('.')[1];
+    if (!decimalPart || decimalPart.length < 10) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Extract coordinates from Google Maps URL using browser automation
  */
 async function extractCoordinates(url, restaurantName) {
@@ -110,9 +127,13 @@ async function extractCoordinates(url, restaurantName) {
       });
 
       if (coordinates && coordinates.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
-        console.log(`  ✓ Got high-precision coordinates from page data: ${coordinates}`);
-        await browser.close();
-        return coordinates;
+        if (hasHighPrecision(coordinates)) {
+          console.log(`  ✓ Got high-precision coordinates from page data: ${coordinates}`);
+          await browser.close();
+          return coordinates;
+        } else {
+          console.log(`  ⚠️  Found coordinates but precision too low: ${coordinates}`);
+        }
       }
     } catch (error) {
       console.log(`  Failed to extract from page data: ${error.message}`);
@@ -123,7 +144,8 @@ async function extractCoordinates(url, restaurantName) {
     console.log(`     1. Right-click on the red pin/marker on the map`);
     console.log(`     2. Click on the coordinates in the context menu (first item) to copy them`);
     console.log(`     3. The script will detect the coordinates automatically...`);
-    console.log(`\n  Waiting 30 seconds for manual interaction...\n`);
+    console.log(`\n  NOTE: Coordinates must have 10+ decimal places for precision`);
+    console.log(`  Waiting 30 seconds for manual interaction...\n`);
 
     // Poll clipboard for valid coordinates
     for (let i = 0; i < 30; i++) {
@@ -134,18 +156,22 @@ async function extractCoordinates(url, restaurantName) {
         const coordinates = clipboardText.replace(/,\s+/, ',').trim();
 
         if (coordinates.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
-          console.log(`  ✓ Got high-precision coordinates from clipboard: ${coordinates}`);
-          await browser.close();
-          return coordinates;
+          if (hasHighPrecision(coordinates)) {
+            console.log(`  ✓ Got high-precision coordinates from clipboard: ${coordinates}`);
+            await browser.close();
+            return coordinates;
+          } else {
+            console.log(`  ⚠️  Clipboard has low-precision coordinates: ${coordinates} - waiting for high-precision...`);
+          }
         }
       } catch {
         // Ignore clipboard read errors
       }
     }
 
-    console.log(`  ✗ Failed to get high-precision coordinates`);
+    console.log(`  ✗ Failed to get high-precision coordinates (need 10+ decimal places)`);
     await browser.close();
-    throw new Error('Could not extract high-precision coordinates');
+    throw new Error('Could not extract high-precision coordinates (minimum 10 decimal places required)');
   } catch (error) {
     console.error(`  ✗ Error: ${error.message}`);
     await browser.close();
