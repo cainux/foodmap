@@ -38,7 +38,7 @@ Kova Aldgate
 https://maps.app.goo.gl/sCJCw3aEXshmLgQn7
 51.51387634478653,-0.06847481974657363
 
-Mr Wang's Aldgate
+Mr Wang's
 https://maps.app.goo.gl/ksTBwqg1pxecBgLs7
 51.51362745799985,-0.07351854805570815
 
@@ -46,9 +46,13 @@ Xi Home Dumpling
 https://maps.app.goo.gl/4BpmRFQnWxVT4gdH7
 51.52165490822007,-0.07744469194904072
 
-JWD Lamian
+JWD Lamian (Canary Wharf)
 https://maps.app.goo.gl/FQi7Z1HbkiZYRCvY9
 51.502390712532616,-0.01946484401150435
+
+JWD Lamian (Liverpool St)
+https://maps.app.goo.gl/dKkPqDohw21nc5Hu8
+51.519095556012424,-0.07982882995650192
 
 Little Green Vietnamese
 https://maps.app.goo.gl/MYYMkUczYDHkzHL16
@@ -65,3 +69,23 @@ https://maps.app.goo.gl/G5SaPSP5ikg4rvQ1A
 3KOBROS Korean Restaurant
 https://maps.app.goo.gl/RyE3LvAFexMCiCvG7
 51.48946582427282,-0.02145205387962504
+
+Eat Vietnam
+https://maps.app.goo.gl/NEacfNqT2AzvE3Rw6
+51.483979362655404,-0.032330981378464095
+
+Natura
+https://maps.app.goo.gl/YXLoR98pY47Z32yH7
+51.54429540198718,-0.027702823247169404
+
+Monohon Ramen
+https://maps.app.goo.gl/jRoxZphAEDY2dci6A
+51.52472659443363,-0.0934531302142815
+
+Japan Centre
+https://maps.app.goo.gl/WK9rhmzTakXtYhg69
+51.50976666289287,-0.1315346685292054
+
+CoCo Ichibanya
+https://maps.app.goo.gl/RCASEC8DuA5wx2TF9
+51.511815574294666,-0.12788188183630442
