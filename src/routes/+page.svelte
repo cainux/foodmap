@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { flip } from 'svelte/animate';
 	import RestaurantMap from '$lib/components/RestaurantMap.svelte';
 	import restaurantsData from '$lib/restaurants.json';
 
-	let sortedRestaurants = $state(restaurantsData);
+	let sortedRestaurants = $state(restaurantsData.filter(r => r.coordinates));
 	let userLocation = $state<{ lat: number; lng: number } | null>(null);
 	let navigateToRestaurant: ((coords: { lat: number; lng: number }) => void) | null = null;
 
@@ -77,35 +78,34 @@
 	<section>
 		<h2>Restaurants</h2>
 		<div class="restaurant-grid">
-			{#each sortedRestaurants as restaurant}
-				{#if restaurant.coordinates}
-					<div
-						class="restaurant-card"
-						onclick={() => handleCardClick(restaurant.coordinates!)}
-						onkeydown={(e) => handleCardKeyPress(e, restaurant.coordinates!)}
-						role="button"
-						tabindex="0"
-					>
-						<div class="card-content">
-							<h3>{restaurant.name}</h3>
-							<a
-								href={restaurant.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="maps-button"
-								onclick={(e) => e.stopPropagation()}
-								title="Open in Google Maps"
-							>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-									<path
-										fill="#4285F4"
-										d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-									/>
-								</svg>
-							</a>
-						</div>
+			{#each sortedRestaurants as restaurant (restaurant.url)}
+				<div
+					class="restaurant-card"
+					onclick={() => handleCardClick(restaurant.coordinates!)}
+					onkeydown={(e) => handleCardKeyPress(e, restaurant.coordinates!)}
+					role="button"
+					tabindex="0"
+					animate:flip={{ duration: 300 }}
+				>
+					<div class="card-content">
+						<h3>{restaurant.name}</h3>
+						<a
+							href={restaurant.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="maps-button"
+							onclick={(e) => e.stopPropagation()}
+							title="Open in Google Maps"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+								<path
+									fill="#4285F4"
+									d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+								/>
+							</svg>
+						</a>
 					</div>
-				{/if}
+				</div>
 			{/each}
 		</div>
 	</section>
