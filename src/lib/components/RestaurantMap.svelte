@@ -110,14 +110,15 @@
 
 			currentHighlightedMarker = marker;
 
-			// Move map to marker and zoom in
-			map.setView([coords.lat, coords.lng], 16, {
-				animate: true,
-				duration: 1
+			// Fly to the marker location with smooth animation
+			map.flyTo([coords.lat, coords.lng], 16, {
+				duration: 1.2
 			});
 
-			// Open popup
-			marker.openPopup();
+			// Open popup after a short delay to ensure map is centered
+			setTimeout(() => {
+				marker.openPopup();
+			}, 1300);
 		}
 
 		// Expose navigation function to parent component
