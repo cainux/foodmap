@@ -31,6 +31,8 @@ pnpm install
 pnpm dev
 ```
 
+The development server automatically generates `src/lib/restaurants.json` from `data/restaurants.md` before starting.
+
 3. Open your browser to `http://localhost:5173`
 
 ## Building
@@ -41,7 +43,9 @@ To create a production build:
 pnpm build
 ```
 
-The static site will be generated in the `build/` directory.
+The build process automatically:
+1. Parses `data/restaurants.md` and generates `src/lib/restaurants.json`
+2. Builds the static site to the `build/` directory
 
 To preview the production build:
 
@@ -49,9 +53,11 @@ To preview the production build:
 pnpm preview
 ```
 
+**Note:** `src/lib/restaurants.json` is a generated file and not tracked in git. It's automatically created during development and build processes.
+
 ## Extracting Real Coordinates
 
-The current coordinates in `src/lib/restaurants.json` are placeholders. See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs.
+See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs in `data/restaurants.md`.
 
 ## Adding Restaurants
 
@@ -59,12 +65,16 @@ The current coordinates in `src/lib/restaurants.json` are placeholders. See [COO
    ```
    Restaurant Name
    https://maps.app.goo.gl/...
+   51.5163842,-0.0693367
 
    ```
 
-2. Run the coordinate extraction script or manually add coordinates to `src/lib/restaurants.json`
+2. Extract coordinates using one of the methods in [COORDINATES.md](./COORDINATES.md)
 
-3. Rebuild the site: `pnpm build`
+3. Start dev server or build - `restaurants.json` is automatically generated:
+   ```sh
+   pnpm dev   # or pnpm build
+   ```
 
 ## Deployment
 
