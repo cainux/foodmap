@@ -6,6 +6,7 @@
 	let sortedRestaurants = $state(restaurantsData.filter(r => r.coordinates));
 	let userLocation = $state<{ lat: number; lng: number } | null>(null);
 	let navigateToRestaurant: ((coords: { lat: number; lng: number }) => void) | null = null;
+	let mapSection: HTMLElement;
 
 	function handleLocationUpdate(location: { lat: number; lng: number }) {
 		userLocation = location;
@@ -34,6 +35,14 @@
 	function handleCardClick(coords: { lat: number; lng: number }) {
 		if (navigateToRestaurant) {
 			navigateToRestaurant(coords);
+
+			// Scroll to map on mobile devices
+			if (mapSection) {
+				// Small delay to allow map animation to start
+				setTimeout(() => {
+					mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}, 100);
+			}
 		}
 	}
 
@@ -67,7 +76,7 @@
 		<p>Where I like to eat</p>
 	</header>
 
-	<article>
+	<article bind:this={mapSection}>
 		<RestaurantMap
 			restaurants={restaurantsData}
 			onLocationUpdate={handleLocationUpdate}
