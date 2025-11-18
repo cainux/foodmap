@@ -110,6 +110,14 @@ async function extractCoordinates(url, restaurantName) {
       console.log(`  No cookie consent dialog detected`);
     }
 
+    // Clear clipboard before starting to avoid detecting old coordinates
+    try {
+      await page.evaluate(() => navigator.clipboard.writeText(''));
+      console.log(`  Cleared clipboard`);
+    } catch (error) {
+      console.log(`  Note: Could not clear clipboard: ${error.message}`);
+    }
+
     // Manual coordinate extraction via right-click
     console.log(`\n  📍 Please extract coordinates manually:`);
     console.log(`     1. Right-click on the red pin/marker on the map`);
@@ -154,6 +162,8 @@ async function extractCoordinates(url, restaurantName) {
  * Main function
  */
 async function main() {
+  console.log('🚀 Starting coordinate extraction script...\n');
+
   const dataPath = join(__dirname, '../data/restaurants.txt');
   const content = readFileSync(dataPath, 'utf-8');
   const restaurants = parseRestaurants(content);
