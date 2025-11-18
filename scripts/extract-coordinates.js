@@ -74,48 +74,52 @@ async function extractCoordinates(url, restaurantName) {
       console.log(`  No cookie consent dialog detected`);
     }
 
-    // Strategy 1: Right-click approach (gets full precision ~15 decimal places)
-    console.log(`  Attempting to right-click on the map marker...`);
+    // Strategy 1: Extract from page data (gets full precision)
+    console.log(`  Attempting to extract coordinates from page data...`);
 
-    // Wait a bit for any overlays or popups
-    await page.waitForTimeout(2000);
-
-    // Try to find and right-click anywhere on the map to get coordinates
     try {
-      // Try clicking on the center of the map area where the pin usually is
-      const mapDiv = page.locator('#scene').first();
-      await mapDiv.waitFor({ timeout: 5000 });
+      // Google Maps stores coordinates in the page URL and in the APP_INITIALIZATION_STATE
+      const coordinates = await page.evaluate(() => {
+        // Method 1: Try to find coordinates in the page's data
+        const scripts = Array.from(document.querySelectorAll('script'));
+        for (const script of scripts) {
+          const content = script.textContent || '';
 
-      console.log(`  Right-clicking on map...`);
-      await mapDiv.click({ button: 'right', position: { x: 200, y: 200 } });
-      await page.waitForTimeout(1000);
+          // Look for coordinates in the format [null,null,lat,lng]
+          const coordPattern = /\[null,null,(-?\d+\.\d+),(-?\d+\.\d+)\]/g;
+          const matches = [...content.matchAll(coordPattern)];
 
-      // Look for the coordinates in the context menu - they appear as the first item
-      const coordsElement = page.locator('[role="menuitem"]').first();
-      await coordsElement.waitFor({ timeout: 3000 });
+          if (matches.length > 0) {
+            // Get the most precise coordinates (longest decimal)
+            let bestMatch = matches[0];
+            let maxLength = matches[0][1].length + matches[0][2].length;
 
-      const coordsText = await coordsElement.textContent();
-      console.log(`  Context menu text: ${coordsText}`);
+            for (const match of matches) {
+              const totalLength = match[1].length + match[2].length;
+              if (totalLength > maxLength) {
+                bestMatch = match;
+                maxLength = totalLength;
+              }
+            }
 
-      // Click to copy coordinates
-      await coordsElement.click();
-      await page.waitForTimeout(1000);
+            return `${bestMatch[1]},${bestMatch[2]}`;
+          }
+        }
 
-      // Read from clipboard
-      const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-      const coordinates = clipboardText.replace(/,\s+/, ',').trim();
+        return null;
+      });
 
-      if (coordinates.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
-        console.log(`  ✓ Got high-precision coordinates from clipboard: ${coordinates}`);
+      if (coordinates && coordinates.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
+        console.log(`  ✓ Got high-precision coordinates from page data: ${coordinates}`);
         await browser.close();
         return coordinates;
       }
     } catch (error) {
-      console.log(`  Automated right-click failed: ${error.message}`);
+      console.log(`  Failed to extract from page data: ${error.message}`);
     }
 
-    // Strategy 2: Manual intervention (preferred for full precision)
-    console.log(`\n  ⚠️  Automated right-click failed. Please manually:`);
+    // Strategy 2: Manual intervention with clipboard (for full precision)
+    console.log(`\n  ⚠️  Automated extraction failed. Please manually:`);
     console.log(`     1. Right-click on the red pin/marker on the map`);
     console.log(`     2. Click on the coordinates in the context menu (first item) to copy them`);
     console.log(`     3. The script will detect the coordinates automatically...`);
@@ -139,31 +143,14 @@ async function extractCoordinates(url, restaurantName) {
       }
     }
 
-    // Strategy 3: URL extraction (fallback with lower precision ~7 decimal places)
-    console.log(`  Trying URL extraction as fallback...`);
-    const currentUrl = page.url();
-    const patterns = [
-      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
-      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
-    ];
-
-    for (const pattern of patterns) {
-      const match = currentUrl.match(pattern);
-      if (match) {
-        const coords = `${match[1]},${match[2]}`;
-        console.log(`  ⚠️  Extracted from URL (lower precision): ${coords}`);
-        await browser.close();
-        return coords;
-      }
-    }
-
-    console.log(`  ✗ Could not extract coordinates`);
+    console.log(`  ✗ Failed to get high-precision coordinates`);
+    await browser.close();
+    throw new Error('Could not extract high-precision coordinates');
   } catch (error) {
     console.error(`  ✗ Error: ${error.message}`);
+    await browser.close();
+    throw error;
   }
-
-  await browser.close();
-  return null;
 }
 
 /**
@@ -190,13 +177,14 @@ async function main() {
     console.log(`\n📍 ${restaurant.name}`);
     console.log(`   URL: ${restaurant.url}`);
 
-    const coords = await extractCoordinates(restaurant.url, restaurant.name);
-
-    if (coords) {
+    try {
+      const coords = await extractCoordinates(restaurant.url, restaurant.name);
       restaurant.coordinates = coords;
       console.log(`   ✅ Coordinates: ${coords}`);
-    } else {
-      console.log(`   ❌ Could not extract coordinates`);
+    } catch (error) {
+      console.error(`   ❌ Failed to extract coordinates: ${error.message}`);
+      console.error(`\n⚠️  Stopping script - fix the issue above before continuing`);
+      process.exit(1);
     }
   }
 
