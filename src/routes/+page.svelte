@@ -8,6 +8,12 @@
 	let navigateToRestaurant: ((coords: { lat: number; lng: number }) => void) | null = null;
 	let mapSection: HTMLElement;
 
+	// Social media preview metadata
+	const siteUrl = 'https://cainux.github.io/foodmap'; // Update this with your actual deployed URL
+	const title = 'Food Map';
+	const description = 'Where I like to eat';
+	const imageUrl = `${siteUrl}/social-preview.png`;
+
 	function handleLocationUpdate(location: { lat: number; lng: number }) {
 		userLocation = location;
 
@@ -69,6 +75,31 @@
 		return degrees * (Math.PI / 180);
 	}
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={siteUrl} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:image" content={imageUrl} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={title} />
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:url" content={siteUrl} />
+	<meta property="twitter:title" content={title} />
+	<meta property="twitter:description" content={description} />
+	<meta property="twitter:image" content={imageUrl} />
+
+	<!-- WhatsApp -->
+	<meta property="og:site_name" content={title} />
+</svelte:head>
 
 <main class="container">
 	<header>
