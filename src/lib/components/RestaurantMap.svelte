@@ -21,6 +21,7 @@
 	let isLocating = $state(false);
 	let moveTimeout: ReturnType<typeof setTimeout> | null = null;
 	let highlightedRestaurantId: string | null = null;
+	let currentPopup: any | null = null; // Track the currently open popup
 
 	onMount(async () => {
 		// Dynamically import MapLibre GL to avoid SSR issues
@@ -114,14 +115,24 @@
 				const coordinates = (feature.geometry as any).coordinates.slice();
 				const { name, url } = feature.properties as { name: string; url: string };
 
-				// Create popup
-				new maplibregl.Popup()
+				// Close previous popup if it exists
+				if (currentPopup) {
+					currentPopup.remove();
+				}
+
+				// Create and track new popup
+				currentPopup = new maplibregl.Popup()
 					.setLngLat(coordinates)
 					.setHTML(`
 						<strong>${name}</strong><br>
 						<a href="${url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
 					`)
 					.addTo(map);
+
+				// Clear reference when popup is closed manually
+				currentPopup.on('close', () => {
+					currentPopup = null;
+				});
 			});
 
 			// Change cursor on hover
@@ -215,13 +226,24 @@
 			if (restaurant) {
 				// Open popup after animation
 				setTimeout(() => {
-					new maplibregl.Popup()
+					// Close previous popup if it exists
+					if (currentPopup) {
+						currentPopup.remove();
+					}
+
+					// Create and track new popup
+					currentPopup = new maplibregl.Popup()
 						.setLngLat([coords.lng, coords.lat])
 						.setHTML(`
 							<strong>${restaurant.name}</strong><br>
 							<a href="${restaurant.url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
 						`)
 						.addTo(map);
+
+					// Clear reference when popup is closed manually
+					currentPopup.on('close', () => {
+						currentPopup = null;
+					});
 				}, 1300);
 			}
 		}
