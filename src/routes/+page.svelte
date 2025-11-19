@@ -9,7 +9,7 @@
 	let mapSection: HTMLElement;
 
 	// Social media preview metadata
-	const siteUrl = 'https://cainux.github.io/foodmap'; // Update this with your actual deployed URL
+	const siteUrl = 'https://food.oha.me';
 	const title = 'Food Map';
 	const description = 'Where I like to eat';
 	const imageUrl = `${siteUrl}/social-preview.png`;
