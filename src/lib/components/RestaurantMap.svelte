@@ -370,38 +370,38 @@
 	}
 
 	:global(.user-location-marker) {
-		width: 24px;
-		height: 36px;
+		width: 28px;
+		height: 40px;
 		position: relative;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
 	}
 
 	/* Red pin head (circle) */
 	:global(.user-location-marker::before) {
 		content: '';
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		border-radius: 50%;
 		background-color: #ff6b6b;
 		border: 3px solid #fff;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-		position: relative;
+		position: absolute;
+		top: 0;
+		left: 0;
 		z-index: 2;
 	}
 
-	/* White center dot */
+	/* Pin point (triangle) */
 	:global(.user-location-marker::after) {
 		content: '';
 		position: absolute;
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background-color: #fff;
-		top: 8px;
-		left: 50%;
-		transform: translateX(-50%);
-		z-index: 3;
+		width: 0;
+		height: 0;
+		border-left: 8px solid transparent;
+		border-right: 8px solid transparent;
+		border-top: 16px solid #ff6b6b;
+		top: 24px;
+		left: 6px;
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+		z-index: 1;
 	}
 </style>
