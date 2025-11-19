@@ -2,9 +2,13 @@ Grounded (Aldgate)
 https://maps.app.goo.gl/mTG2MTWQWzVsuGE89
 51.516355592157986,-0.06930076315515116
 
-Pizza Union
+Pizza Union (Aldgate)
 https://maps.app.goo.gl/E6s3Tma5Y9ii5Wpu5
 51.513884434412034,-0.07050150185264993
+
+Pizza Union (Old Street)
+https://maps.app.goo.gl/bEwvcohbZsVY28wA7
+51.52756500074078,-0.08854604735563558
 
 Sushinoen (Japanese)
 https://maps.app.goo.gl/FoHeA91P96ZncT8XA
@@ -101,3 +105,19 @@ https://maps.app.goo.gl/JMwJN9k5KNh4hAgA8
 Ippudo (Central)
 https://maps.app.goo.gl/hiHtzAafCxRvvex6A
 51.51583116688025,-0.12747188941328272
+
+TANAKATSU
+https://maps.app.goo.gl/q41U1e2rqQU4ZmsS9
+51.53032489272937,-0.10204306057621795
+
+Bone Daddies (Old Street)
+https://maps.app.goo.gl/mSkHHY9TtGHQgEwH9
+51.52680982292624,-0.08910509258886198
+
+Noodle & Beer
+https://maps.app.goo.gl/vUmuubBkonasTXFcA
+51.51780317589261,-0.07622620156651684
+
+The Pizza Room
+https://maps.app.goo.gl/rZ8PBuAeFJxdzpfc7
+51.511375977529326,-0.01509029044980984
