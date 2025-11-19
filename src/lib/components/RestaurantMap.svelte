@@ -297,8 +297,11 @@
 				const el = document.createElement('div');
 				el.className = 'user-location-marker';
 
-				// Add user location marker
-				userMarker = new maplibregl.Marker({ element: el })
+				// Add user location marker with anchor at the pin point
+				userMarker = new maplibregl.Marker({
+					element: el,
+					anchor: 'bottom'
+				})
 					.setLngLat([longitude, latitude])
 					.setPopup(new maplibregl.Popup().setHTML('<strong>You are here</strong>'))
 					.addTo(map);
@@ -390,11 +393,35 @@
 	}
 
 	:global(.user-location-marker) {
-		width: 20px;
-		height: 20px;
+		width: 28px;
+		height: 40px;
+		position: relative;
+	}
+
+	/* Google Maps style pin */
+	:global(.user-location-marker::before) {
+		content: '';
+		width: 28px;
+		height: 28px;
+		background-color: #ea4335;
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-radius: 50% 50% 50% 0;
+		transform: rotate(-45deg);
+		box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+	}
+
+	/* White center dot */
+	:global(.user-location-marker::after) {
+		content: '';
+		position: absolute;
+		width: 14px;
+		height: 14px;
 		border-radius: 50%;
-		background-color: #1095c1;
-		border: 3px solid #fff;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		background-color: #fff;
+		top: 5px;
+		left: 7px;
+		z-index: 2;
 	}
 </style>
