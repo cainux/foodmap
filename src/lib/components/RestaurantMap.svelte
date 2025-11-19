@@ -316,6 +316,30 @@
 				// Notify parent component
 				onLocationUpdate({ lat: latitude, lng: longitude });
 
+				// Find nearest restaurant
+				const validRestaurants = restaurants.filter(r => r.coordinates !== null);
+				if (validRestaurants.length > 0) {
+					// Calculate distances and find nearest
+					const restaurantsWithDistance = validRestaurants.map(r => {
+						const distance = calculateDistance(
+							latitude,
+							longitude,
+							r.coordinates!.lat,
+							r.coordinates!.lng
+						);
+						return { restaurant: r, distance };
+					});
+
+					// Sort by distance and get the nearest
+					restaurantsWithDistance.sort((a, b) => a.distance - b.distance);
+					const nearestRestaurant = restaurantsWithDistance[0].restaurant;
+
+					// Navigate to the nearest restaurant after a short delay
+					setTimeout(() => {
+						navigateToRestaurant(nearestRestaurant.coordinates!);
+					}, 1500);
+				}
+
 				isLocating = false;
 			},
 			(error) => {
@@ -324,6 +348,22 @@
 				alert('Unable to get your location. Please check your browser permissions.');
 			}
 		);
+	}
+
+	// Haversine formula to calculate distance between two points
+	function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+		const R = 6371; // Radius of Earth in km
+		const dLat = toRad(lat2 - lat1);
+		const dLon = toRad(lon2 - lon1);
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return R * c;
+	}
+
+	function toRad(degrees: number): number {
+		return degrees * (Math.PI / 180);
 	}
 </script>
 
