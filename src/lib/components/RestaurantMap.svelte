@@ -370,16 +370,16 @@
 	}
 
 	:global(.user-location-marker) {
-		width: 32px;
-		height: 45px;
+		width: 28px;
+		height: 40px;
 		position: relative;
 	}
 
 	/* Google Maps style pin */
 	:global(.user-location-marker::before) {
 		content: '';
-		width: 32px;
-		height: 32px;
+		width: 28px;
+		height: 28px;
 		background-color: #ea4335;
 		position: absolute;
 		top: 0;
@@ -393,12 +393,12 @@
 	:global(.user-location-marker::after) {
 		content: '';
 		position: absolute;
-		width: 10px;
-		height: 10px;
+		width: 14px;
+		height: 14px;
 		border-radius: 50%;
 		background-color: #fff;
-		top: 6px;
-		left: 11px;
+		top: 5px;
+		left: 7px;
 		z-index: 2;
 	}
 </style>
