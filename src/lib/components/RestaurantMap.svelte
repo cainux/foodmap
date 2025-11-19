@@ -274,8 +274,11 @@
 				const el = document.createElement('div');
 				el.className = 'user-location-marker';
 
-				// Add user location marker
-				userMarker = new maplibregl.Marker({ element: el })
+				// Add user location marker with anchor at the pin point
+				userMarker = new maplibregl.Marker({
+					element: el,
+					anchor: 'bottom'
+				})
 					.setLngLat([longitude, latitude])
 					.setPopup(new maplibregl.Popup().setHTML('<strong>You are here</strong>'))
 					.addTo(map);
@@ -367,11 +370,26 @@
 	}
 
 	:global(.user-location-marker) {
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		background-color: #1095c1;
+		width: 30px;
+		height: 40px;
+		position: relative;
+		/* Pin head (red circle) */
+		background-color: #ff6b6b;
 		border: 3px solid #fff;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		border-radius: 50% 50% 50% 0;
+		transform: rotate(-45deg);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+	}
+
+	:global(.user-location-marker::after) {
+		content: '';
+		position: absolute;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background-color: #fff;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 </style>
