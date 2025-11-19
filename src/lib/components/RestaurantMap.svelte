@@ -370,37 +370,35 @@
 	}
 
 	:global(.user-location-marker) {
-		width: 28px;
-		height: 40px;
+		width: 32px;
+		height: 45px;
 		position: relative;
 	}
 
-	/* Red pin head (circle) */
+	/* Google Maps style pin */
 	:global(.user-location-marker::before) {
 		content: '';
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		background-color: #ff6b6b;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+		width: 32px;
+		height: 32px;
+		background-color: #ea4335;
 		position: absolute;
 		top: 0;
 		left: 0;
-		z-index: 2;
+		border-radius: 50% 50% 50% 0;
+		transform: rotate(-45deg);
+		box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 	}
 
-	/* Pin point (triangle) */
+	/* White center dot */
 	:global(.user-location-marker::after) {
 		content: '';
 		position: absolute;
-		width: 0;
-		height: 0;
-		border-left: 8px solid transparent;
-		border-right: 8px solid transparent;
-		border-top: 16px solid #ff6b6b;
-		top: 24px;
-		left: 6px;
-		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-		z-index: 1;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background-color: #fff;
+		top: 6px;
+		left: 11px;
+		z-index: 2;
 	}
 </style>
