@@ -162,6 +162,12 @@
 			const maplibregl = await import('maplibre-gl');
 			const id = `${coords.lat},${coords.lng}`;
 
+			// Close previous popup immediately if it exists
+			if (currentPopup) {
+				currentPopup.remove();
+				currentPopup = null;
+			}
+
 			// Reset previous highlighted marker
 			if (highlightedRestaurantId) {
 				// Update the paint properties to reset the previous marker
@@ -226,11 +232,6 @@
 			if (restaurant) {
 				// Open popup after animation
 				setTimeout(() => {
-					// Close previous popup if it exists
-					if (currentPopup) {
-						currentPopup.remove();
-					}
-
 					// Create and track new popup
 					currentPopup = new maplibregl.Popup()
 						.setLngLat([coords.lng, coords.lat])
