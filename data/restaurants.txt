@@ -121,3 +121,7 @@ https://maps.app.goo.gl/vUmuubBkonasTXFcA
 The Pizza Room
 https://maps.app.goo.gl/rZ8PBuAeFJxdzpfc7
 51.511375977529326,-0.01509029044980984
+
+Angel of Bow Public House
+https://maps.app.goo.gl/cZDEtgy7ypZ9Rn8C8
+51.51957587181999,-0.02078730476167694
