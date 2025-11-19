@@ -382,7 +382,6 @@
 		height: 28px;
 		border-radius: 50%;
 		background-color: #ff6b6b;
-		border: 3px solid #fff;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 		position: absolute;
 		top: 0;
