@@ -1,8 +1,8 @@
 # CLAUDE.md - AI Assistant Guide for FoodMap
 
-> **Last Updated**: 2025-11-17
+> **Last Updated**: 2025-11-19
 > **Project**: FoodMap - Interactive Restaurant Map
-> **Current Branch**: `claude/claude-md-mi3neouiixqay9n9-01MPLHfKcQGWvtJQoer9fkHz`
+> **Current Branch**: `claude/update-all-docs-01LvsugYqnmAaKQxE9HuSRuZ`
 
 ## Table of Contents
 
@@ -25,11 +25,13 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 - **Purpose**: Personal restaurant map for tracking favorite dining locations
 - **Architecture**: Static site generation (SSG) with no backend
 - **Key Features**:
-  - Interactive map with restaurant markers (red circles with white borders)
-  - Geolocation support to find user's current location (blue marker)
+  - Interactive map with restaurant markers (blue circles with white borders)
+  - Geolocation support to find user's current location (round pushpin emoji 📍)
   - Dynamic distance-based sorting from map center or user location
-  - Responsive grid layout for restaurant cards
+  - Single popup selection with automatic navigation to nearest restaurant
+  - Responsive grid layout for restaurant cards with clickable navigation
   - Clean, minimal UI using Pico CSS
+  - Social media preview metadata for sharing
 
 **Target Deployment**: Static hosting (GitHub Pages, Netlify, Vercel, Cloudflare Pages)
 
@@ -49,7 +51,7 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 
 ### UI & Styling
 - **Pico CSS 2.1.1** - Minimal, class-light CSS framework
-- **Leaflet 1.9.4** - Interactive mapping library
+- **MapLibre GL 4.7.1** - Interactive mapping library (WebGL-based)
 - **OpenStreetMap** - Tile layer provider
 
 ### Development
@@ -287,38 +289,62 @@ Standard Svelte component order:
 }
 ```
 
-### Leaflet Integration
+### MapLibre GL Integration
 
 **Client-side only** (avoid SSR issues):
 
 ```typescript
 onMount(async () => {
   // Dynamic import to prevent SSR errors
-  const L = await import('leaflet');
+  const maplibregl = await import('maplibre-gl');
 
-  // Initialize map
-  map = L.map(mapContainer).setView([lat, lng], zoom);
-
-  // Add tiles
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '...'
-  }).addTo(map);
+  // Initialize map with OpenStreetMap style
+  map = new maplibregl.Map({
+    container: mapContainer,
+    style: {
+      version: 8,
+      sources: {
+        'osm-tiles': {
+          type: 'raster',
+          tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tileSize: 256,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }
+      },
+      layers: [
+        {
+          id: 'osm-tiles',
+          type: 'raster',
+          source: 'osm-tiles',
+          minzoom: 0,
+          maxzoom: 19
+        }
+      ]
+    },
+    center: [avgLng, avgLat],
+    zoom: 13
+  });
 });
 ```
 
 **Marker Styling**:
-- **Restaurant markers**: Red circles (`#ff6b6b`) with white border
+- **Restaurant markers**: Blue circles (`#1095c1`) with white border
   ```typescript
-  L.circleMarker([lat, lng], {
-    radius: 8,
-    fillColor: '#ff6b6b',
-    color: '#fff',
-    weight: 2,
-    opacity: 1,
-    fillOpacity: 0.8
-  })
+  map.addLayer({
+    id: 'restaurants-circle',
+    type: 'circle',
+    source: 'restaurants',
+    paint: {
+      'circle-radius': 8,
+      'circle-color': '#1095c1',
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff',
+      'circle-opacity': 1
+    }
+  });
   ```
-- **User location marker**: Blue circle (`#4285f4`) with white border, larger radius (10)
+- **Highlighted restaurant**: Red circle (`#ff6b6b`) with larger radius (12) and thicker border (3)
+- **User location marker**: Custom HTML marker with round pushpin emoji (📍)
 
 ### Distance Calculations
 
@@ -341,10 +367,10 @@ function toRad(degrees: number): number {
 }
 ```
 
-**Implementation** (see `src/routes/+page.svelte:28-42`):
+**Implementation** (see `src/routes/+page.svelte:63-76`):
 - Calculate distance from map center/user location to each restaurant
 - Sort restaurants by distance (ascending)
-- Update grid order in real-time
+- Update grid order in real-time with animated transitions
 
 ---
 
@@ -354,7 +380,7 @@ function toRad(degrees: number): number {
 
 **IMPORTANT**: All development occurs on feature branches starting with `claude/`
 
-- **Current branch**: `claude/claude-md-mi3neouiixqay9n9-01MPLHfKcQGWvtJQoer9fkHz`
+- **Current branch**: `claude/update-all-docs-01LvsugYqnmAaKQxE9HuSRuZ`
 - **Never push to**: `main` or `master` without explicit permission
 - **Branch naming**: `claude/description-sessionId`
 
@@ -381,7 +407,7 @@ git commit -m "WIP"                  # Avoid vague messages
 **Pushing changes**:
 ```bash
 # Always use -u flag for new branches
-git push -u origin claude/claude-md-mi3neouiixqay9n9-01MPLHfKcQGWvtJQoer9fkHz
+git push -u origin claude/update-all-docs-01LvsugYqnmAaKQxE9HuSRuZ
 
 # CRITICAL: Branch MUST start with 'claude/' and end with session ID
 # Otherwise push will fail with 403 HTTP error
@@ -512,21 +538,22 @@ coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)
 **File location**: `src/lib/components/RestaurantMap.svelte`
 
 **Common changes**:
-- **Marker colors**: Lines 55, 112 (`fillColor`)
-- **Marker size**: Lines 54, 111 (`radius`)
-- **Border**: Lines 56-57, 113-114 (`color`, `weight`)
-- **Default zoom**: Line 43 (`setView` second argument)
-- **Map height**: Line 160 (`.map-container` height)
+- **Marker colors**: Lines 103, 181-186 (`circle-color`)
+- **Marker size**: Lines 102, 174-179 (`circle-radius`)
+- **Border**: Lines 104, 187-193 (`circle-stroke-width`, `circle-stroke-color`)
+- **Default zoom**: Line 68 (`zoom` property)
+- **Map height**: Line 469 (`.map-container` height)
 
 ### Task: Modify Restaurant Grid
 
 **File location**: `src/routes/+page.svelte`
 
 **Common changes**:
-- **Grid columns**: Line 107 (`grid-template-columns`)
-- **Card spacing**: Line 108 (`gap`)
-- **Card content**: Lines 60-65 (template)
-- **Sorting logic**: Lines 8-26 (`handleLocationUpdate`)
+- **Grid columns**: Line 189 (`grid-template-columns`)
+- **Card spacing**: Line 190 (`gap`)
+- **Card content**: Lines 122-148 (template with click handlers)
+- **Sorting logic**: Lines 17-35 (`handleLocationUpdate`)
+- **Card navigation**: Lines 41-53 (`handleCardClick` - scrolls to map on mobile)
 
 ### Task: Add Type Checking
 
@@ -541,7 +568,7 @@ pnpm check:watch
 **Common errors**:
 - Missing type annotations on props
 - Incorrect Svelte 5 syntax (`export let` instead of `$props()`)
-- Leaflet type mismatches (ensure `@types/leaflet` is installed)
+- MapLibre GL type mismatches (types are included in the package)
 
 ### Task: Debug Map Issues
 
@@ -549,12 +576,14 @@ pnpm check:watch
 
 1. **Map not rendering**:
    - Check browser console for errors
-   - Verify `leaflet` CSS is imported in `+layout.svelte`
+   - Verify `maplibre-gl` CSS is imported in `+layout.svelte`
    - Ensure dynamic import in `onMount` (no SSR)
+   - Check that map style is properly defined (OSM raster tiles)
 
 2. **Markers not showing**:
    - Verify `restaurants.json` has valid coordinates
-   - Check map bounds with `map.fitBounds()`
+   - Check that map `load` event has fired before adding layers
+   - Verify GeoJSON source and layer are added correctly
    - Inspect network tab for tile loading errors
 
 3. **Geolocation not working**:
@@ -610,9 +639,9 @@ pnpm preview
 
 2. **Type everything**: Add TypeScript types to all functions, props, state
 
-3. **Client-side only for Leaflet**: Always use dynamic imports in `onMount`
+3. **Client-side only for MapLibre GL**: Always use dynamic imports in `onMount`
 
-4. **Test responsively**: Check mobile view (grid, button placement)
+4. **Test responsively**: Check mobile view (grid, button placement, map height)
 
 ### When Working with Data
 
@@ -632,8 +661,8 @@ pnpm preview
 ### Common Pitfalls to Avoid
 
 1. **SSR Issues**:
-   - Leaflet requires browser APIs (window, document)
-   - Always use dynamic imports: `const L = await import('leaflet')`
+   - MapLibre GL requires browser APIs (window, document)
+   - Always use dynamic imports: `const maplibregl = await import('maplibre-gl')`
    - Set `ssr: false` in `+layout.ts`
 
 2. **Svelte 4 vs 5 Confusion**:
@@ -641,7 +670,7 @@ pnpm preview
    - OLD: `$: doubled = value * 2` → NEW: `let doubled = $derived(value * 2)`
 
 3. **Missing CSS**:
-   - Leaflet CSS must be imported in layout
+   - MapLibre GL CSS must be imported in layout
    - Pico CSS imported for base styling
    - Check global vs scoped styles
 
@@ -664,9 +693,10 @@ pnpm preview
    - Fast loading, minimal JavaScript
 
 2. **Map Optimization**:
-   - Use `CircleMarker` instead of `Marker` (lighter weight)
+   - Use GeoJSON sources with circle layers (GPU-accelerated via WebGL)
    - Debounce map movement events (500ms in code)
    - Fit bounds on load to show all markers
+   - Single popup instance to prevent memory leaks
 
 3. **Sorting Efficiency**:
    - Haversine calculations are CPU-intensive
@@ -677,12 +707,14 @@ pnpm preview
 
 Understanding recent commits helps maintain consistency:
 
-1. **Dynamic Sorting** (`e71853f`): Restaurants sort by distance from map center
-2. **Geolocation** (`3936811`): "Find My Location" button with distance sorting
-3. **Circle Markers** (`f35bbdc`): Changed from pins to circles with white borders
-4. **Mobile Responsive** (`ba1bb43`, `ffeabdd`): Centered headings, adjusted spacing
+1. **Round Pushpin User Marker** (`c92790c`): Use round pushpin emoji for user location marker
+2. **Social Media Preview** (`84ac927`): Add social media preview metadata for sharing
+3. **Auto-Navigation to Nearest** (`4495274`): Automatically navigate to nearest restaurant when finding user location
+4. **Single Popup Selection** (`369a86e`): Implement single popup selection on map
+5. **MapLibre GL Migration** (`98da7ed`): Switch from Leaflet to MapLibre GL for mapping
+6. **Coordinate Script Streamline** (`8ffbbe4`): Streamline restaurant coordinate fetching script
 
-**Key insight**: Project evolved from static map → interactive map → location-aware sorting
+**Key insight**: Project evolved from Leaflet-based map → MapLibre GL (WebGL) → enhanced UX with auto-navigation and single popup selection
 
 ### File Modification Frequency
 
@@ -706,7 +738,7 @@ Understanding recent commits helps maintain consistency:
 
 - **Svelte 5 Docs**: https://svelte.dev/docs/svelte/overview
 - **SvelteKit Docs**: https://kit.svelte.dev/docs
-- **Leaflet Docs**: https://leafletjs.com/reference.html
+- **MapLibre GL Docs**: https://maplibre.org/maplibre-gl-js/docs/
 - **Pico CSS**: https://picocss.com/docs
 - **TypeScript**: https://www.typescriptlang.org/docs
 
@@ -729,19 +761,21 @@ Understanding recent commits helps maintain consistency:
 
 **Suitable for**: Personal restaurant lists, curated collections (<100 items)
 
-### Why Leaflet over Google Maps?
+### Why MapLibre GL over Google Maps?
 
 **Rationale**:
-- Free (no API key required)
-- Open source
+- Free and open source (no API key required)
+- WebGL-based rendering (smooth, hardware-accelerated)
 - OpenStreetMap tiles (community-driven)
-- Lightweight library
-- Customizable styling
+- Modern architecture with better performance
+- Highly customizable styling with JSON-based styles
+- Active community and development
 
 **Tradeoffs**:
 - Fewer features than Google Maps API
 - Tiles may have less detail in some regions
 - No built-in places/reviews
+- Requires WebGL support (not an issue for modern browsers)
 
 ### Why Pico CSS?
 
@@ -776,10 +810,11 @@ When something breaks, check these in order:
 | Error | Likely Cause | Solution |
 |-------|--------------|----------|
 | `Cannot read properties of undefined (reading 'lat')` | Missing coordinates in data | Check `restaurants.json`, rerun parser |
-| `Uncaught ReferenceError: L is not defined` | Leaflet not imported | Add `import 'leaflet/dist/leaflet.css'` in layout |
-| `document is not defined` | SSR issue | Use `onMount` with dynamic import for Leaflet |
+| `Uncaught ReferenceError: maplibregl is not defined` | MapLibre GL not imported | Add `import 'maplibre-gl/dist/maplibre-gl.css'` in layout |
+| `document is not defined` | SSR issue | Use `onMount` with dynamic import for MapLibre GL |
 | `Failed to fetch` (map tiles) | Network issue or incorrect tile URL | Check internet connection, verify OSM URL |
 | `Type 'X' is not assignable to type 'Y'` | TypeScript error | Add proper type annotations, check Svelte 5 syntax |
+| `Style is not done loading` | Adding layers before map loads | Wrap layer additions in `map.on('load', () => {})` |
 
 ---
 

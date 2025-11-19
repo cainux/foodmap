@@ -1,23 +1,29 @@
 # 🍽️ Food Map
 
-A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.txt` and rendered as pins using Leaflet maps.
+A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.txt` and rendered as interactive markers using MapLibre GL maps.
 
 ## Features
 
-- 🗺️ Interactive map using Leaflet
-- 📍 Restaurant pins with popups showing names and links to Google Maps
+- 🗺️ Interactive map using MapLibre GL (WebGL-based)
+- 📍 Restaurant markers with popups showing names and links to Google Maps
+- 🧭 Geolocation support with "Find My Location" button
+- 🎯 Auto-navigation to nearest restaurant
+- 📏 Dynamic distance-based sorting from map center or user location
 - 🎨 Clean, minimal styling with Pico CSS
-- 📱 Responsive design
+- 📱 Responsive design with mobile-optimized interactions
 - ⚡ Static site generation for fast loading
-- 🔗 Restaurant list with clickable cards
+- 🔗 Restaurant list with clickable cards that navigate the map
+- 📤 Social media preview metadata for sharing
 
 ## Tech Stack
 
-- **SvelteKit** - Framework
-- **Leaflet** - Interactive maps
-- **Pico CSS** - Minimal styling
-- **TypeScript** - Type safety
-- **Vite** - Build tool
+- **SvelteKit 2.47.1** - Full-stack framework with static adapter
+- **Svelte 5.41.0** - Reactive UI components (using latest runes API)
+- **MapLibre GL 4.7.1** - Interactive WebGL-based mapping library
+- **Pico CSS 2.1.1** - Minimal styling framework
+- **TypeScript 5.9.3** - Type safety
+- **Vite 7.1.10** - Build tool and dev server
+- **pnpm** - Fast, disk-efficient package manager
 
 ## Getting Started
 
