@@ -306,15 +306,116 @@
 					.setPopup(new maplibregl.Popup().setHTML('<strong>You are here</strong>'))
 					.addTo(map);
 
-				// Move map to user location and zoom to show ~10 minute walk area
-				map.flyTo({
-					center: [longitude, latitude],
-					zoom: 15,
-					duration: 1200
-				});
-
 				// Notify parent component
 				onLocationUpdate({ lat: latitude, lng: longitude });
+
+				// Find nearest restaurant
+				const validRestaurants = restaurants.filter(r => r.coordinates !== null);
+				if (validRestaurants.length > 0) {
+					// Calculate distances and find nearest
+					const restaurantsWithDistance = validRestaurants.map(r => {
+						const distance = calculateDistance(
+							latitude,
+							longitude,
+							r.coordinates!.lat,
+							r.coordinates!.lng
+						);
+						return { restaurant: r, distance };
+					});
+
+					// Sort by distance and get the nearest
+					restaurantsWithDistance.sort((a, b) => a.distance - b.distance);
+					const nearestRestaurant = restaurantsWithDistance[0].restaurant;
+
+					// Highlight the nearest restaurant
+					const id = `${nearestRestaurant.coordinates!.lat},${nearestRestaurant.coordinates!.lng}`;
+
+					if (highlightedRestaurantId) {
+						map.setPaintProperty('restaurants-circle', 'circle-radius', [
+							'case',
+							['==', ['get', 'id'], id],
+							12,
+							8
+						]);
+
+						map.setPaintProperty('restaurants-circle', 'circle-color', [
+							'case',
+							['==', ['get', 'id'], id],
+							'#ff6b6b',
+							'#1095c1'
+						]);
+
+						map.setPaintProperty('restaurants-circle', 'circle-stroke-width', [
+							'case',
+							['==', ['get', 'id'], id],
+							3,
+							2
+						]);
+					} else {
+						map.setPaintProperty('restaurants-circle', 'circle-radius', [
+							'case',
+							['==', ['get', 'id'], id],
+							12,
+							8
+						]);
+
+						map.setPaintProperty('restaurants-circle', 'circle-color', [
+							'case',
+							['==', ['get', 'id'], id],
+							'#ff6b6b',
+							'#1095c1'
+						]);
+
+						map.setPaintProperty('restaurants-circle', 'circle-stroke-width', [
+							'case',
+							['==', ['get', 'id'], id],
+							3,
+							2
+						]);
+					}
+
+					highlightedRestaurantId = id;
+
+					// Fit map bounds to show both user location and nearest restaurant
+					const bounds = new maplibregl.LngLatBounds(
+						[longitude, latitude],
+						[longitude, latitude]
+					);
+					bounds.extend([nearestRestaurant.coordinates!.lng, nearestRestaurant.coordinates!.lat]);
+
+					map.fitBounds(bounds, {
+						padding: { top: 80, bottom: 80, left: 80, right: 80 },
+						duration: 1200
+					});
+
+					// Open popup for nearest restaurant after animation
+					setTimeout(() => {
+						// Close previous popup if it exists
+						if (currentPopup) {
+							currentPopup.remove();
+							currentPopup = null;
+						}
+
+						currentPopup = new maplibregl.Popup()
+							.setLngLat([nearestRestaurant.coordinates!.lng, nearestRestaurant.coordinates!.lat])
+							.setHTML(`
+								<strong>${nearestRestaurant.name}</strong><br>
+								<a href="${nearestRestaurant.url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+							`)
+							.addTo(map);
+
+						currentPopup.on('close', () => {
+							currentPopup = null;
+						});
+					}, 1300);
+				} else {
+					// No restaurants found, just zoom to user location
+					map.flyTo({
+						center: [longitude, latitude],
+						zoom: 15,
+						duration: 1200
+					});
+				}
 
 				isLocating = false;
 			},
@@ -324,6 +425,22 @@
 				alert('Unable to get your location. Please check your browser permissions.');
 			}
 		);
+	}
+
+	// Haversine formula to calculate distance between two points
+	function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+		const R = 6371; // Radius of Earth in km
+		const dLat = toRad(lat2 - lat1);
+		const dLon = toRad(lon2 - lon1);
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return R * c;
+	}
+
+	function toRad(degrees: number): number {
+		return degrees * (Math.PI / 180);
 	}
 </script>
 
