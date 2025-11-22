@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Map, Marker, LngLatBounds, LngLatLike, MapMouseEvent } from 'maplibre-gl';
+	import { MapLibre, GeoJSONSource, CircleLayer, Marker, Popup } from 'svelte-maplibre-gl';
+	import type { Map, LngLatLike, MapLayerMouseEvent } from 'maplibre-gl';
 
 	interface Restaurant {
 		name: string;
@@ -14,210 +14,146 @@
 		onMapReady?: (navigateToRestaurant: (coords: { lat: number; lng: number }) => void) => void;
 	} = $props();
 
-	let mapContainer: HTMLDivElement;
-	let map: Map;
-	let userMarker: Marker | null = null;
+	let map = $state<Map>();
 	let hasGeolocation = $state(false);
 	let isLocating = $state(false);
 	let moveTimeout: ReturnType<typeof setTimeout> | null = null;
-	let highlightedRestaurantId: string | null = null;
-	let currentPopup: any | null = null; // Track the currently open popup
+	let highlightedRestaurantId = $state<string | null>(null);
+	let userLocation = $state<{ lng: number; lat: number } | null>(null);
+	let selectedRestaurant = $state<Restaurant | null>(null);
 
-	onMount(async () => {
-		// Dynamically import MapLibre GL to avoid SSR issues
-		const maplibregl = await import('maplibre-gl');
+	// OpenStreetMap style
+	const mapStyle = {
+		version: 8 as const,
+		sources: {
+			'osm-tiles': {
+				type: 'raster' as const,
+				tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+				tileSize: 256,
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			}
+		},
+		layers: [
+			{
+				id: 'osm-tiles',
+				type: 'raster' as const,
+				source: 'osm-tiles',
+				minzoom: 0,
+				maxzoom: 19
+			}
+		]
+	};
 
-		// Check if geolocation is available
-		if ('geolocation' in navigator) {
-			hasGeolocation = true;
+	// Calculate center of all restaurants
+	const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
+	const avgLat =
+		validRestaurants.reduce((sum, r) => sum + r.coordinates!.lat, 0) /
+		validRestaurants.length;
+	const avgLng =
+		validRestaurants.reduce((sum, r) => sum + r.coordinates!.lng, 0) /
+		validRestaurants.length;
+
+	const initialCenter: LngLatLike = [avgLng, avgLat];
+
+	// Create GeoJSON feature collection for restaurant markers
+	let restaurantFeatures = $derived({
+		type: 'FeatureCollection' as const,
+		features: validRestaurants.map((restaurant) => ({
+			type: 'Feature' as const,
+			properties: {
+				name: restaurant.name,
+				url: restaurant.url,
+				id: `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`
+			},
+			geometry: {
+				type: 'Point' as const,
+				coordinates: [restaurant.coordinates!.lng, restaurant.coordinates!.lat]
+			}
+		}))
+	});
+
+	// Circle paint properties with conditional styling for highlighted marker
+	let circlePaint = $derived(highlightedRestaurantId ? {
+		'circle-radius': ['case', ['==', ['get', 'id'], highlightedRestaurantId], 12, 8] as any,
+		'circle-color': ['case', ['==', ['get', 'id'], highlightedRestaurantId], '#ff6b6b', '#1095c1'] as any,
+		'circle-stroke-width': ['case', ['==', ['get', 'id'], highlightedRestaurantId], 3, 2] as any,
+		'circle-stroke-color': '#fff',
+		'circle-opacity': 1
+	} : {
+		'circle-radius': 8,
+		'circle-color': '#1095c1',
+		'circle-stroke-width': 2,
+		'circle-stroke-color': '#fff',
+		'circle-opacity': 1
+	});
+
+	// Check if geolocation is available
+	if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
+		hasGeolocation = true;
+	}
+
+	function handleMapLoad() {
+		// map is already bound via bind:map
+		if (!map) return;
+
+		// Fit bounds to show all markers
+		if (validRestaurants.length > 0) {
+			const bounds = validRestaurants.reduce((bounds, restaurant) => {
+				return bounds.extend([restaurant.coordinates!.lng, restaurant.coordinates!.lat]);
+			}, new (window as any).maplibregl.LngLatBounds(
+				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat],
+				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat]
+			));
+
+			map.fitBounds(bounds, { padding: 50 });
 		}
 
-		// Calculate center of all restaurants
-		const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
-		const avgLat =
-			validRestaurants.reduce((sum, r) => sum + r.coordinates!.lat, 0) /
-			validRestaurants.length;
-		const avgLng =
-			validRestaurants.reduce((sum, r) => sum + r.coordinates!.lng, 0) /
-			validRestaurants.length;
+		// Expose navigation function to parent component
+		if (onMapReady) {
+			onMapReady(navigateToRestaurant);
+		}
+	}
 
-		// Initialize map with OpenStreetMap style
-		map = new maplibregl.Map({
-			container: mapContainer,
-			style: {
-				version: 8,
-				sources: {
-					'osm-tiles': {
-						type: 'raster',
-						tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
-						tileSize: 256,
-						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-					}
-				},
-				layers: [
-					{
-						id: 'osm-tiles',
-						type: 'raster',
-						source: 'osm-tiles',
-						minzoom: 0,
-						maxzoom: 19
-					}
-				]
-			},
-			center: [avgLng, avgLat],
-			zoom: 13
-		});
+	function handleMoveEnd() {
+		// Clear existing timeout
+		if (moveTimeout) {
+			clearTimeout(moveTimeout);
+		}
 
-		// Wait for map to load before adding markers
-		map.on('load', () => {
-			// Create GeoJSON feature collection for restaurant markers
-			const features = validRestaurants.map((restaurant) => ({
-				type: 'Feature' as const,
-				properties: {
-					name: restaurant.name,
-					url: restaurant.url,
-					id: `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`
-				},
-				geometry: {
-					type: 'Point' as const,
-					coordinates: [restaurant.coordinates!.lng, restaurant.coordinates!.lat]
-				}
-			}));
-
-			// Add restaurant markers source
-			map.addSource('restaurants', {
-				type: 'geojson',
-				data: {
-					type: 'FeatureCollection',
-					features: features
-				}
-			});
-
-			// Add circle layer for restaurant markers
-			map.addLayer({
-				id: 'restaurants-circle',
-				type: 'circle',
-				source: 'restaurants',
-				paint: {
-					'circle-radius': 8,
-					'circle-color': '#1095c1',
-					'circle-stroke-width': 2,
-					'circle-stroke-color': '#fff',
-					'circle-opacity': 1
-				}
-			});
-
-			// Add click handler for restaurant markers
-			map.on('click', 'restaurants-circle', (e: MapMouseEvent) => {
-				if (!e.features || e.features.length === 0) return;
-
-				const feature = e.features[0];
-				const coordinates = (feature.geometry as any).coordinates.slice();
-				const { name, url } = feature.properties as { name: string; url: string };
-
-				// Close previous popup if it exists
-				if (currentPopup) {
-					currentPopup.remove();
-				}
-
-				// Create and track new popup
-				currentPopup = new maplibregl.Popup()
-					.setLngLat(coordinates)
-					.setHTML(`
-						<strong>${name}</strong><br>
-						<a href="${url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
-					`)
-					.addTo(map);
-
-				// Clear reference when popup is closed manually
-				currentPopup.on('close', () => {
-					currentPopup = null;
-				});
-			});
-
-			// Change cursor on hover
-			map.on('mouseenter', 'restaurants-circle', () => {
-				map.getCanvas().style.cursor = 'pointer';
-			});
-
-			map.on('mouseleave', 'restaurants-circle', () => {
-				map.getCanvas().style.cursor = '';
-			});
-
-			// Fit bounds to show all markers
-			if (validRestaurants.length > 0) {
-				const bounds = validRestaurants.reduce((bounds, restaurant) => {
-					return bounds.extend([restaurant.coordinates!.lng, restaurant.coordinates!.lat]);
-				}, new maplibregl.LngLatBounds(
-					[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat],
-					[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat]
-				));
-
-				map.fitBounds(bounds, { padding: 50 });
+		// Set new timeout to update sorting 500ms after movement stops
+		moveTimeout = setTimeout(() => {
+			if (map) {
+				const center = map.getCenter();
+				onLocationUpdate({ lat: center.lat, lng: center.lng });
 			}
-		});
+		}, 500);
+	}
 
-		// Function to navigate to and highlight a restaurant marker
-		async function navigateToRestaurant(coords: { lat: number; lng: number }) {
-			const maplibregl = await import('maplibre-gl');
-			const id = `${coords.lat},${coords.lng}`;
+	function handleMarkerClick(e: MapLayerMouseEvent) {
+		if (!e.features || e.features.length === 0) return;
 
-			// Close previous popup immediately if it exists
-			if (currentPopup) {
-				currentPopup.remove();
-				currentPopup = null;
-			}
+		const feature = e.features[0];
+		const { name, url } = feature.properties as { name: string; url: string };
 
-			// Reset previous highlighted marker
-			if (highlightedRestaurantId) {
-				// Update the paint properties to reset the previous marker
-				map.setPaintProperty('restaurants-circle', 'circle-radius', [
-					'case',
-					['==', ['get', 'id'], id],
-					12,
-					8
-				]);
+		// Find the restaurant
+		const restaurant = restaurants.find(r => r.name === name && r.url === url);
+		if (restaurant) {
+			selectedRestaurant = restaurant;
+		}
+	}
 
-				map.setPaintProperty('restaurants-circle', 'circle-color', [
-					'case',
-					['==', ['get', 'id'], id],
-					'#ff6b6b',
-					'#1095c1'
-				]);
+	// Function to navigate to and highlight a restaurant marker
+	function navigateToRestaurant(coords: { lat: number; lng: number }) {
+		const id = `${coords.lat},${coords.lng}`;
 
-				map.setPaintProperty('restaurants-circle', 'circle-stroke-width', [
-					'case',
-					['==', ['get', 'id'], id],
-					3,
-					2
-				]);
-			} else {
-				// First time highlighting, set up the conditional styling
-				map.setPaintProperty('restaurants-circle', 'circle-radius', [
-					'case',
-					['==', ['get', 'id'], id],
-					12,
-					8
-				]);
+		// Close previous popup
+		selectedRestaurant = null;
 
-				map.setPaintProperty('restaurants-circle', 'circle-color', [
-					'case',
-					['==', ['get', 'id'], id],
-					'#ff6b6b',
-					'#1095c1'
-				]);
+		// Set highlighted restaurant
+		highlightedRestaurantId = id;
 
-				map.setPaintProperty('restaurants-circle', 'circle-stroke-width', [
-					'case',
-					['==', ['get', 'id'], id],
-					3,
-					2
-				]);
-			}
-
-			highlightedRestaurantId = id;
-
-			// Fly to the marker location with smooth animation
+		// Fly to the marker location with smooth animation
+		if (map) {
 			map.flyTo({
 				center: [coords.lng, coords.lat],
 				zoom: 16,
@@ -232,49 +168,11 @@
 			if (restaurant) {
 				// Open popup after animation
 				setTimeout(() => {
-					// Create and track new popup
-					currentPopup = new maplibregl.Popup()
-						.setLngLat([coords.lng, coords.lat])
-						.setHTML(`
-							<strong>${restaurant.name}</strong><br>
-							<a href="${restaurant.url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
-						`)
-						.addTo(map);
-
-					// Clear reference when popup is closed manually
-					currentPopup.on('close', () => {
-						currentPopup = null;
-					});
+					selectedRestaurant = restaurant;
 				}, 1300);
 			}
 		}
-
-		// Expose navigation function to parent component
-		if (onMapReady) {
-			onMapReady(navigateToRestaurant);
-		}
-
-		// Add moveend listener to update sorting when map is moved
-		map.on('moveend', () => {
-			// Clear existing timeout
-			if (moveTimeout) {
-				clearTimeout(moveTimeout);
-			}
-
-			// Set new timeout to update sorting 500ms after movement stops
-			moveTimeout = setTimeout(() => {
-				const center = map.getCenter();
-				onLocationUpdate({ lat: center.lat, lng: center.lng });
-			}, 500);
-		});
-
-		// Cleanup on unmount
-		return () => {
-			if (map) {
-				map.remove();
-			}
-		};
-	});
+	}
 
 	async function findMyLocation() {
 		if (!navigator.geolocation) return;
@@ -285,34 +183,15 @@
 			async (position) => {
 				const { latitude, longitude } = position.coords;
 
-				// Import MapLibre GL again
-				const maplibregl = await import('maplibre-gl');
-
-				// Remove existing user marker if any
-				if (userMarker) {
-					userMarker.remove();
-				}
-
-				// Create custom marker element for user location (round pushpin emoji)
-				const el = document.createElement('div');
-				el.className = 'user-location-marker';
-				el.textContent = '📍';
-
-				// Add user location marker with anchor at the pin point
-				userMarker = new maplibregl.Marker({
-					element: el,
-					anchor: 'bottom'
-				})
-					.setLngLat([longitude, latitude])
-					.setPopup(new maplibregl.Popup().setHTML('<strong>You are here</strong>'))
-					.addTo(map);
+				// Set user location marker
+				userLocation = { lng: longitude, lat: latitude };
 
 				// Notify parent component
 				onLocationUpdate({ lat: latitude, lng: longitude });
 
 				// Find nearest restaurant
 				const validRestaurants = restaurants.filter(r => r.coordinates !== null);
-				if (validRestaurants.length > 0) {
+				if (validRestaurants.length > 0 && map) {
 					// Calculate distances and find nearest
 					const restaurantsWithDistance = validRestaurants.map(r => {
 						const distance = calculateDistance(
@@ -330,55 +209,10 @@
 
 					// Highlight the nearest restaurant
 					const id = `${nearestRestaurant.coordinates!.lat},${nearestRestaurant.coordinates!.lng}`;
-
-					if (highlightedRestaurantId) {
-						map.setPaintProperty('restaurants-circle', 'circle-radius', [
-							'case',
-							['==', ['get', 'id'], id],
-							12,
-							8
-						]);
-
-						map.setPaintProperty('restaurants-circle', 'circle-color', [
-							'case',
-							['==', ['get', 'id'], id],
-							'#ff6b6b',
-							'#1095c1'
-						]);
-
-						map.setPaintProperty('restaurants-circle', 'circle-stroke-width', [
-							'case',
-							['==', ['get', 'id'], id],
-							3,
-							2
-						]);
-					} else {
-						map.setPaintProperty('restaurants-circle', 'circle-radius', [
-							'case',
-							['==', ['get', 'id'], id],
-							12,
-							8
-						]);
-
-						map.setPaintProperty('restaurants-circle', 'circle-color', [
-							'case',
-							['==', ['get', 'id'], id],
-							'#ff6b6b',
-							'#1095c1'
-						]);
-
-						map.setPaintProperty('restaurants-circle', 'circle-stroke-width', [
-							'case',
-							['==', ['get', 'id'], id],
-							3,
-							2
-						]);
-					}
-
 					highlightedRestaurantId = id;
 
 					// Fit map bounds to show both user location and nearest restaurant
-					const bounds = new maplibregl.LngLatBounds(
+					const bounds = new (window as any).maplibregl.LngLatBounds(
 						[longitude, latitude],
 						[longitude, latitude]
 					);
@@ -391,25 +225,9 @@
 
 					// Open popup for nearest restaurant after animation
 					setTimeout(() => {
-						// Close previous popup if it exists
-						if (currentPopup) {
-							currentPopup.remove();
-							currentPopup = null;
-						}
-
-						currentPopup = new maplibregl.Popup()
-							.setLngLat([nearestRestaurant.coordinates!.lng, nearestRestaurant.coordinates!.lat])
-							.setHTML(`
-								<strong>${nearestRestaurant.name}</strong><br>
-								<a href="${nearestRestaurant.url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
-							`)
-							.addTo(map);
-
-						currentPopup.on('close', () => {
-							currentPopup = null;
-						});
+						selectedRestaurant = nearestRestaurant;
 					}, 1300);
-				} else {
+				} else if (map) {
 					// No restaurants found, just zoom to user location
 					map.flyTo({
 						center: [longitude, latitude],
@@ -447,7 +265,38 @@
 
 <div class="map-wrapper">
 	<div class="map-container">
-		<div bind:this={mapContainer} class="map"></div>
+		<MapLibre
+			bind:map
+			class="map"
+			style={mapStyle}
+			center={initialCenter}
+			zoom={13}
+			onload={handleMapLoad}
+			onmoveend={handleMoveEnd}
+		>
+			<GeoJSONSource data={restaurantFeatures}>
+				<CircleLayer
+					paint={circlePaint}
+					onclick={handleMarkerClick}
+				/>
+			</GeoJSONSource>
+
+			{#if userLocation}
+				<Marker lnglat={userLocation} anchor="bottom">
+					<div class="user-location-marker">📍</div>
+				</Marker>
+			{/if}
+
+			{#if selectedRestaurant && selectedRestaurant.coordinates}
+				<Popup
+					lnglat={[selectedRestaurant.coordinates.lng, selectedRestaurant.coordinates.lat]}
+					onclose={() => selectedRestaurant = null}
+				>
+					<strong>{selectedRestaurant.name}</strong><br>
+					<a href={selectedRestaurant.url} target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+				</Popup>
+			{/if}
+		</MapLibre>
 	</div>
 
 	{#if hasGeolocation}
@@ -478,7 +327,7 @@
 		}
 	}
 
-	.map {
+	:global(.map) {
 		width: 100%;
 		height: 100%;
 	}
@@ -510,7 +359,7 @@
 		color: var(--pico-primary);
 	}
 
-	:global(.user-location-marker) {
+	.user-location-marker {
 		font-size: 32px;
 		line-height: 1;
 		cursor: pointer;

@@ -38,6 +38,9 @@ importers:
       svelte-check:
         specifier: ^4.3.3
         version: 4.3.4(picomatch@4.0.3)(svelte@5.43.8)(typescript@5.9.3)
+      svelte-maplibre-gl:
+        specifier: ^1.0.2
+        version: 1.0.2(maplibre-gl@4.7.1)(svelte@5.43.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -812,6 +815,12 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
+  svelte-maplibre-gl@1.0.2:
+    resolution: {integrity: sha512-df/8K1aOlNcPTxAZktKTeO4MnG36K4Mp/ZRbyKB1+0EG2FYkC6bh5C8Z4K64uZt7p29PiV6vypczyOZsDBcecw==}
+    peerDependencies:
+      maplibre-gl: ^5.0.0 || ^4.0.0
+      svelte: '>=5.0.0'
+
   svelte@5.43.8:
     resolution: {integrity: sha512-d53/xClCjHsuFXuHsn7+F/0NKkkwgRv8kLg2his5YBYqVtfIrBqkvWd+5ZjYN6ryk/jv/rJF00vexXHkK8ofXA==}
     engines: {node: '>=18'}
@@ -1548,6 +1557,11 @@ snapshots:
       typescript: 5.9.3
     transitivePeerDependencies:
       - picomatch
+
+  svelte-maplibre-gl@1.0.2(maplibre-gl@4.7.1)(svelte@5.43.8):
+    dependencies:
+      maplibre-gl: 4.7.1
+      svelte: 5.43.8
 
   svelte@5.43.8:
     dependencies:
