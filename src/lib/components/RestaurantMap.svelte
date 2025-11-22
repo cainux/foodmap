@@ -142,6 +142,18 @@
 		}
 	}
 
+	function handleMouseEnter() {
+		if (map) {
+			map.getCanvas().style.cursor = 'pointer';
+		}
+	}
+
+	function handleMouseLeave() {
+		if (map) {
+			map.getCanvas().style.cursor = '';
+		}
+	}
+
 	// Function to navigate to and highlight a restaurant marker
 	function navigateToRestaurant(coords: { lat: number; lng: number }) {
 		const id = `${coords.lat},${coords.lng}`;
@@ -278,6 +290,8 @@
 				<CircleLayer
 					paint={circlePaint}
 					onclick={handleMarkerClick}
+					onmouseenter={handleMouseEnter}
+					onmouseleave={handleMouseLeave}
 				/>
 			</GeoJSONSource>
 
@@ -290,6 +304,7 @@
 			{#if selectedRestaurant && selectedRestaurant.coordinates}
 				<Popup
 					lnglat={[selectedRestaurant.coordinates.lng, selectedRestaurant.coordinates.lat]}
+					open={true}
 					onclose={() => selectedRestaurant = null}
 				>
 					<strong>{selectedRestaurant.name}</strong><br>
