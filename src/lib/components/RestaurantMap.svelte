@@ -92,9 +92,13 @@
 		hasGeolocation = true;
 	}
 
-	function handleMapLoad() {
-		// map is already bound via bind:map
-		if (!map) return;
+	function handleMapLoad(e: any) {
+		// Get map from event to ensure it's available immediately
+		const mapInstance = e.target as Map;
+		if (!mapInstance) return;
+
+		// Also ensure our bound map variable is set
+		if (!map) map = mapInstance;
 
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
@@ -105,7 +109,7 @@
 				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat]
 			));
 
-			map.fitBounds(bounds, { padding: 50 });
+			mapInstance.fitBounds(bounds, { padding: 50 });
 		}
 
 		// Expose navigation function to parent component
