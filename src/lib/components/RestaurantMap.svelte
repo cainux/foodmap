@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { MapLibre, GeoJSONSource, CircleLayer, Marker, Popup } from 'svelte-maplibre-gl';
-	import type { Map, LngLatLike, MapLayerMouseEvent } from 'maplibre-gl';
+	import maplibregl, { type Map, type LngLatLike, type MapLayerMouseEvent } from 'maplibre-gl';
 
 	interface Restaurant {
 		name: string;
@@ -104,7 +104,7 @@
 		if (validRestaurants.length > 0) {
 			const bounds = validRestaurants.reduce((bounds, restaurant) => {
 				return bounds.extend([restaurant.coordinates!.lng, restaurant.coordinates!.lat]);
-			}, new (window as any).maplibregl.LngLatBounds(
+			}, new maplibregl.LngLatBounds(
 				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat],
 				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat]
 			));
@@ -228,7 +228,7 @@
 					highlightedRestaurantId = id;
 
 					// Fit map bounds to show both user location and nearest restaurant
-					const bounds = new (window as any).maplibregl.LngLatBounds(
+					const bounds = new maplibregl.LngLatBounds(
 						[longitude, latitude],
 						[longitude, latitude]
 					);
