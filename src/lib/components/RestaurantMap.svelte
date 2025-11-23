@@ -25,6 +25,7 @@
 	// OpenStreetMap style
 	const mapStyle = {
 		version: 8 as const,
+		glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
 		sources: {
 			'osm-tiles': {
 				type: 'raster' as const,
@@ -348,7 +349,7 @@
 					filter={['has', 'point_count']}
 					layout={{
 						'text-field': '{point_count_abbreviated}',
-						'text-font': ['Noto Sans Regular'],
+						'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
 						'text-size': 16
 					}}
 					paint={{
