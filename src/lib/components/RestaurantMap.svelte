@@ -86,14 +86,19 @@
 		// Also ensure our bound map variable is set
 		if (!map) map = mapInstance;
 
+		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
+		console.log('Sample feature:', restaurantFeatures.features[0]);
+
 		// Add the restaurants source with clustering
 		mapInstance.addSource('restaurants', {
 			type: 'geojson',
 			data: restaurantFeatures,
 			cluster: true,
-			clusterMaxZoom: 18,
-			clusterRadius: 40
+			clusterMaxZoom: 16,
+			clusterRadius: 30
 		});
+
+		console.log('Added source, now adding layers...');
 
 		// Add cluster circle layer
 		mapInstance.addLayer({
@@ -106,14 +111,15 @@
 				'circle-radius': [
 					'step',
 					['get', 'point_count'],
-					25,
+					30,
+					3,
+					40,
 					5,
-					35,
-					10,
-					45
+					50
 				],
-				'circle-stroke-width': 2,
-				'circle-stroke-color': '#fff'
+				'circle-stroke-width': 3,
+				'circle-stroke-color': '#fff',
+				'circle-opacity': 1
 			}
 		});
 
@@ -126,7 +132,7 @@
 			layout: {
 				'text-field': '{point_count_abbreviated}',
 				'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
-				'text-size': 16
+				'text-size': 18
 			},
 			paint: {
 				'text-color': '#ffffff'
@@ -192,6 +198,9 @@
 		mapInstance.on('mouseleave', 'unclustered-point', () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
+
+		console.log('All layers added successfully');
+		console.log('Map layers:', mapInstance.getStyle().layers.map((l: any) => l.id));
 
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
