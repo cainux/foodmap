@@ -317,8 +317,8 @@
 				id="restaurants"
 				data={restaurantFeatures}
 				cluster={true}
-				clusterMaxZoom={14}
-				clusterRadius={50}
+				clusterMaxZoom={18}
+				clusterRadius={40}
 			>
 				<!-- Cluster circles -->
 				<CircleLayer
@@ -329,14 +329,15 @@
 						'circle-radius': [
 							'step',
 							['get', 'point_count'],
-							20,
+							25,
+							5,
+							35,
 							10,
-							30,
-							30,
-							40
+							45
 						],
 						'circle-stroke-width': 2,
-						'circle-stroke-color': '#fff'
+						'circle-stroke-color': '#fff',
+						'circle-opacity': 1
 					}}
 					onclick={handleClusterClick}
 					onmouseenter={handleMouseEnter}
