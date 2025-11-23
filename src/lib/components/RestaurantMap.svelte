@@ -111,11 +111,15 @@
 				'circle-radius': [
 					'step',
 					['get', 'point_count'],
-					30,
+					20,  // 2 markers
 					3,
-					40,
+					25,  // 3-4 markers
 					5,
-					50
+					30,  // 5-9 markers
+					10,
+					35,  // 10-19 markers
+					20,
+					40   // 20+ markers
 				],
 				'circle-stroke-width': 3,
 				'circle-stroke-color': '#fff',
