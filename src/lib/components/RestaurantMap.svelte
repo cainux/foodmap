@@ -324,15 +324,7 @@
 					id="clusters"
 					filter={['has', 'point_count']}
 					paint={{
-						'circle-color': [
-							'step',
-							['get', 'point_count'],
-							'#51bbd6',
-							10,
-							'#f1f075',
-							30,
-							'#f28cb1'
-						],
+						'circle-color': '#1095c1',
 						'circle-radius': [
 							'step',
 							['get', 'point_count'],
@@ -357,10 +349,10 @@
 					layout={{
 						'text-field': '{point_count_abbreviated}',
 						'text-font': ['Noto Sans Regular'],
-						'text-size': 14
+						'text-size': 16
 					}}
 					paint={{
-						'text-color': '#000'
+						'text-color': '#ffffff'
 					}}
 				/>
 
