@@ -125,3 +125,35 @@ https://maps.app.goo.gl/rZ8PBuAeFJxdzpfc7
 Angel of Bow Public House
 https://maps.app.goo.gl/cZDEtgy7ypZ9Rn8C8
 51.51957587181999,-0.02078730476167694
+
+Kanada-Ya
+https://maps.app.goo.gl/ZhQf2wJsbWuZ8X4P8
+51.5155653414603,-0.12758894731359402
+
+Shoryu Ramen
+https://maps.app.goo.gl/v5ougeMFhM3tvAAe8
+51.50833297763785,-0.13374611656634508
+
+Haidilao Hot Pot (Picadilly)
+https://maps.app.goo.gl/bspECt4yT6uPBfuR9
+51.51032044005184,-0.1328456073731951
+
+Haidilao Hot Pot (O2)
+https://maps.app.goo.gl/cVyCn7FasaCwE8q6A
+51.503354803845305,0.002073831876374963
+
+Blacklock (Canary Wharf)
+https://maps.app.goo.gl/X5dx49vnbzySmQni9
+51.50605409712381,-0.0210245055583535
+
+Marugame (Canary Wharf)
+https://maps.app.goo.gl/kUEsGXG91tPNsHdA8
+51.5050375817937,-0.02014865337986823
+
+Long White Cloud Bakery
+https://maps.app.goo.gl/cDm3Mn3dnSym7NYA7
+51.53048096293452,-0.07366628821798689
+
+Brags and Brams
+https://maps.app.goo.gl/FR5MVEWdMYi6K13Q7
+51.531213353642556,-0.06860552716047158
