@@ -131,7 +131,7 @@
 			filter: ['has', 'point_count'],
 			layout: {
 				'text-field': '{point_count_abbreviated}',
-				'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
+				'text-font': ['Noto Sans Regular'],
 				'text-size': 18
 			},
 			paint: {
