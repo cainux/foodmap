@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MapLibre, GeoJSONSource, CircleLayer, Marker, Popup } from 'svelte-maplibre-gl';
+	import { MapLibre, GeoJSONSource, CircleLayer, SymbolLayer, Marker, Popup } from 'svelte-maplibre-gl';
 	import maplibregl, { type Map, type LngLatLike, type MapLayerMouseEvent } from 'maplibre-gl';
 
 	interface Restaurant {
@@ -143,6 +143,28 @@
 		const restaurant = restaurants.find(r => r.name === name && r.url === url);
 		if (restaurant) {
 			selectedRestaurant = restaurant;
+		}
+	}
+
+	async function handleClusterClick(e: MapLayerMouseEvent) {
+		if (!e.features || e.features.length === 0 || !map) return;
+
+		const feature = e.features[0];
+		const clusterId = feature.properties.cluster_id;
+
+		// Get the cluster expansion zoom
+		const source = map.getSource('restaurants') as maplibregl.GeoJSONSource;
+		try {
+			const zoom = await source.getClusterExpansionZoom(clusterId);
+
+			if (feature.geometry.type === 'Point') {
+				map.easeTo({
+					center: feature.geometry.coordinates as [number, number],
+					zoom: zoom
+				});
+			}
+		} catch (err) {
+			console.error('Error getting cluster expansion zoom:', err);
 		}
 	}
 
@@ -290,8 +312,62 @@
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
-			<GeoJSONSource data={restaurantFeatures}>
+			<GeoJSONSource
+				id="restaurants"
+				data={restaurantFeatures}
+				cluster={true}
+				clusterMaxZoom={14}
+				clusterRadius={50}
+			>
+				<!-- Cluster circles -->
 				<CircleLayer
+					id="clusters"
+					filter={['has', 'point_count']}
+					paint={{
+						'circle-color': [
+							'step',
+							['get', 'point_count'],
+							'#51bbd6',
+							10,
+							'#f1f075',
+							30,
+							'#f28cb1'
+						],
+						'circle-radius': [
+							'step',
+							['get', 'point_count'],
+							20,
+							10,
+							30,
+							30,
+							40
+						],
+						'circle-stroke-width': 2,
+						'circle-stroke-color': '#fff'
+					}}
+					onclick={handleClusterClick}
+					onmouseenter={handleMouseEnter}
+					onmouseleave={handleMouseLeave}
+				/>
+
+				<!-- Cluster count labels -->
+				<SymbolLayer
+					id="cluster-count"
+					filter={['has', 'point_count']}
+					layout={{
+						'text-field': '{point_count_abbreviated}',
+						'text-font': ['Noto Sans Regular'],
+						'text-size': 14
+					}}
+					paint={{
+						'text-color': '#000'
+					}}
+				/>
+
+				<!-- Individual unclustered points -->
+				<CircleLayer
+					id="unclustered-point"
+					filter={['!', ['has', 'point_count']]}
 					paint={circlePaint}
 					onclick={handleMarkerClick}
 					onmouseenter={handleMouseEnter}
