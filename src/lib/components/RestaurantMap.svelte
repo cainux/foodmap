@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { MapLibre, GeoJSONSource, CircleLayer, SymbolLayer, Marker, Popup } from 'svelte-maplibre-gl';
-	import maplibregl, { type Map, type LngLatLike, type MapLayerMouseEvent } from 'maplibre-gl';
+	import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
+	import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
 
 	interface Restaurant {
 		name: string;
@@ -73,21 +73,6 @@
 		}))
 	});
 
-	// Circle paint properties with conditional styling for highlighted marker
-	let circlePaint = $derived(highlightedRestaurantId ? {
-		'circle-radius': ['case', ['==', ['get', 'id'], highlightedRestaurantId], 12, 8] as any,
-		'circle-color': ['case', ['==', ['get', 'id'], highlightedRestaurantId], '#ff6b6b', '#1095c1'] as any,
-		'circle-stroke-width': ['case', ['==', ['get', 'id'], highlightedRestaurantId], 3, 2] as any,
-		'circle-stroke-color': '#fff',
-		'circle-opacity': 1
-	} : {
-		'circle-radius': 8,
-		'circle-color': '#1095c1',
-		'circle-stroke-width': 2,
-		'circle-stroke-color': '#fff',
-		'circle-opacity': 1
-	});
-
 	// Check if geolocation is available
 	if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
 		hasGeolocation = true;
@@ -100,6 +85,113 @@
 
 		// Also ensure our bound map variable is set
 		if (!map) map = mapInstance;
+
+		// Add the restaurants source with clustering
+		mapInstance.addSource('restaurants', {
+			type: 'geojson',
+			data: restaurantFeatures,
+			cluster: true,
+			clusterMaxZoom: 18,
+			clusterRadius: 40
+		});
+
+		// Add cluster circle layer
+		mapInstance.addLayer({
+			id: 'clusters',
+			type: 'circle',
+			source: 'restaurants',
+			filter: ['has', 'point_count'],
+			paint: {
+				'circle-color': '#1095c1',
+				'circle-radius': [
+					'step',
+					['get', 'point_count'],
+					25,
+					5,
+					35,
+					10,
+					45
+				],
+				'circle-stroke-width': 2,
+				'circle-stroke-color': '#fff'
+			}
+		});
+
+		// Add cluster count label layer
+		mapInstance.addLayer({
+			id: 'cluster-count',
+			type: 'symbol',
+			source: 'restaurants',
+			filter: ['has', 'point_count'],
+			layout: {
+				'text-field': '{point_count_abbreviated}',
+				'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
+				'text-size': 16
+			},
+			paint: {
+				'text-color': '#ffffff'
+			}
+		});
+
+		// Add unclustered point layer
+		mapInstance.addLayer({
+			id: 'unclustered-point',
+			type: 'circle',
+			source: 'restaurants',
+			filter: ['!', ['has', 'point_count']],
+			paint: {
+				'circle-radius': 8,
+				'circle-color': '#1095c1',
+				'circle-stroke-width': 2,
+				'circle-stroke-color': '#fff',
+				'circle-opacity': 1
+			}
+		});
+
+		// Add click handler for clusters
+		mapInstance.on('click', 'clusters', async (e) => {
+			if (!e.features || e.features.length === 0) return;
+			const feature = e.features[0];
+			const clusterId = feature.properties.cluster_id;
+			const source = mapInstance.getSource('restaurants') as maplibregl.GeoJSONSource;
+
+			try {
+				const zoom = await source.getClusterExpansionZoom(clusterId);
+				if (feature.geometry.type === 'Point') {
+					mapInstance.easeTo({
+						center: feature.geometry.coordinates as [number, number],
+						zoom: zoom
+					});
+				}
+			} catch (err) {
+				console.error('Error getting cluster expansion zoom:', err);
+			}
+		});
+
+		// Add click handler for unclustered points
+		mapInstance.on('click', 'unclustered-point', (e) => {
+			if (!e.features || e.features.length === 0) return;
+			const feature = e.features[0];
+			const { name, url } = feature.properties as { name: string; url: string };
+			const restaurant = restaurants.find(r => r.name === name && r.url === url);
+			if (restaurant) {
+				selectedRestaurant = restaurant;
+			}
+		});
+
+		// Add cursor pointer on hover
+		mapInstance.on('mouseenter', 'clusters', () => {
+			mapInstance.getCanvas().style.cursor = 'pointer';
+		});
+		mapInstance.on('mouseleave', 'clusters', () => {
+			mapInstance.getCanvas().style.cursor = '';
+		});
+		mapInstance.on('mouseenter', 'unclustered-point', () => {
+			mapInstance.getCanvas().style.cursor = 'pointer';
+		});
+		mapInstance.on('mouseleave', 'unclustered-point', () => {
+			mapInstance.getCanvas().style.cursor = '';
+		});
 
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
@@ -134,52 +226,6 @@
 		}, 500);
 	}
 
-	function handleMarkerClick(e: MapLayerMouseEvent) {
-		if (!e.features || e.features.length === 0) return;
-
-		const feature = e.features[0];
-		const { name, url } = feature.properties as { name: string; url: string };
-
-		// Find the restaurant
-		const restaurant = restaurants.find(r => r.name === name && r.url === url);
-		if (restaurant) {
-			selectedRestaurant = restaurant;
-		}
-	}
-
-	async function handleClusterClick(e: MapLayerMouseEvent) {
-		if (!e.features || e.features.length === 0 || !map) return;
-
-		const feature = e.features[0];
-		const clusterId = feature.properties.cluster_id;
-
-		// Get the cluster expansion zoom
-		const source = map.getSource('restaurants') as maplibregl.GeoJSONSource;
-		try {
-			const zoom = await source.getClusterExpansionZoom(clusterId);
-
-			if (feature.geometry.type === 'Point') {
-				map.easeTo({
-					center: feature.geometry.coordinates as [number, number],
-					zoom: zoom
-				});
-			}
-		} catch (err) {
-			console.error('Error getting cluster expansion zoom:', err);
-		}
-	}
-
-	function handleMouseEnter() {
-		if (map) {
-			map.getCanvas().style.cursor = 'pointer';
-		}
-	}
-
-	function handleMouseLeave() {
-		if (map) {
-			map.getCanvas().style.cursor = '';
-		}
-	}
 
 	// Function to navigate to and highlight a restaurant marker
 	function navigateToRestaurant(coords: { lat: number; lng: number }) {
@@ -313,61 +359,6 @@
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
-			<GeoJSONSource
-				id="restaurants"
-				data={restaurantFeatures}
-				cluster={true}
-				clusterMaxZoom={18}
-				clusterRadius={40}
-			>
-				<!-- Cluster circles -->
-				<CircleLayer
-					id="clusters"
-					filter={['has', 'point_count']}
-					paint={{
-						'circle-color': '#1095c1',
-						'circle-radius': [
-							'step',
-							['get', 'point_count'],
-							25,
-							5,
-							35,
-							10,
-							45
-						],
-						'circle-stroke-width': 2,
-						'circle-stroke-color': '#fff',
-						'circle-opacity': 1
-					}}
-					onclick={handleClusterClick}
-					onmouseenter={handleMouseEnter}
-					onmouseleave={handleMouseLeave}
-				/>
-
-				<!-- Cluster count labels -->
-				<SymbolLayer
-					id="cluster-count"
-					filter={['has', 'point_count']}
-					layout={{
-						'text-field': '{point_count_abbreviated}',
-						'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
-						'text-size': 16
-					}}
-					paint={{
-						'text-color': '#ffffff'
-					}}
-				/>
-
-				<!-- Individual unclustered points -->
-				<CircleLayer
-					id="unclustered-point"
-					filter={['!', ['has', 'point_count']]}
-					paint={circlePaint}
-					onclick={handleMarkerClick}
-					onmouseenter={handleMouseEnter}
-					onmouseleave={handleMouseLeave}
-				/>
-			</GeoJSONSource>
 
 			{#if userLocation}
 				<Marker lnglat={userLocation} anchor="bottom">
