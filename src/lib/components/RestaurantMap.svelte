@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { MapLibre, GeoJSONSource, CircleLayer, Marker, Popup } from 'svelte-maplibre-gl';
-	import maplibregl, { type Map, type LngLatLike, type MapLayerMouseEvent } from 'maplibre-gl';
+	import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
+	import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
 
 	interface Restaurant {
 		name: string;
@@ -25,6 +25,7 @@
 	// OpenStreetMap style
 	const mapStyle = {
 		version: 8 as const,
+		glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
 		sources: {
 			'osm-tiles': {
 				type: 'raster' as const,
@@ -72,21 +73,6 @@
 		}))
 	});
 
-	// Circle paint properties with conditional styling for highlighted marker
-	let circlePaint = $derived(highlightedRestaurantId ? {
-		'circle-radius': ['case', ['==', ['get', 'id'], highlightedRestaurantId], 12, 8] as any,
-		'circle-color': ['case', ['==', ['get', 'id'], highlightedRestaurantId], '#ff6b6b', '#1095c1'] as any,
-		'circle-stroke-width': ['case', ['==', ['get', 'id'], highlightedRestaurantId], 3, 2] as any,
-		'circle-stroke-color': '#fff',
-		'circle-opacity': 1
-	} : {
-		'circle-radius': 8,
-		'circle-color': '#1095c1',
-		'circle-stroke-width': 2,
-		'circle-stroke-color': '#fff',
-		'circle-opacity': 1
-	});
-
 	// Check if geolocation is available
 	if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
 		hasGeolocation = true;
@@ -99,6 +85,126 @@
 
 		// Also ensure our bound map variable is set
 		if (!map) map = mapInstance;
+
+		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
+		console.log('Sample feature:', restaurantFeatures.features[0]);
+
+		// Add the restaurants source with clustering
+		mapInstance.addSource('restaurants', {
+			type: 'geojson',
+			data: restaurantFeatures,
+			cluster: true,
+			clusterMaxZoom: 16,
+			clusterRadius: 30
+		});
+
+		console.log('Added source, now adding layers...');
+
+		// Add cluster circle layer
+		mapInstance.addLayer({
+			id: 'clusters',
+			type: 'circle',
+			source: 'restaurants',
+			filter: ['has', 'point_count'],
+			paint: {
+				'circle-color': '#1095c1',
+				'circle-radius': [
+					'step',
+					['get', 'point_count'],
+					20,  // 2 markers
+					3,
+					25,  // 3-4 markers
+					5,
+					30,  // 5-9 markers
+					10,
+					35,  // 10-19 markers
+					20,
+					40   // 20+ markers
+				],
+				'circle-stroke-width': 3,
+				'circle-stroke-color': '#fff',
+				'circle-opacity': 1
+			}
+		});
+
+		// Add cluster count label layer
+		mapInstance.addLayer({
+			id: 'cluster-count',
+			type: 'symbol',
+			source: 'restaurants',
+			filter: ['has', 'point_count'],
+			layout: {
+				'text-field': '{point_count_abbreviated}',
+				'text-font': ['Noto Sans Regular'],
+				'text-size': 18
+			},
+			paint: {
+				'text-color': '#ffffff'
+			}
+		});
+
+		// Add unclustered point layer
+		mapInstance.addLayer({
+			id: 'unclustered-point',
+			type: 'circle',
+			source: 'restaurants',
+			filter: ['!', ['has', 'point_count']],
+			paint: {
+				'circle-radius': 8,
+				'circle-color': '#1095c1',
+				'circle-stroke-width': 2,
+				'circle-stroke-color': '#fff',
+				'circle-opacity': 1
+			}
+		});
+
+		// Add click handler for clusters
+		mapInstance.on('click', 'clusters', async (e) => {
+			if (!e.features || e.features.length === 0) return;
+			const feature = e.features[0];
+			const clusterId = feature.properties.cluster_id;
+			const source = mapInstance.getSource('restaurants') as maplibregl.GeoJSONSource;
+
+			try {
+				const zoom = await source.getClusterExpansionZoom(clusterId);
+				if (feature.geometry.type === 'Point') {
+					mapInstance.easeTo({
+						center: feature.geometry.coordinates as [number, number],
+						zoom: zoom
+					});
+				}
+			} catch (err) {
+				console.error('Error getting cluster expansion zoom:', err);
+			}
+		});
+
+		// Add click handler for unclustered points
+		mapInstance.on('click', 'unclustered-point', (e) => {
+			if (!e.features || e.features.length === 0) return;
+			const feature = e.features[0];
+			const { name, url } = feature.properties as { name: string; url: string };
+			const restaurant = restaurants.find(r => r.name === name && r.url === url);
+			if (restaurant) {
+				selectedRestaurant = restaurant;
+			}
+		});
+
+		// Add cursor pointer on hover
+		mapInstance.on('mouseenter', 'clusters', () => {
+			mapInstance.getCanvas().style.cursor = 'pointer';
+		});
+		mapInstance.on('mouseleave', 'clusters', () => {
+			mapInstance.getCanvas().style.cursor = '';
+		});
+		mapInstance.on('mouseenter', 'unclustered-point', () => {
+			mapInstance.getCanvas().style.cursor = 'pointer';
+		});
+		mapInstance.on('mouseleave', 'unclustered-point', () => {
+			mapInstance.getCanvas().style.cursor = '';
+		});
+
+		console.log('All layers added successfully');
+		console.log('Map layers:', mapInstance.getStyle().layers.map((l: any) => l.id));
 
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
@@ -133,30 +239,6 @@
 		}, 500);
 	}
 
-	function handleMarkerClick(e: MapLayerMouseEvent) {
-		if (!e.features || e.features.length === 0) return;
-
-		const feature = e.features[0];
-		const { name, url } = feature.properties as { name: string; url: string };
-
-		// Find the restaurant
-		const restaurant = restaurants.find(r => r.name === name && r.url === url);
-		if (restaurant) {
-			selectedRestaurant = restaurant;
-		}
-	}
-
-	function handleMouseEnter() {
-		if (map) {
-			map.getCanvas().style.cursor = 'pointer';
-		}
-	}
-
-	function handleMouseLeave() {
-		if (map) {
-			map.getCanvas().style.cursor = '';
-		}
-	}
 
 	// Function to navigate to and highlight a restaurant marker
 	function navigateToRestaurant(coords: { lat: number; lng: number }) {
@@ -290,14 +372,6 @@
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
-			<GeoJSONSource data={restaurantFeatures}>
-				<CircleLayer
-					paint={circlePaint}
-					onclick={handleMarkerClick}
-					onmouseenter={handleMouseEnter}
-					onmouseleave={handleMouseLeave}
-				/>
-			</GeoJSONSource>
 
 			{#if userLocation}
 				<Marker lnglat={userLocation} anchor="bottom">
