@@ -1,8 +1,8 @@
 # CLAUDE.md - AI Assistant Guide for FoodMap
 
-> **Last Updated**: 2025-11-19
+> **Last Updated**: 2025-11-24
 > **Project**: FoodMap - Interactive Restaurant Map
-> **Current Branch**: `claude/update-all-docs-01LvsugYqnmAaKQxE9HuSRuZ`
+> **Current Branch**: `claude/update-documentation-015EWbwFJYRYXoRVXEvyi39c`
 
 ## Table of Contents
 
@@ -20,12 +20,13 @@
 
 ## Project Overview
 
-FoodMap is a **static website** built with SvelteKit that displays curated restaurants on an interactive Leaflet map. The project focuses on:
+FoodMap is a **static website** built with SvelteKit that displays curated restaurants on an interactive MapLibre GL map. The project focuses on:
 
 - **Purpose**: Personal restaurant map for tracking favorite dining locations
 - **Architecture**: Static site generation (SSG) with no backend
 - **Key Features**:
   - Interactive map with restaurant markers (blue circles with white borders)
+  - Marker clustering for better visualization when zoomed out
   - Geolocation support to find user's current location (round pushpin emoji 📍)
   - Dynamic distance-based sorting from map center or user location
   - Single popup selection with automatic navigation to nearest restaurant
@@ -52,6 +53,7 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 ### UI & Styling
 - **Pico CSS 2.1.1** - Minimal, class-light CSS framework
 - **MapLibre GL 4.7.1** - Interactive mapping library (WebGL-based)
+- **svelte-maplibre-gl** - Svelte components for MapLibre GL integration
 - **OpenStreetMap** - Tile layer provider
 
 ### Development
@@ -112,7 +114,7 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 | File Path | Purpose | Key Exports/Features |
 |-----------|---------|---------------------|
 | `src/routes/+page.svelte` | Main app page | Renders map + restaurant grid, handles sorting |
-| `src/lib/components/RestaurantMap.svelte` | Map component | Leaflet integration, geolocation, markers |
+| `src/lib/components/RestaurantMap.svelte` | Map component | MapLibre GL integration with clustering, geolocation, markers |
 | `src/lib/restaurants.json` | Restaurant data (GENERATED) | Array of `{name, url, coordinates}` |
 | `data/restaurants.txt` | Source data (SSOT) | Human-editable restaurant list |
 | `scripts/parse-restaurants.js` | Data parser | Converts .md → .json format |
@@ -291,60 +293,78 @@ Standard Svelte component order:
 
 ### MapLibre GL Integration
 
-**Client-side only** (avoid SSR issues):
+This project uses the **svelte-maplibre-gl** library, which provides Svelte components for MapLibre GL.
 
-```typescript
-onMount(async () => {
-  // Dynamic import to prevent SSR errors
-  const maplibregl = await import('maplibre-gl');
+**Key components**:
+```svelte
+<script lang="ts">
+  import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
+  import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
 
-  // Initialize map with OpenStreetMap style
-  map = new maplibregl.Map({
-    container: mapContainer,
-    style: {
-      version: 8,
-      sources: {
-        'osm-tiles': {
-          type: 'raster',
-          tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
-          tileSize: 256,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }
-      },
-      layers: [
-        {
-          id: 'osm-tiles',
-          type: 'raster',
-          source: 'osm-tiles',
-          minzoom: 0,
-          maxzoom: 19
-        }
-      ]
+  // Map style with OpenStreetMap tiles
+  const mapStyle = {
+    version: 8 as const,
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+    sources: {
+      'osm-tiles': {
+        type: 'raster' as const,
+        tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }
     },
-    center: [avgLng, avgLat],
-    zoom: 13
-  });
+    layers: [...]
+  };
+</script>
+
+<MapLibre
+  bind:map
+  style={mapStyle}
+  center={initialCenter}
+  zoom={13}
+  onload={handleMapLoad}
+  onmoveend={handleMoveEnd}
+>
+  <Marker lnglat={userLocation}>
+    <div class="user-location-marker">📍</div>
+  </Marker>
+
+  <Popup lnglat={coords} open={true}>
+    <strong>{name}</strong>
+  </Popup>
+</MapLibre>
+```
+
+**Marker Clustering**:
+The map uses GeoJSON source with clustering enabled for better visualization:
+```typescript
+mapInstance.addSource('restaurants', {
+  type: 'geojson',
+  data: restaurantFeatures,
+  cluster: true,
+  clusterMaxZoom: 16,  // Clusters visible up to zoom level 16
+  clusterRadius: 30     // Cluster markers within 30px
 });
 ```
 
-**Marker Styling**:
-- **Restaurant markers**: Blue circles (`#1095c1`) with white border
-  ```typescript
-  map.addLayer({
-    id: 'restaurants-circle',
-    type: 'circle',
-    source: 'restaurants',
-    paint: {
-      'circle-radius': 8,
-      'circle-color': '#1095c1',
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff',
-      'circle-opacity': 1
-    }
-  });
-  ```
-- **Highlighted restaurant**: Red circle (`#ff6b6b`) with larger radius (12) and thicker border (3)
-- **User location marker**: Custom HTML marker with round pushpin emoji (📍)
+**Three layers for markers**:
+1. **Cluster circles** (`clusters`): Shows grouped markers
+   - Size varies by count (20-40px radius)
+   - Blue color (`#1095c1`) with white border (3px)
+
+2. **Cluster labels** (`cluster-count`): Shows marker count
+   - White text showing number of markers in cluster
+
+3. **Individual markers** (`unclustered-point`): Single restaurant markers
+   - Blue circles (`#1095c1`) with white border (2px)
+   - 8px radius
+
+**Cluster interaction**:
+- Clicking clusters zooms to expand them
+- Clicking individual markers opens popup
+- Hover changes cursor to pointer
+
+**User location marker**: Custom HTML marker with round pushpin emoji (📍)
 
 ### Distance Calculations
 
@@ -380,7 +400,7 @@ function toRad(degrees: number): number {
 
 **IMPORTANT**: All development occurs on feature branches starting with `claude/`
 
-- **Current branch**: `claude/update-all-docs-01LvsugYqnmAaKQxE9HuSRuZ`
+- **Current branch**: `claude/update-documentation-015EWbwFJYRYXoRVXEvyi39c`
 - **Never push to**: `main` or `master` without explicit permission
 - **Branch naming**: `claude/description-sessionId`
 
@@ -407,7 +427,7 @@ git commit -m "WIP"                  # Avoid vague messages
 **Pushing changes**:
 ```bash
 # Always use -u flag for new branches
-git push -u origin claude/update-all-docs-01LvsugYqnmAaKQxE9HuSRuZ
+git push -u origin claude/update-documentation-015EWbwFJYRYXoRVXEvyi39c
 
 # CRITICAL: Branch MUST start with 'claude/' and end with session ID
 # Otherwise push will fail with 403 HTTP error
@@ -538,11 +558,14 @@ coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)
 **File location**: `src/lib/components/RestaurantMap.svelte`
 
 **Common changes**:
-- **Marker colors**: Lines 103, 181-186 (`circle-color`)
-- **Marker size**: Lines 102, 174-179 (`circle-radius`)
-- **Border**: Lines 104, 187-193 (`circle-stroke-width`, `circle-stroke-color`)
-- **Default zoom**: Line 68 (`zoom` property)
-- **Map height**: Line 469 (`.map-container` height)
+- **Cluster colors**: Lines 110 (`circle-color` for clusters)
+- **Cluster size**: Lines 111-123 (step function for `circle-radius`)
+- **Unclustered marker size**: Line 153 (`circle-radius` for individual markers)
+- **Marker colors**: Lines 110, 154 (`circle-color`)
+- **Border styling**: Lines 124-126, 155-157 (`circle-stroke-width`, `circle-stroke-color`)
+- **Clustering settings**: Lines 96-98 (`clusterMaxZoom`, `clusterRadius`)
+- **Default zoom**: Line 371 (`zoom` property)
+- **Map height**: Line 411 (`.map-container` height)
 
 ### Task: Modify Restaurant Grid
 
@@ -577,16 +600,23 @@ pnpm check:watch
 1. **Map not rendering**:
    - Check browser console for errors
    - Verify `maplibre-gl` CSS is imported in `+layout.svelte`
-   - Ensure dynamic import in `onMount` (no SSR)
+   - Ensure `ssr: false` is set in `+layout.ts`
    - Check that map style is properly defined (OSM raster tiles)
 
 2. **Markers not showing**:
    - Verify `restaurants.json` has valid coordinates
    - Check that map `load` event has fired before adding layers
-   - Verify GeoJSON source and layer are added correctly
+   - Verify GeoJSON source with clustering is added correctly
+   - Check that all three layers are added: `clusters`, `cluster-count`, `unclustered-point`
    - Inspect network tab for tile loading errors
 
-3. **Geolocation not working**:
+3. **Clusters not working**:
+   - Verify clustering is enabled in GeoJSON source (`cluster: true`)
+   - Check clusterMaxZoom and clusterRadius settings
+   - Ensure cluster click handlers are attached
+   - Verify cluster expansion zoom logic is working
+
+4. **Geolocation not working**:
    - HTTPS required (or localhost)
    - Browser permissions must be granted
    - Check `hasGeolocation` state value
@@ -639,7 +669,7 @@ pnpm preview
 
 2. **Type everything**: Add TypeScript types to all functions, props, state
 
-3. **Client-side only for MapLibre GL**: Always use dynamic imports in `onMount`
+3. **Use svelte-maplibre-gl components**: The library handles SSR automatically, no need for dynamic imports
 
 4. **Test responsively**: Check mobile view (grid, button placement, map height)
 
@@ -662,8 +692,9 @@ pnpm preview
 
 1. **SSR Issues**:
    - MapLibre GL requires browser APIs (window, document)
-   - Always use dynamic imports: `const maplibregl = await import('maplibre-gl')`
-   - Set `ssr: false` in `+layout.ts`
+   - The svelte-maplibre-gl library handles SSR automatically
+   - Set `ssr: false` in `+layout.ts` to ensure client-side only rendering
+   - No dynamic imports needed when using svelte-maplibre-gl components
 
 2. **Svelte 4 vs 5 Confusion**:
    - OLD: `export let value` → NEW: `let { value } = $props()`
@@ -707,14 +738,15 @@ pnpm preview
 
 Understanding recent commits helps maintain consistency:
 
-1. **Round Pushpin User Marker** (`c92790c`): Use round pushpin emoji for user location marker
-2. **Social Media Preview** (`84ac927`): Add social media preview metadata for sharing
-3. **Auto-Navigation to Nearest** (`4495274`): Automatically navigate to nearest restaurant when finding user location
-4. **Single Popup Selection** (`369a86e`): Implement single popup selection on map
-5. **MapLibre GL Migration** (`98da7ed`): Switch from Leaflet to MapLibre GL for mapping
-6. **Coordinate Script Streamline** (`8ffbbe4`): Streamline restaurant coordinate fetching script
+1. **Marker Clustering** (`ba97ec2`): Add marker clustering for zoomed out view using GeoJSON sources
+2. **Round Pushpin User Marker** (`c92790c`): Use round pushpin emoji for user location marker
+3. **Social Media Preview** (`84ac927`): Add social media preview metadata for sharing
+4. **Auto-Navigation to Nearest** (`4495274`): Automatically navigate to nearest restaurant when finding user location
+5. **Single Popup Selection** (`369a86e`): Implement single popup selection on map
+6. **MapLibre GL Migration** (`98da7ed`): Switch from Leaflet to MapLibre GL for mapping
+7. **Coordinate Script Streamline** (`8ffbbe4`): Streamline restaurant coordinate fetching script
 
-**Key insight**: Project evolved from Leaflet-based map → MapLibre GL (WebGL) → enhanced UX with auto-navigation and single popup selection
+**Key insight**: Project evolved from Leaflet-based map → MapLibre GL (WebGL) → enhanced UX with auto-navigation and single popup selection → marker clustering for better visualization
 
 ### File Modification Frequency
 

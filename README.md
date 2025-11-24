@@ -6,6 +6,7 @@ A static website built with SvelteKit that displays restaurants on an interactiv
 
 - 🗺️ Interactive map using MapLibre GL (WebGL-based)
 - 📍 Restaurant markers with popups showing names and links to Google Maps
+- 🔵 Marker clustering for better visualization when zoomed out
 - 🧭 Geolocation support with "Find My Location" button
 - 🎯 Auto-navigation to nearest restaurant
 - 📏 Dynamic distance-based sorting from map center or user location
@@ -20,6 +21,7 @@ A static website built with SvelteKit that displays restaurants on an interactiv
 - **SvelteKit 2.47.1** - Full-stack framework with static adapter
 - **Svelte 5.41.0** - Reactive UI components (using latest runes API)
 - **MapLibre GL 4.7.1** - Interactive WebGL-based mapping library
+- **svelte-maplibre-gl** - Svelte components for MapLibre GL integration
 - **Pico CSS 2.1.1** - Minimal styling framework
 - **TypeScript 5.9.3** - Type safety
 - **Vite 7.1.10** - Build tool and dev server
