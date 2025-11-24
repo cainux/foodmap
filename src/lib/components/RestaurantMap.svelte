@@ -372,11 +372,8 @@
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
-
 			{#if userLocation}
-				<Marker lnglat={userLocation} anchor="bottom">
-					<div class="user-location-marker">📍</div>
-				</Marker>
+				<Marker lnglat={userLocation} />
 			{/if}
 
 			{#if selectedRestaurant && selectedRestaurant.coordinates}
@@ -451,11 +448,5 @@
 	:global(.maplibregl-popup-content strong) {
 		font-size: 1.1em;
 		color: var(--pico-primary);
-	}
-
-	.user-location-marker {
-		font-size: 32px;
-		line-height: 1;
-		cursor: pointer;
 	}
 </style>
