@@ -383,6 +383,7 @@
 				<Popup
 					lnglat={[selectedRestaurant.coordinates.lng, selectedRestaurant.coordinates.lat]}
 					open={true}
+					closeButton={false}
 					onclose={() => selectedRestaurant = null}
 				>
 					<strong>{selectedRestaurant.name}</strong><br>
