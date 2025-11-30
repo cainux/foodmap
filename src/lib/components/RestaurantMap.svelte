@@ -40,7 +40,7 @@
 				type: 'raster' as const,
 				source: 'osm-tiles',
 				minzoom: 0,
-				maxzoom: 16
+				maxzoom: 19
 			}
 		]
 	};
@@ -86,7 +86,7 @@
 		// Also ensure our bound map variable is set
 		if (!map) map = mapInstance;
 
-		// Set maximum zoom to match OpenStreetMap tile availability
+		// Set maximum zoom to match restaurant navigation zoom level
 		mapInstance.setMaxZoom(16);
 
 		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
