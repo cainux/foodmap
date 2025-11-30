@@ -369,6 +369,7 @@
 			style={mapStyle}
 			center={initialCenter}
 			zoom={13}
+			maxZoom={19}
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
