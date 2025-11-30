@@ -86,6 +86,9 @@
 		// Also ensure our bound map variable is set
 		if (!map) map = mapInstance;
 
+		// Set maximum zoom to match restaurant navigation zoom level
+		mapInstance.setMaxZoom(16);
+
 		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
 		console.log('Sample feature:', restaurantFeatures.features[0]);
 
@@ -369,6 +372,7 @@
 			style={mapStyle}
 			center={initialCenter}
 			zoom={13}
+			maxZoom={16}
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
