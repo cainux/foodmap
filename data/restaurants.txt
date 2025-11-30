@@ -157,3 +157,7 @@ https://maps.app.goo.gl/cDm3Mn3dnSym7NYA7
 Brags and Brams
 https://maps.app.goo.gl/FR5MVEWdMYi6K13Q7
 51.531213353642556,-0.06860552716047158
+
+Mare Street Market
+https://maps.app.goo.gl/v8Aory3LZEx4gb9Y8
+51.53789740323768,-0.05722246814882648
