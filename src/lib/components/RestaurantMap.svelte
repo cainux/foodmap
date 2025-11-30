@@ -40,7 +40,7 @@
 				type: 'raster' as const,
 				source: 'osm-tiles',
 				minzoom: 0,
-				maxzoom: 19
+				maxzoom: 18
 			}
 		]
 	};
@@ -87,7 +87,7 @@
 		if (!map) map = mapInstance;
 
 		// Set maximum zoom to match OpenStreetMap tile availability
-		mapInstance.setMaxZoom(19);
+		mapInstance.setMaxZoom(18);
 
 		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
 		console.log('Sample feature:', restaurantFeatures.features[0]);
@@ -372,7 +372,7 @@
 			style={mapStyle}
 			center={initialCenter}
 			zoom={13}
-			maxZoom={19}
+			maxZoom={18}
 			onload={handleMapLoad}
 			onmoveend={handleMoveEnd}
 		>
