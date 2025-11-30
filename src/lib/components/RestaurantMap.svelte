@@ -86,6 +86,9 @@
 		// Also ensure our bound map variable is set
 		if (!map) map = mapInstance;
 
+		// Set maximum zoom to match OpenStreetMap tile availability
+		mapInstance.setMaxZoom(19);
+
 		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
 		console.log('Sample feature:', restaurantFeatures.features[0]);
 
