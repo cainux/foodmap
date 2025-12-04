@@ -110,7 +110,7 @@
 			source: 'restaurants',
 			filter: ['has', 'point_count'],
 			paint: {
-				'circle-color': '#1095c1',
+				'circle-color': '#10b981',
 				'circle-radius': [
 					'step',
 					['get', 'point_count'],
@@ -154,7 +154,7 @@
 			filter: ['!', ['has', 'point_count']],
 			paint: {
 				'circle-radius': 8,
-				'circle-color': '#1095c1',
+				'circle-color': '#10b981',
 				'circle-stroke-width': 2,
 				'circle-stroke-color': '#fff',
 				'circle-opacity': 1
