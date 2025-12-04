@@ -22,14 +22,14 @@
 	let userLocation = $state<{ lng: number; lat: number } | null>(null);
 	let selectedRestaurant = $state<Restaurant | null>(null);
 
-	// CartoCDN Positron style
+	// CartoCDN Voyager style
 	const mapStyle = {
 		version: 8 as const,
 		glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
 		sources: {
 			'carto-tiles': {
 				type: 'raster' as const,
-				tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
+				tiles: ['https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'],
 				tileSize: 256,
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 			}
