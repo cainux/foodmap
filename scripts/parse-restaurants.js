@@ -20,9 +20,9 @@ for (const entry of data) {
   if (name && url && url.startsWith('http')) {
     let coordinates = null;
 
-    // Check if coordinates are present and valid
-    if (coords && typeof coords === 'string' && coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
-      const [lat, lng] = coords.split(',').map(parseFloat);
+    // Check if coordinates are present and valid (allows optional space after comma)
+    if (coords && typeof coords === 'string' && coords.match(/^-?\d+\.\d+,\s*-?\d+\.\d+$/)) {
+      const [lat, lng] = coords.split(/,\s*/).map(parseFloat);
       coordinates = { lat, lng };
     }
 
