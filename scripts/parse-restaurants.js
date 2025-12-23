@@ -1,28 +1,27 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { parse } from 'yaml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Read the restaurants.txt file
-const dataPath = join(__dirname, '../data/restaurants.txt');
+// Read the restaurants.yaml file
+const dataPath = join(__dirname, '../data/restaurants.yaml');
 const content = readFileSync(dataPath, 'utf-8');
 
-// Parse the content
-const lines = content.split('\n').filter(line => line.trim() !== '');
+// Parse the YAML content
+const data = parse(content);
 const restaurants = [];
 
-for (let i = 0; i < lines.length; i += 3) {
-  const name = lines[i]?.trim();
-  const url = lines[i + 1]?.trim();
-  const coords = lines[i + 2]?.trim();
+for (const entry of data) {
+  const { name, url, coordinates: coords } = entry;
 
   if (name && url && url.startsWith('http')) {
     let coordinates = null;
 
-    // Check if coordinates are present
-    if (coords && coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
+    // Check if coordinates are present and valid
+    if (coords && typeof coords === 'string' && coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
       const [lat, lng] = coords.split(',').map(parseFloat);
       coordinates = { lat, lng };
     }

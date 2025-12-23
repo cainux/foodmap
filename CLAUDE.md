@@ -75,7 +75,7 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 │   │   │   └── RestaurantMap.svelte  # Main map component
 │   │   ├── assets/
 │   │   │   └── favicon.svg           # Site favicon
-│   │   ├── restaurants.json          # GENERATED restaurant data
+│   │   ├── restaurants.json          # GENERATED from restaurants.yaml
 │   │   └── index.ts                  # Library exports
 │   └── routes/                       # SvelteKit pages
 │       ├── +layout.svelte            # Root layout (CSS imports)
@@ -83,10 +83,10 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 │       └── +page.svelte              # Home page (main app)
 │
 ├── data/
-│   └── restaurants.txt               # SOURCE restaurant data (SSOT)
+│   └── restaurants.yaml              # SOURCE restaurant data (SSOT)
 │
 ├── scripts/
-│   ├── parse-restaurants.js          # Parse .txt → .json
+│   ├── parse-restaurants.js          # Parse .yaml → .json
 │   └── extract-coordinates.js        # Playwright-based manual extraction
 │
 ├── static/
@@ -116,8 +116,8 @@ FoodMap is a **static website** built with SvelteKit that displays curated resta
 | `src/routes/+page.svelte` | Main app page | Renders map + restaurant grid, handles sorting |
 | `src/lib/components/RestaurantMap.svelte` | Map component | MapLibre GL integration with clustering, geolocation, markers |
 | `src/lib/restaurants.json` | Restaurant data (GENERATED) | Array of `{name, url, coordinates}` |
-| `data/restaurants.txt` | Source data (SSOT) | Human-editable restaurant list |
-| `scripts/parse-restaurants.js` | Data parser | Converts .md → .json format |
+| `data/restaurants.yaml` | Source data (SSOT) | Human-editable restaurant list (YAML format) |
+| `scripts/parse-restaurants.js` | Data parser | Converts .yaml → .json format |
 | `src/routes/+layout.ts` | Route config | `export const prerender = true; export const ssr = false;` |
 | `svelte.config.js` | SvelteKit config | Static adapter, build output to `build/` |
 
@@ -151,19 +151,18 @@ pnpm build
 pnpm preview
 ```
 
-**Note:** `src/lib/restaurants.json` is automatically generated from `data/restaurants.txt` when you run `pnpm dev` or `pnpm build`. You never need to manually run `pnpm parse:restaurants`.
+**Note:** `src/lib/restaurants.json` is automatically generated from `data/restaurants.yaml` when you run `pnpm dev` or `pnpm build`. You never need to manually run `pnpm parse:restaurants`.
 
 ### Adding Restaurants
 
-1. **Edit source data**: `data/restaurants.txt`
+1. **Edit source data**: `data/restaurants.yaml`
+   ```yaml
+   - name: Restaurant Name
+     url: https://maps.app.goo.gl/...
+     coordinates: 51.5163842,-0.0693367
    ```
-   Restaurant Name
-   https://maps.app.goo.gl/...
-   51.5163842,-0.0693367
-
-   ```
-   - Format: name, URL, coordinates (lat,lng) on separate lines
-   - Blank line separates entries
+   - YAML list with properties: `name`, `url`, `coordinates`
+   - Coordinates in `lat,lng` format (comma-separated, no spaces)
 
 2. **Start dev or build**: `pnpm dev` or `pnpm build`
    - Automatically generates `src/lib/restaurants.json` from source data
@@ -183,7 +182,7 @@ The extraction script uses Playwright to:
 - Handle cookie consent automatically
 - Wait for manual coordinate extraction (right-click on pin)
 - Monitor clipboard for high-precision coordinates (10+ decimal places)
-- Validate and update `data/restaurants.txt` automatically
+- Validate and update `data/restaurants.yaml` automatically
 
 **Manual intervention required**: You must right-click the pin and copy coordinates for each restaurant. The script automates everything else.
 
@@ -466,7 +465,7 @@ When committing changes:
 
 **Important**:
 - DO NOT commit generated files: `build/`, `node_modules/`, `.svelte-kit/`, `src/lib/restaurants.json`
-- DO commit source data changes: `data/restaurants.txt`
+- DO commit source data changes: `data/restaurants.yaml`
 - `src/lib/restaurants.json` is a build artifact (auto-generated, not tracked in git)
 - NO secrets: Never commit `.env`, `credentials.json`, API keys
 
@@ -476,31 +475,30 @@ When committing changes:
 
 ### Single Source of Truth (SSOT)
 
-**`data/restaurants.txt`** is the SSOT for restaurant data:
+**`data/restaurants.yaml`** is the SSOT for restaurant data:
 
-```
-Restaurant Name
-https://maps.app.goo.gl/shortUrl
-51.5163842,-0.0693367
+```yaml
+- name: Restaurant Name
+  url: https://maps.app.goo.gl/shortUrl
+  coordinates: 51.5163842,-0.0693367
 
-Next Restaurant
-https://maps.app.goo.gl/anotherUrl
-51.5139088,-0.0728799
+- name: Next Restaurant
+  url: https://maps.app.goo.gl/anotherUrl
+  coordinates: 51.5139088,-0.0728799
 ```
 
 **Format Rules**:
-1. Line 1: Restaurant name (free text, can include notes in parentheses)
-2. Line 2: Google Maps short URL (`maps.app.goo.gl`)
-3. Line 3: Coordinates in `lat,lng` format (decimal degrees)
-4. Blank line separates entries
+1. Each entry is a YAML list item (starts with `-`)
+2. Properties: `name`, `url`, `coordinates`
+3. Coordinates in `lat,lng` format (decimal degrees, comma-separated, no spaces)
 
 ### Data Flow
 
 ```
 Source Data                Parser                   Application
 ─────────────────         ─────────────            ─────────────
-data/restaurants.txt  →  parse-restaurants.js  →  src/lib/restaurants.json
-(human-editable)        (auto-run on dev/build)    (generated build artifact)
+data/restaurants.yaml →  parse-restaurants.js  →  src/lib/restaurants.json
+(human-editable YAML)   (auto-run on dev/build)    (generated build artifact)
 ```
 
 **Automatic Generation**: The parser runs automatically when you execute `pnpm dev` or `pnpm build`. The JSON file is not tracked in git and is regenerated fresh each time.
@@ -542,12 +540,12 @@ coords.match(/^-?\d+\.\d+,-?\d+\.\d+$/)
 ### Task: Add New Restaurants
 
 **File locations**:
-- Source: `data/restaurants.txt`
+- Source: `data/restaurants.yaml`
 - Script: `scripts/parse-restaurants.js` (auto-run on dev/build)
 - Output: `src/lib/restaurants.json` (generated build artifact)
 
 **Steps**:
-1. Edit `data/restaurants.txt` (add new entries)
+1. Edit `data/restaurants.yaml` (add new entries)
 2. Run `pnpm dev` or `pnpm build`
    - Parser runs automatically
    - Verify output in console: `✅ Parsed X restaurants`
@@ -676,13 +674,13 @@ pnpm preview
 ### When Working with Data
 
 1. **NEVER manually edit** `src/lib/restaurants.json` - it's auto-generated
-2. **ALWAYS edit** `data/restaurants.txt` as the source of truth
+2. **ALWAYS edit** `data/restaurants.yaml` as the source of truth
 3. **Parser runs automatically**: `pnpm dev` and `pnpm build` generate the JSON
 4. **VALIDATE coordinates**: Ensure lat,lng format with no spaces
 
 ### When Committing
 
-1. **Review diffs**: Check `git diff` before staging (should only see `data/restaurants.txt` changes)
+1. **Review diffs**: Check `git diff` before staging (should only see `data/restaurants.yaml` changes)
 2. **Clear messages**: Follow imperative mood commit style
 3. **Test build**: Run `pnpm build` before committing (auto-generates JSON)
 4. **Push to feature branch**: Never push to main without permission
@@ -751,7 +749,7 @@ Understanding recent commits helps maintain consistency:
 ### File Modification Frequency
 
 **Frequently modified**:
-- `data/restaurants.txt` - adding/updating restaurants
+- `data/restaurants.yaml` - adding/updating restaurants
 - `src/routes/+page.svelte` - main UI changes
 - `src/lib/components/RestaurantMap.svelte` - map features
 
