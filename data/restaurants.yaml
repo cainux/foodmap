@@ -158,10 +158,10 @@
   url: https://maps.app.goo.gl/FR5MVEWdMYi6K13Q7
   coordinates: 51.531213353642556,-0.06860552716047158
 
-- name: Mare Street Market
-  url: https://maps.app.goo.gl/v8Aory3LZEx4gb9Y8
-  coordinates: 51.53789740323768,-0.05722246814882648
-
 - name: Ong Lai Kopitiam
   url: https://maps.app.goo.gl/bebtmMbqmyzGv3Mf6
   coordinates: 51.502295186104206,-0.010616543472048531
+
+- name: Taro
+  url: https://maps.app.goo.gl/4ZT3t7hmGJw8pznE9
+  coordinates: 51.51147328731191, -0.135594986998677
