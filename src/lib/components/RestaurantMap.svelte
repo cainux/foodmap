@@ -6,6 +6,8 @@
 		name: string;
 		url: string;
 		coordinates: { lat: number; lng: number } | null;
+		tags?: string[];
+		comment?: string;
 	}
 
 	let { restaurants, onLocationUpdate, onMapReady }: {
@@ -388,6 +390,16 @@
 					onclose={() => selectedRestaurant = null}
 				>
 					<strong>{selectedRestaurant.name}</strong><br>
+					{#if selectedRestaurant.tags && selectedRestaurant.tags.length > 0}
+						<div class="tags">
+							{#each selectedRestaurant.tags as tag}
+								<span class="tag">{tag}</span>
+							{/each}
+						</div>
+					{/if}
+					{#if selectedRestaurant.comment}
+						<p class="comment">{selectedRestaurant.comment}</p>
+					{/if}
 					<a href={selectedRestaurant.url} target="_blank" rel="noopener noreferrer">View on Google Maps</a>
 				</Popup>
 			{/if}
@@ -450,7 +462,31 @@
 	}
 
 	:global(.maplibregl-popup-content strong) {
-		font-size: 1.1em;
+		font-size: 1.3em;
 		color: var(--pico-primary);
+	}
+
+	:global(.maplibregl-popup-content .tags) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		margin: 0.25rem 0 0.5rem 0;
+	}
+
+	:global(.maplibregl-popup-content .tag) {
+		display: inline-block;
+		padding: 0.05rem 0.3rem;
+		font-size: 0.55rem;
+		background-color: var(--pico-primary);
+		color: white;
+		border-radius: 8px;
+		border: none;
+	}
+
+	:global(.maplibregl-popup-content .comment) {
+		margin: 0.5rem 0;
+		font-size: 0.75rem;
+		font-style: italic;
+		color: var(--pico-muted-color);
 	}
 </style>

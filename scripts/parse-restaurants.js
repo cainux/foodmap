@@ -15,7 +15,7 @@ const data = parse(content);
 const restaurants = [];
 
 for (const entry of data) {
-  const { name, url, coordinates: coords } = entry;
+  const { name, url, coordinates: coords, tags, comment } = entry;
 
   if (name && url && url.startsWith('http')) {
     let coordinates = null;
@@ -26,10 +26,15 @@ for (const entry of data) {
       coordinates = { lat, lng };
     }
 
+    // Parse tags (space-separated string to array)
+    const parsedTags = tags && typeof tags === 'string' ? tags.split(/\s+/).filter(t => t) : [];
+
     restaurants.push({
       name,
       url,
-      coordinates
+      coordinates,
+      tags: parsedTags,
+      ...(comment && { comment })
     });
   }
 }
