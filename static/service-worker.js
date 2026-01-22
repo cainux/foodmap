@@ -12,13 +12,13 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   console.log('Service Worker: Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
       console.log('Service Worker: Caching static assets');
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => {
+      await cache.addAll(STATIC_ASSETS);
       console.log('Service Worker: Installed');
-      return self.skipWaiting();
-    })
+      await self.skipWaiting();
+    })()
   );
 });
 
@@ -26,19 +26,19 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('Service Worker: Activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
+    (async () => {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map(async (cacheName) => {
           if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
             console.log('Service Worker: Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
+            await caches.delete(cacheName);
           }
         })
       );
-    }).then(() => {
       console.log('Service Worker: Activated');
-      return self.clients.claim();
-    })
+      await self.clients.claim();
+    })()
   );
 });
 
@@ -52,46 +52,57 @@ self.addEventListener('fetch', (event) => {
     // Cache map tiles for offline use
     if (url.hostname.includes('tile') || url.hostname.includes('carto') || url.hostname.includes('openstreetmap')) {
       event.respondWith(
-        caches.open(RUNTIME_CACHE).then((cache) => {
-          return cache.match(request).then((response) => {
-            if (response) {
-              return response;
+        (async () => {
+          const cache = await caches.open(RUNTIME_CACHE);
+          const cachedResponse = await cache.match(request);
+
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+
+          try {
+            const response = await fetch(request);
+            // Cache successful tile requests
+            if (response.ok) {
+              cache.put(request, response.clone());
             }
-            return fetch(request).then((response) => {
-              // Cache successful tile requests
-              if (response.ok) {
-                cache.put(request, response.clone());
-              }
-              return response;
-            }).catch(() => {
-              // Return a placeholder or handle offline gracefully
-              return new Response('Offline', { status: 503 });
-            });
-          });
-        })
+            return response;
+          } catch {
+            // Return a placeholder or handle offline gracefully
+            return new Response('Offline', { status: 503 });
+          }
+        })()
       );
       return;
     }
 
     // For other cross-origin requests (fonts, etc.), try network first
     event.respondWith(
-      fetch(request).catch(() => {
-        return caches.match(request);
-      })
+      (async () => {
+        try {
+          return await fetch(request);
+        } catch {
+          return await caches.match(request);
+        }
+      })()
     );
     return;
   }
 
   // For same-origin requests, use cache-first strategy
   event.respondWith(
-    caches.match(request).then((response) => {
-      if (response) {
+    (async () => {
+      const cachedResponse = await caches.match(request);
+
+      if (cachedResponse) {
         // Return cached version
-        return response;
+        return cachedResponse;
       }
 
       // Fetch from network and cache
-      return fetch(request).then((response) => {
+      try {
+        const response = await fetch(request);
+
         // Don't cache non-successful responses
         if (!response || response.status !== 200 || response.type === 'error') {
           return response;
@@ -103,19 +114,18 @@ self.addEventListener('fetch', (event) => {
         // Determine which cache to use
         const cacheToUse = request.url.includes('/_app/') ? RUNTIME_CACHE : CACHE_NAME;
 
-        caches.open(cacheToUse).then((cache) => {
-          cache.put(request, responseToCache);
-        });
+        const cache = await caches.open(cacheToUse);
+        await cache.put(request, responseToCache);
 
         return response;
-      }).catch(() => {
+      } catch {
         // If fetch fails and nothing in cache, return offline page
         if (request.destination === 'document') {
-          return caches.match('/');
+          return await caches.match('/');
         }
         return new Response('Offline', { status: 503 });
-      });
-    })
+      }
+    })()
   );
 });
 
