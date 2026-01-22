@@ -208,3 +208,8 @@
   url: https://maps.app.goo.gl/4ZT3t7hmGJw8pznE9
   coordinates: 51.51147328731191, -0.135594986998677
   tags: japanese
+
+- name: Kokura
+  url: https://maps.app.goo.gl/9uaRYS2R6xesnbGM6
+  coordinates: 51.503025070169386,-0.10707492099532595
+  tags: japanese
