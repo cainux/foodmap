@@ -422,7 +422,7 @@
 
 	.map-container {
 		width: 100%;
-		height: 800px;
+		height: 600px;
 		border-radius: var(--pico-border-radius);
 		overflow: hidden;
 		box-shadow: var(--pico-card-box-shadow);
@@ -430,7 +430,7 @@
 
 	@media (max-width: 768px) {
 		.map-container {
-			height: 600px;
+			height: 400px;
 		}
 	}
 
