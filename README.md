@@ -1,6 +1,6 @@
 # 🍽️ Food Map
 
-A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.txt` and rendered as interactive markers using MapLibre GL maps.
+A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.yaml` and rendered as interactive markers using MapLibre GL maps.
 
 ## Features
 
@@ -39,7 +39,7 @@ pnpm install
 pnpm dev
 ```
 
-The development server automatically generates `src/lib/restaurants.json` from `data/restaurants.txt` before starting.
+The development server automatically generates `src/lib/restaurants.json` from `data/restaurants.yaml` before starting.
 
 3. Open your browser to `http://localhost:5173`
 
@@ -52,7 +52,7 @@ pnpm build
 ```
 
 The build process automatically:
-1. Parses `data/restaurants.txt` and generates `src/lib/restaurants.json`
+1. Parses `data/restaurants.yaml` and generates `src/lib/restaurants.json`
 2. Builds the static site to the `build/` directory
 
 To preview the production build:
@@ -65,16 +65,16 @@ pnpm preview
 
 ## Extracting Real Coordinates
 
-See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs in `data/restaurants.txt`.
+See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs in `data/restaurants.yaml`.
 
 ## Adding Restaurants
 
-1. Edit `data/restaurants.txt` following the format:
-   ```
-   Restaurant Name
-   https://maps.app.goo.gl/...
-   51.5163842,-0.0693367
-
+1. Edit `data/restaurants.yaml` following the format:
+   ```yaml
+   - name: Restaurant Name
+     url: https://maps.app.goo.gl/...
+     coordinates: 51.5163842,-0.0693367
+     tags: optional-tag
    ```
 
 2. Extract coordinates using one of the methods in [COORDINATES.md](./COORDINATES.md)
