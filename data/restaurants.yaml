@@ -213,3 +213,8 @@
   url: https://maps.app.goo.gl/9uaRYS2R6xesnbGM6
   coordinates: 51.503025070169386,-0.10707492099532595
   tags: japanese
+
+- name: Ahaba Cafe
+  url: https://maps.app.goo.gl/45YoXmZ1PTz2WQMm6
+  coordinates: 51.5205779042697,-0.01980685253020558
+  tags: coffee
