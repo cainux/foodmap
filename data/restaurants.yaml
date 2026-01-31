@@ -218,3 +218,13 @@
   url: https://maps.app.goo.gl/45YoXmZ1PTz2WQMm6
   coordinates: 51.5205779042697,-0.01980685253020558
   tags: coffee
+
+- name: Swan Chinese Bakery
+  url: https://maps.app.goo.gl/2WAQrgsk8usEpFwn6
+  coordinates: 51.51671761906708,-0.07467149637804775
+  tags: chinese bakery
+
+- name: WA Cafe
+  url: https://maps.app.goo.gl/k3h4k49B13EZaZcQ8
+  coordinates: 51.51623538896622,-0.07285174926209768
+  tags: japanese patisserie
