@@ -2,6 +2,7 @@
 	import { flip } from 'svelte/animate';
 	import RestaurantMap from '$lib/components/RestaurantMap.svelte';
 	import restaurantsData from '$lib/restaurants.json';
+	import { calculateDistance } from '$lib/geo';
 
 	let sortedRestaurants = $state(restaurantsData.filter(r => r.coordinates));
 	let userLocation = $state<{ lat: number; lng: number } | null>(null);
@@ -59,21 +60,6 @@
 		}
 	}
 
-	// Haversine formula to calculate distance between two points
-	function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-		const R = 6371; // Radius of Earth in km
-		const dLat = toRad(lat2 - lat1);
-		const dLon = toRad(lon2 - lon1);
-		const a =
-			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		return R * c;
-	}
-
-	function toRad(degrees: number): number {
-		return degrees * (Math.PI / 180);
-	}
 </script>
 
 <svelte:head>
@@ -116,7 +102,6 @@
 	</article>
 
 	<section>
-		<h2>Restaurants</h2>
 		<div class="restaurant-grid">
 			{#each sortedRestaurants as restaurant (restaurant.url)}
 				<div
