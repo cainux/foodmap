@@ -233,3 +233,8 @@
   url: https://maps.app.goo.gl/cmergP4PEfJJFMdN7
   coordinates: 51.518778261077884,-0.03557065616987836
   tags: italian cafe pastry
+
+- name: Napoli on the Road
+  url: https://maps.app.goo.gl/Wk7ubwXvMnTEKdXq5
+  coordinates: 51.5145437,-0.1345294
+  tags: italian pizza
