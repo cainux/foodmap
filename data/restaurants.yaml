@@ -238,3 +238,8 @@
   url: https://maps.app.goo.gl/Wk7ubwXvMnTEKdXq5
   coordinates: 51.5145437,-0.1345294
   tags: italian pizza
+
+- name: Konjiki
+  url: https://maps.app.goo.gl/jpxn8AbF4isYC9L8A
+  coordinates: 51.5026759,-0.1909248
+  tags: japanese
