@@ -117,7 +117,7 @@
 - name: CoCo Ichibanya
   url: https://maps.app.goo.gl/RCASEC8DuA5wx2TF9
   coordinates: 51.511815574294666,-0.12788188183630442
-  tags: japanese
+  tags: japanese curry
 
 - name: Grounded
   url: https://maps.app.goo.gl/7gZVYXiUSP98GrPx8
@@ -236,10 +236,25 @@
 
 - name: Napoli on the Road
   url: https://maps.app.goo.gl/Wk7ubwXvMnTEKdXq5
-  coordinates: 51.5145437,-0.1345294
+  coordinates: 51.51452347783673, -0.13475067654914147
   tags: italian pizza
 
 - name: Konjiki
   url: https://maps.app.goo.gl/jpxn8AbF4isYC9L8A
-  coordinates: 51.5026759,-0.1909248
+  coordinates: 51.50272068842904, -0.19114421732650008
   tags: japanese
+
+- name: Dopi
+  url: https://maps.app.goo.gl/8eGgCMRen4jUTZi4A
+  coordinates: 51.525165272503315, -0.07086692721327262
+  tags: korean
+
+- name: CoCo Ichibanya (Bond St)
+  url: https://maps.app.goo.gl/fgY4jYYRV5NcnXp76
+  coordinates: 51.5158353094932, -0.15115302177762668
+  tags: japanese curry
+
+- name: Mama Li
+  url: https://maps.app.goo.gl/NW28ox2w72Q37fTd8
+  coordinates: 51.502833022769146, -0.0108832865987985
+  tags: chinese cantonese
