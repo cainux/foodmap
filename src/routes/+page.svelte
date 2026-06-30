@@ -105,6 +105,7 @@
 			type="search"
 			placeholder="Search restaurants…"
 			bind:value={searchQuery}
+			onfocus={() => (sidebarOpen = true)}
 			aria-label="Search restaurants"
 		/>
 	</div>
@@ -130,7 +131,7 @@
 		z-index: 30;
 		top: 1rem;
 		left: 1rem;
-		width: 340px;
+		width: 320px;
 		max-width: calc(100vw - 2rem);
 		display: flex;
 		align-items: center;

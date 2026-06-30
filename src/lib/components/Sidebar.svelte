@@ -108,9 +108,9 @@
 		transform: translateX(0);
 	}
 
-	/* Leave room for the floating search box / find-my-location controls */
+	/* Leave room for the floating search box above the list */
 	.sidebar-scroll {
-		padding-top: 9rem;
+		padding-top: 4.75rem;
 	}
 
 	.restaurant-card {
