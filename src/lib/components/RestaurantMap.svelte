@@ -386,8 +386,21 @@
 	</div>
 
 	{#if hasGeolocation}
-		<button class="location-button" onclick={findMyLocation} disabled={isLocating}>
-			{isLocating ? 'Locating…' : '📍 Find My Location'}
+		<button
+			class="location-button"
+			class:locating={isLocating}
+			onclick={findMyLocation}
+			disabled={isLocating}
+			aria-label={isLocating ? 'Locating…' : 'Find my location'}
+			title="Find my location"
+		>
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<circle cx="12" cy="12" r="3.5" />
+				<line x1="12" y1="2" x2="12" y2="5" />
+				<line x1="12" y1="19" x2="12" y2="22" />
+				<line x1="2" y1="12" x2="5" y2="12" />
+				<line x1="19" y1="12" x2="22" y2="12" />
+			</svg>
 		</button>
 	{/if}
 </div>
@@ -411,18 +424,24 @@
 		height: 100%;
 	}
 
-	/* Floating "Find My Location" button: top-left on desktop. */
+	/* Floating "Find My Location" button: icon-only, bottom-right. */
 	.location-button {
 		position: absolute;
 		z-index: 30;
-		top: 4.5rem;
-		left: 1rem;
-		width: auto;
+		bottom: 2.5rem;
+		right: 1rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
 		margin: 0;
-		padding: 0.5rem 1rem;
-		font-size: 0.85rem;
-		border-radius: 999px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: var(--pico-card-background-color);
+		color: var(--pico-primary);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 		cursor: pointer;
 	}
 
@@ -431,12 +450,13 @@
 		opacity: 0.7;
 	}
 
-	/* Mobile: top-center, below the full-width search box. */
-	@media (max-width: 768px) {
-		.location-button {
-			top: 4.25rem;
-			left: 50%;
-			transform: translateX(-50%);
+	.location-button.locating svg {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
 		}
 	}
 
