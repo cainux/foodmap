@@ -21,7 +21,6 @@
 	let hasGeolocation = $state(false);
 	let isLocating = $state(false);
 	let moveTimeout: ReturnType<typeof setTimeout> | null = null;
-	let highlightedRestaurantId = $state<string | null>(null);
 	let userLocation = $state<{ lng: number; lat: number } | null>(null);
 	let selectedRestaurant = $state<Restaurant | null>(null);
 
@@ -59,27 +58,38 @@
 
 	const initialCenter: LngLatLike = [avgLng, avgLat];
 
-	// Create GeoJSON feature collection for restaurant markers
+	// Create GeoJSON feature collection for restaurant markers.
+	// Derives from the live `restaurants` prop so search filtering updates the map.
 	let restaurantFeatures = $derived({
 		type: 'FeatureCollection' as const,
-		features: validRestaurants.map((restaurant) => ({
-			type: 'Feature' as const,
-			properties: {
-				name: restaurant.name,
-				url: restaurant.url,
-				id: `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`
-			},
-			geometry: {
-				type: 'Point' as const,
-				coordinates: [restaurant.coordinates!.lng, restaurant.coordinates!.lat]
-			}
-		}))
+		features: restaurants
+			.filter((r) => r.coordinates !== null)
+			.map((restaurant) => ({
+				type: 'Feature' as const,
+				properties: {
+					name: restaurant.name,
+					url: restaurant.url,
+					id: `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`
+				},
+				geometry: {
+					type: 'Point' as const,
+					coordinates: [restaurant.coordinates!.lng, restaurant.coordinates!.lat]
+				}
+			}))
 	});
 
 	// Check if geolocation is available
 	if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
 		hasGeolocation = true;
 	}
+
+	// Keep the map markers/clusters in sync with the (filtered) restaurants prop.
+	$effect(() => {
+		const data = restaurantFeatures;
+		if (!map) return;
+		const source = map.getSource('restaurants') as maplibregl.GeoJSONSource | undefined;
+		source?.setData(data);
+	});
 
 	function handleMapLoad(e: any) {
 		// Get map from event to ensure it's available immediately
@@ -92,9 +102,6 @@
 		// Set maximum zoom to match restaurant navigation zoom level
 		mapInstance.setMaxZoom(16);
 
-		console.log('Adding restaurants source with', restaurantFeatures.features.length, 'features');
-		console.log('Sample feature:', restaurantFeatures.features[0]);
-
 		// Add the restaurants source with clustering
 		mapInstance.addSource('restaurants', {
 			type: 'geojson',
@@ -103,8 +110,6 @@
 			clusterMaxZoom: 16,
 			clusterRadius: 30
 		});
-
-		console.log('Added source, now adding layers...');
 
 		// Add cluster circle layer
 		mapInstance.addLayer({
@@ -209,9 +214,6 @@
 			mapInstance.getCanvas().style.cursor = '';
 		});
 
-		console.log('All layers added successfully');
-		console.log('Map layers:', mapInstance.getStyle().layers.map((l: any) => l.id));
-
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
 			const bounds = validRestaurants.reduce((bounds, restaurant) => {
@@ -248,13 +250,8 @@
 
 	// Function to navigate to and highlight a restaurant marker
 	function navigateToRestaurant(coords: { lat: number; lng: number }) {
-		const id = `${coords.lat},${coords.lng}`;
-
 		// Close previous popup
 		selectedRestaurant = null;
-
-		// Set highlighted restaurant
-		highlightedRestaurantId = id;
 
 		// Fly to the marker location with smooth animation
 		if (map) {
@@ -310,10 +307,6 @@
 					// Sort by distance and get the nearest
 					restaurantsWithDistance.sort((a, b) => a.distance - b.distance);
 					const nearestRestaurant = restaurantsWithDistance[0].restaurant;
-
-					// Highlight the nearest restaurant
-					const id = `${nearestRestaurant.coordinates!.lat},${nearestRestaurant.coordinates!.lng}`;
-					highlightedRestaurantId = id;
 
 					// Fit map bounds to show both user location and nearest restaurant
 					const bounds = new maplibregl.LngLatBounds(
@@ -378,7 +371,7 @@
 					<strong>{selectedRestaurant.name}</strong><br>
 					{#if selectedRestaurant.tags && selectedRestaurant.tags.length > 0}
 						<div class="tags">
-							{#each selectedRestaurant.tags as tag}
+							{#each selectedRestaurant.tags as tag (tag)}
 								<span class="tag">{tag}</span>
 							{/each}
 						</div>
@@ -393,31 +386,24 @@
 	</div>
 
 	{#if hasGeolocation}
-		<div class="location-button-container">
-			<button onclick={findMyLocation} disabled={isLocating}>
-				{isLocating ? 'Locating...' : 'Find My Location'}
-			</button>
-		</div>
+		<button class="location-button" onclick={findMyLocation} disabled={isLocating}>
+			{isLocating ? 'Locating…' : '📍 Find My Location'}
+		</button>
 	{/if}
 </div>
 
 <style>
 	.map-wrapper {
+		position: absolute;
+		inset: 0;
 		width: 100%;
+		height: 100%;
 	}
 
 	.map-container {
 		width: 100%;
-		height: 600px;
-		border-radius: var(--pico-border-radius);
+		height: 100%;
 		overflow: hidden;
-		box-shadow: var(--pico-card-box-shadow);
-	}
-
-	@media (max-width: 768px) {
-		.map-container {
-			height: 400px;
-		}
 	}
 
 	:global(.map) {
@@ -425,21 +411,33 @@
 		height: 100%;
 	}
 
-	.location-button-container {
-		display: flex;
-		justify-content: center;
-		margin-top: 1rem;
-	}
-
-	.location-button-container button {
-		padding: 0.5rem 1.5rem;
-		font-size: 0.9rem;
+	/* Floating "Find My Location" button: top-left on desktop. */
+	.location-button {
+		position: absolute;
+		z-index: 30;
+		top: 4.5rem;
+		left: 1rem;
+		width: auto;
+		margin: 0;
+		padding: 0.5rem 1rem;
+		font-size: 0.85rem;
+		border-radius: 999px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
 	}
 
-	.location-button-container button:disabled {
+	.location-button:disabled {
 		cursor: wait;
 		opacity: 0.7;
+	}
+
+	/* Mobile: top-center, below the full-width search box. */
+	@media (max-width: 768px) {
+		.location-button {
+			top: 4.25rem;
+			left: 50%;
+			transform: translateX(-50%);
+		}
 	}
 
 	:global(.maplibregl-popup-content) {
