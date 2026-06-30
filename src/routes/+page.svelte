@@ -86,6 +86,7 @@
 		restaurants={filtered}
 		onLocationUpdate={handleLocationUpdate}
 		onMapReady={handleMapReady}
+		{sidebarOpen}
 	/>
 
 	<div class="search-box">
@@ -115,6 +116,7 @@
 		open={sidebarOpen}
 		{userLocation}
 		onCardClick={handleCardClick}
+		onToggle={() => (sidebarOpen = !sidebarOpen)}
 	/>
 </div>
 
