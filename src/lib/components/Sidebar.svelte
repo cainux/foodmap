@@ -268,6 +268,8 @@
 			padding: 12px 0;
 			cursor: grab;
 			touch-action: none;
+			background: transparent;
+			border: none;
 		}
 
 		.grab-handle {
@@ -275,7 +277,7 @@
 			width: 40px;
 			height: 4px;
 			border-radius: 2px;
-			background: var(--pico-card-background-color);
+			background: var(--pico-muted-border-color);
 		}
 
 		.sidebar-scroll {
