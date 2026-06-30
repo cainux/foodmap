@@ -4,7 +4,9 @@
 	import restaurantsData from '$lib/restaurants.json';
 	import { calculateDistance } from '$lib/geo';
 
-	let sidebarOpen = $state(false);
+	let sidebarOpen = $state(
+		typeof window !== 'undefined' && window.matchMedia('(min-width: 769px)').matches
+	);
 	let searchQuery = $state('');
 	let userLocation = $state<{ lat: number; lng: number } | null>(null);
 	let navigateToRestaurant: ((coords: { lat: number; lng: number }) => void) | null = null;
