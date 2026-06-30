@@ -18,13 +18,13 @@ A static website built with SvelteKit that displays restaurants on an interactiv
 
 ## Tech Stack
 
-- **SvelteKit 2.47.1** - Full-stack framework with static adapter
-- **Svelte 5.41.0** - Reactive UI components (using latest runes API)
+- **SvelteKit 2.50.1** - Full-stack framework with static adapter
+- **Svelte 5.49.1** - Reactive UI components (using latest runes API)
 - **MapLibre GL 4.7.1** - Interactive WebGL-based mapping library
 - **svelte-maplibre-gl** - Svelte components for MapLibre GL integration
 - **Pico CSS 2.1.1** - Minimal styling framework
 - **TypeScript 5.9.3** - Type safety
-- **Vite 7.1.10** - Build tool and dev server
+- **Vite 7.3.1** - Build tool and dev server
 - **pnpm** - Fast, disk-efficient package manager
 
 ## Getting Started
@@ -63,10 +63,6 @@ pnpm preview
 
 **Note:** `src/lib/restaurants.json` is a generated file and not tracked in git. It's automatically created during development and build processes.
 
-## Extracting Real Coordinates
-
-See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real coordinates from the Google Maps URLs in `data/restaurants.yaml`.
-
 ## Adding Restaurants
 
 1. Edit `data/restaurants.yaml` following the format:
@@ -77,7 +73,7 @@ See [COORDINATES.md](./COORDINATES.md) for instructions on how to extract real c
      tags: optional-tag
    ```
 
-2. Extract coordinates using one of the methods in [COORDINATES.md](./COORDINATES.md)
+2. Get coordinates by opening the Google Maps link in a browser — the lat/lng appear in the URL (e.g. `@51.5163842,-0.0693367`).
 
 3. Start dev server or build - `restaurants.json` is automatically generated:
    ```sh

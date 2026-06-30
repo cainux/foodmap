@@ -64,7 +64,7 @@ $effect(() => { /* side effects */ });
 The map uses `svelte-maplibre-gl` components with GeoJSON clustering:
 - Three layers: `clusters`, `cluster-count`, `unclustered-point`
 - Clustering enabled via GeoJSON source (`cluster: true`)
-- SSR is disabled in `+layout.ts` (`export const ssr = false`)
+- Prerendering is enabled in `+layout.ts` (`export const prerender = true`)
 - All layer setup happens in `handleMapLoad` after the map `load` event
 
 ## Styling
