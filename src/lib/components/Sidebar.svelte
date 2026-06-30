@@ -275,7 +275,7 @@
 			width: 40px;
 			height: 4px;
 			border-radius: 2px;
-			background: var(--pico-muted-color);
+			background: var(--pico-card-background-color);
 		}
 
 		.sidebar-scroll {
