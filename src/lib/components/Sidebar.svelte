@@ -275,7 +275,7 @@
 			width: 40px;
 			height: 4px;
 			border-radius: 2px;
-			background: var(--pico-muted-border-color);
+			background: var(--pico-muted-color);
 		}
 
 		.sidebar-scroll {
