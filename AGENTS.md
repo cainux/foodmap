@@ -74,10 +74,6 @@ The map uses `svelte-maplibre-gl` components with GeoJSON clustering:
 - Scoped styles in component `<style>` blocks
 - Global styles only in `src/routes/+layout.svelte`
 
-## Tools
-
-Use 'bd' for task tracking.
-
 ### Svelte MCP Server
 
 Use the Svelte MCP server for documentation and code validation:

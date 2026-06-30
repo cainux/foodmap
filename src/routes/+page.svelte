@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { flip } from 'svelte/animate';
 	import RestaurantMap from '$lib/components/RestaurantMap.svelte';
+	import Sidebar from '$lib/components/Sidebar.svelte';
 	import restaurantsData from '$lib/restaurants.json';
 	import { calculateDistance } from '$lib/geo';
 
-	let sortedRestaurants = $state(restaurantsData.filter(r => r.coordinates));
+	let sidebarOpen = $state(
+		typeof window !== 'undefined' && window.matchMedia('(min-width: 769px)').matches
+	);
+	let searchQuery = $state('');
 	let userLocation = $state<{ lat: number; lng: number } | null>(null);
 	let navigateToRestaurant: ((coords: { lat: number; lng: number }) => void) | null = null;
-	let mapSection: HTMLElement;
 
 	// Social media preview metadata
 	const siteUrl = 'https://food.oha.me';
@@ -15,24 +17,31 @@
 	const description = 'Where I like to eat';
 	const imageUrl = `${siteUrl}/social-preview.png`;
 
+	// Name/tag filter only — feeds the map markers (no sort needed).
+	let filtered = $derived.by(() => {
+		const list = restaurantsData.filter((r) => r.coordinates);
+		const q = searchQuery.trim().toLowerCase();
+		if (!q) return list;
+		return list.filter(
+			(r) =>
+				r.name.toLowerCase().includes(q) ||
+				(r.tags ?? []).some((t) => t.toLowerCase().includes(q))
+		);
+	});
+
+	// Filter + distance sort — feeds the sidebar list.
+	let displayed = $derived.by(() => {
+		if (!userLocation) return filtered;
+		const loc = userLocation;
+		return [...filtered].sort(
+			(a, b) =>
+				calculateDistance(loc.lat, loc.lng, a.coordinates!.lat, a.coordinates!.lng) -
+				calculateDistance(loc.lat, loc.lng, b.coordinates!.lat, b.coordinates!.lng)
+		);
+	});
+
 	function handleLocationUpdate(location: { lat: number; lng: number }) {
 		userLocation = location;
-
-		// Calculate distances and sort restaurants
-		const withDistances = restaurantsData
-			.filter(r => r.coordinates)
-			.map(r => {
-				const distance = calculateDistance(
-					location.lat,
-					location.lng,
-					r.coordinates!.lat,
-					r.coordinates!.lng
-				);
-				return { ...r, distance };
-			})
-			.sort((a, b) => a.distance - b.distance);
-
-		sortedRestaurants = withDistances;
 	}
 
 	function handleMapReady(navFunction: (coords: { lat: number; lng: number }) => void) {
@@ -40,26 +49,13 @@
 	}
 
 	function handleCardClick(coords: { lat: number; lng: number }) {
-		if (navigateToRestaurant) {
-			navigateToRestaurant(coords);
+		navigateToRestaurant?.(coords);
 
-			// Scroll to map on mobile devices
-			if (mapSection) {
-				// Small delay to allow map animation to start
-				setTimeout(() => {
-					mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				}, 100);
-			}
+		// Collapse the bottom sheet on mobile so the map is visible.
+		if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+			sidebarOpen = false;
 		}
 	}
-
-	function handleCardKeyPress(event: KeyboardEvent, coords: { lat: number; lng: number }) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleCardClick(coords);
-		}
-	}
-
 </script>
 
 <svelte:head>
@@ -87,103 +83,111 @@
 	<meta property="og:site_name" content={title} />
 </svelte:head>
 
-<main class="container">
-	<header>
-		<h1>🍽️ Food Map</h1>
-		<p>Where I like to eat</p>
-	</header>
+<div class="app">
+	<RestaurantMap
+		restaurants={filtered}
+		onLocationUpdate={handleLocationUpdate}
+		onMapReady={handleMapReady}
+		{sidebarOpen}
+	/>
 
-	<article bind:this={mapSection}>
-		<RestaurantMap
-			restaurants={restaurantsData}
-			onLocationUpdate={handleLocationUpdate}
-			onMapReady={handleMapReady}
+	<div class="search-box">
+		<button
+			class="menu-toggle"
+			onclick={() => (sidebarOpen = !sidebarOpen)}
+			aria-label={sidebarOpen ? 'Hide restaurant list' : 'Show restaurant list'}
+			aria-expanded={sidebarOpen}
+		>
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+				<line x1="3" y1="6" x2="21" y2="6" />
+				<line x1="3" y1="12" x2="21" y2="12" />
+				<line x1="3" y1="18" x2="21" y2="18" />
+			</svg>
+		</button>
+		<input
+			type="search"
+			placeholder="Search restaurants…"
+			bind:value={searchQuery}
+			onfocus={() => (sidebarOpen = true)}
+			aria-label="Search restaurants"
 		/>
-	</article>
+	</div>
 
-	<section>
-		<div class="restaurant-grid">
-			{#each sortedRestaurants as restaurant (restaurant.url)}
-				<div
-					class="restaurant-card"
-					onclick={() => handleCardClick(restaurant.coordinates!)}
-					onkeydown={(e) => handleCardKeyPress(e, restaurant.coordinates!)}
-					role="button"
-					tabindex="0"
-					animate:flip={{ duration: 300 }}
-				>
-					<div class="card-content">
-						<div class="card-header">
-							<h3>{restaurant.name}</h3>
-						</div>
-					</div>
-				</div>
-			{/each}
-		</div>
-	</section>
-</main>
+	<Sidebar
+		restaurants={displayed}
+		open={sidebarOpen}
+		{userLocation}
+		onCardClick={handleCardClick}
+		onToggle={() => (sidebarOpen = !sidebarOpen)}
+	/>
+</div>
 
 <style>
-	main {
-		padding: 2rem 0;
+	.app {
+		position: relative;
+		width: 100vw;
+		height: 100dvh;
+		overflow: hidden;
 	}
 
-	header {
-		text-align: center;
-		margin-bottom: 2rem;
+	.search-box {
+		position: absolute;
+		z-index: 30;
+		top: 1rem;
+		left: 1rem;
+		width: 320px;
+		max-width: calc(100vw - 2rem);
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		background: var(--pico-card-background-color);
+		border-radius: 999px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
-	header h1 {
-		margin-bottom: 0.5rem;
+	.menu-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		margin: 0;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: var(--pico-color);
+		cursor: pointer;
 	}
 
-	header p {
-		color: var(--pico-muted-color);
-		margin-top: 0;
+	.menu-toggle:hover {
+		background: var(--pico-secondary-background);
 	}
 
-	section {
-		margin-top: 2rem;
+	.search-box input[type='search'] {
+		flex: 1;
+		min-width: 0;
+		margin: 0;
+		padding: 0.35rem 0.5rem;
+		border: none;
+		background: transparent;
+		box-shadow: none;
+		font-size: 0.95rem;
+		--pico-form-element-focus-color: transparent;
 	}
 
-	section h2 {
-		margin-bottom: 1rem;
+	.search-box input[type='search']:focus {
+		outline: none;
+		box-shadow: none;
 	}
 
 	@media (max-width: 768px) {
-		section h2 {
-			text-align: center;
+		.search-box {
+			left: 50%;
+			transform: translateX(-50%);
+			width: calc(100vw - 2rem);
 		}
-	}
-
-	.restaurant-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 1rem;
-		margin-top: 1rem;
-	}
-
-	.restaurant-card {
-		padding: 1rem;
-		margin: 0;
-		cursor: pointer;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
-		background: var(--pico-card-background-color);
-		border-radius: var(--pico-border-radius);
-		box-shadow: var(--pico-card-box-shadow);
-	}
-
-	.restaurant-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	}
-
-	.restaurant-card:active {
-		transform: translateY(0);
-	}
-
-	.restaurant-card h3 {
-		margin: 0;
-		font-size: 1.1rem;
 	}
 </style>
