@@ -14,13 +14,58 @@
 		restaurants,
 		open,
 		userLocation,
-		onCardClick
+		onCardClick,
+		onToggle
 	}: {
 		restaurants: Restaurant[];
 		open: boolean;
 		userLocation: { lat: number; lng: number } | null;
 		onCardClick: (coords: { lat: number; lng: number }) => void;
+		onToggle: () => void;
 	} = $props();
+
+	let sidebarEl: HTMLElement | undefined = $state();
+	let dragStartY = 0;
+	let dragging = false;
+
+	function onPointerDown(e: PointerEvent) {
+		if (!sidebarEl) return;
+		dragging = true;
+		dragStartY = e.clientY;
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+		sidebarEl.style.transition = 'none';
+	}
+
+	function onPointerMove(e: PointerEvent) {
+		if (!dragging || !sidebarEl) return;
+		const deltaY = e.clientY - dragStartY;
+		const sidebarHeight = sidebarEl.offsetHeight;
+		const collapsedOffset = sidebarHeight - 28;
+
+		if (open) {
+			const clamped = Math.max(0, Math.min(deltaY, collapsedOffset));
+			sidebarEl.style.transform = `translateY(${clamped}px)`;
+		} else {
+			const clamped = Math.max(-collapsedOffset, Math.min(deltaY, 0));
+			sidebarEl.style.transform = `translateY(calc(100% - 28px + ${clamped}px))`;
+		}
+	}
+
+	function onPointerUp(e: PointerEvent) {
+		if (!dragging || !sidebarEl) return;
+		dragging = false;
+		sidebarEl.style.transition = '';
+		sidebarEl.style.transform = '';
+
+		const deltaY = e.clientY - dragStartY;
+		if (Math.abs(deltaY) < 10) {
+			onToggle();
+		} else if (open && deltaY > 10) {
+			onToggle();
+		} else if (!open && deltaY < -10) {
+			onToggle();
+		}
+	}
 
 	function distanceLabel(coords: { lat: number; lng: number }): string {
 		if (!userLocation) return '';
@@ -36,8 +81,21 @@
 	}
 </script>
 
-<aside class="sidebar" class:open aria-hidden={!open}>
-	<div class="grab-handle"></div>
+<aside class="sidebar" class:open aria-hidden={!open} bind:this={sidebarEl}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="grab-handle-area"
+		onpointerdown={onPointerDown}
+		onpointermove={onPointerMove}
+		onpointerup={onPointerUp}
+		onpointercancel={onPointerUp}
+		role="button"
+		tabindex="0"
+		aria-label={open ? 'Collapse panel' : 'Expand panel'}
+		onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
+	>
+		<div class="grab-handle"></div>
+	</div>
 	<div class="sidebar-scroll">
 		{#each restaurants as restaurant (restaurant.url)}
 			<div
@@ -81,6 +139,10 @@
 		flex-direction: column;
 		overflow: hidden;
 		transition: transform 0.3s ease;
+	}
+
+	.grab-handle-area {
+		display: none;
 	}
 
 	.grab-handle {
@@ -198,12 +260,20 @@
 			transform: translateY(0);
 		}
 
+		.grab-handle-area {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			padding: 12px 0;
+			cursor: grab;
+			touch-action: none;
+		}
+
 		.grab-handle {
 			display: block;
-			flex-shrink: 0;
 			width: 40px;
 			height: 4px;
-			margin: 10px auto;
 			border-radius: 2px;
 			background: var(--pico-muted-border-color);
 		}

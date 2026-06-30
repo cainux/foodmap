@@ -11,10 +11,11 @@
 		comment?: string;
 	}
 
-	let { restaurants, onLocationUpdate, onMapReady }: {
+	let { restaurants, onLocationUpdate, onMapReady, sidebarOpen = false }: {
 		restaurants: Restaurant[];
 		onLocationUpdate: (location: { lat: number; lng: number }) => void;
 		onMapReady?: (navigateToRestaurant: (coords: { lat: number; lng: number }) => void) => void;
+		sidebarOpen?: boolean;
 	} = $props();
 
 	let map = $state<Map>();
@@ -389,6 +390,7 @@
 		<button
 			class="location-button"
 			class:locating={isLocating}
+			class:hidden-mobile={sidebarOpen}
 			onclick={findMyLocation}
 			disabled={isLocating}
 			aria-label={isLocating ? 'Locating…' : 'Find my location'}
@@ -457,6 +459,12 @@
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.location-button.hidden-mobile {
+			display: none;
 		}
 	}
 
