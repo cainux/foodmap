@@ -103,6 +103,7 @@
   url: https://maps.app.goo.gl/YXLoR98pY47Z32yH7
   coordinates: 51.54429540198718,-0.027702823247169404
   tags: pizza
+  comment: Pay with cash
 
 - name: Monohon Ramen
   url: https://maps.app.goo.gl/jRoxZphAEDY2dci6A
@@ -258,3 +259,9 @@
   url: https://maps.app.goo.gl/NW28ox2w72Q37fTd8
   coordinates: 51.502833022769146, -0.0108832865987985
   tags: chinese cantonese
+
+- name: Tay Do
+  url: https://maps.app.goo.gl/zwrC26Rju8QgfoUV8
+  coordinates: 51.52983751094818, -0.07754491233674653
+  tags: vietnamese
+  comment: Cash only
