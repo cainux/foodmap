@@ -265,3 +265,8 @@
   coordinates: 51.52983751094818, -0.07754491233674653
   tags: vietnamese
   comment: Cash only
+
+- name: Noodle Street
+  url: https://maps.app.goo.gl/pcumjAoJ2YAbrQeL9
+  coordinates: 51.50963676665528, -0.024320158494203825
+  tags: chinese
