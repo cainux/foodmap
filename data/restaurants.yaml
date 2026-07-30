@@ -270,3 +270,13 @@
   url: https://maps.app.goo.gl/pcumjAoJ2YAbrQeL9
   coordinates: 51.50963676665528, -0.024320158494203825
   tags: chinese
+
+- name: Noodle Inn
+  url: https://maps.app.goo.gl/1eixvc8v16d1zGzh8
+  coordinates: 51.51747801511137, -0.0772403101245763
+  tags: chinese
+
+- name: Darlish
+  url: https://maps.app.goo.gl/JooQreuyRtcPj5WL8
+  coordinates: 51.51887942758026, -0.07894462981997703
+  tags: ice-cream
