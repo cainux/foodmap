@@ -280,3 +280,8 @@
   url: https://maps.app.goo.gl/JooQreuyRtcPj5WL8
   coordinates: 51.51887942758026, -0.07894462981997703
   tags: ice-cream
+
+- name: Two Roosters
+  url: https://maps.app.goo.gl/uR4USdYFtc9XjmjHA
+  coordinates: 51.52032811952586, -0.07654720003894935
+  tags: chicken-rice
