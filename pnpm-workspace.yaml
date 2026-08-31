@@ -1,2 +1,12 @@
-onlyBuiltDependencies:
-  - esbuild
+packages:
+  - admin
+
+allowBuilds:
+  core-js: false
+  esbuild: true
+  workerd: true
+
+patchedDependencies:
+  '@atproto-labs/did-resolver@0.3.7': patches/@atproto-labs__did-resolver@0.3.7.patch
+  '@atproto-labs/handle-resolver@0.4.8': patches/@atproto-labs__handle-resolver@0.4.8.patch
+  '@atproto/oauth-client@0.8.4': patches/@atproto__oauth-client@0.8.4.patch
