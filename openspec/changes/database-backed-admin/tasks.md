@@ -41,10 +41,10 @@
 
 ## 6. Manual publish
 
-- [ ] 6.1 Create the Deploy Hook on the public site's Cloudflare Pages project
-- [ ] 6.2 Add a "publish" control to the admin app that, when activated, POSTs to the Deploy Hook URL
-- [ ] 6.3 Confirm create/edit/delete only write to D1 and never call the Deploy Hook as a side effect
-- [ ] 6.4 Verify end-to-end: admin writes accumulate in D1, and only activating publish triggers a public site rebuild that reflects the accumulated changes within about a minute
+- [x] 6.1 Create the Deploy Hook on the public site's Cloudflare Pages project (required first connecting the Pages project to its GitHub repo, since Deploy Hooks aren't available for direct-upload projects — done via the dashboard)
+- [x] 6.2 Add a "publish" control to the admin app that, when activated, POSTs to the Deploy Hook URL
+- [x] 6.3 Confirm create/edit/delete only write to D1 and never call the Deploy Hook as a side effect
+- [x] 6.4 Verify end-to-end: admin writes accumulate in D1, and only activating publish triggers a public site rebuild that reflects the accumulated changes within about a minute (confirmed live: publish button produced a new Active Pages deployment)
 
 ## 7. Cleanup and cutover
 

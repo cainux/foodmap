@@ -7,6 +7,8 @@
 
 <h1>foodmap admin</h1>
 
+<p><a href="/publish">Publish changes to the public site</a></p>
+
 <div class="layout">
 	<section class="list">
 		<form method="GET">

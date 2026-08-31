@@ -83,6 +83,7 @@ Reason: `workerd` doesn't implement `fetch`'s `redirect: 'error'` mode, which se
 - [Rebuild latency (~30-60s) means the admin doesn't see their own edit live] → Acceptable per proposal; admin list view can read D1 directly (not the stale prerendered output) so the admin's own UI always reflects the latest write even before a publish.
 - [Manual publish means an admin can forget to publish, leaving the public site stale] → Accepted trade-off for batching edits; admin list view reading D1 directly (above) at least keeps the admin's own view accurate regardless.
 - [pnpm patches are version-pinned and will need re-diffing as atproto packages update] → Documented in design; treat as expected maintenance, not a one-time cost.
+- [Cloudflare Pages Deploy Hooks only exist for a project connected to a Git repository — the public site was originally a direct-upload project with no hook available] → Resolved by connecting the Pages project to its GitHub repo via the dashboard (Settings → Build), which also gains ordinary git-push auto-deploys as a side benefit; the Deploy Hook was then created under Builds & deployments.
 
 ## Migration Plan
 
