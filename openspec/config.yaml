@@ -30,3 +30,7 @@ schema: spec-driven
 #     archive:
 #       guidance:
 #         - Summarize the archive outcome before finishing
+rules:
+  design:
+    - Use Mermaid or ASCII diagrams where appropriate to best explain the
+      design to readers
