@@ -30,14 +30,14 @@
 
 ## 5. Admin restaurant management UI
 
-- [ ] 5.1 Build the shared add/edit form component (name, URL, coordinates, freeform tag input, multiline comment)
-- [ ] 5.2 Add the "use current location" button using `navigator.geolocation`, filling coordinate fields at 15 decimal places while keeping them editable
-- [ ] 5.3 Implement create: form submit inserts a new D1 row
-- [ ] 5.4 Implement edit: pre-fill the form from an existing record, submit updates the D1 row
-- [ ] 5.5 Implement delete with a confirmation step before removing the D1 row
-- [ ] 5.6 Build the restaurant list view (reads D1 directly, not the public prerendered output) with name/tags search filtering
-- [ ] 5.7 Implement the duplicate warning: on coordinate entry/change, compare against existing restaurants using `src/lib/geo.ts`'s distance calculation and show a non-blocking warning naming any match within the radius
-- [ ] 5.8 Build the responsive layout: form + list stacked on narrow viewports, side-by-side on wide viewports, single set of components/routes for both
+- [x] 5.1 Build the shared add/edit form component (name, URL, coordinates, freeform tag input, multiline comment)
+- [x] 5.2 Add the "use current location" button using `navigator.geolocation`, filling coordinate fields at 15 decimal places while keeping them editable
+- [x] 5.3 Implement create: form submit inserts a new D1 row
+- [x] 5.4 Implement edit: pre-fill the form from an existing record, submit updates the D1 row
+- [x] 5.5 Implement delete with a confirmation step before removing the D1 row
+- [x] 5.6 Build the restaurant list view (reads D1 directly, not the public prerendered output) with name/tags search filtering
+- [x] 5.7 Implement the duplicate warning: on coordinate entry/change, compare against existing restaurants using `src/lib/geo.ts`'s distance calculation and show a non-blocking warning naming any match within the radius
+- [x] 5.8 Build the responsive layout: form + list stacked on narrow viewports, side-by-side on wide viewports, single set of components/routes for both
 
 ## 6. Manual publish
 
