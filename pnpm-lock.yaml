@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  sourcemap-codec: npm:@jridgewell/sourcemap-codec@^1.5.0
+  source-map@^0.8.0-beta.0: ^0.7.4
+
 patchedDependencies:
   '@atproto-labs/did-resolver@0.3.7': fbbcb3d668349bb8d17f083f0fb74427ae0d5f591553ba55dc523840877970e9
   '@atproto-labs/handle-resolver@0.4.8': b3da2c99aeb4db0c2390287dd0bc0c7d34c5583786bcf8931e49a4e38d5c04e1
@@ -3089,13 +3093,9 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
-  source-map@0.8.0:
-    resolution: {integrity: sha512-d8EqvL+k/SOXCreS/SUzg2ciyHqBBLcN/yuRjFsbvVhHTE2pgei7oAhmPM7kWFbkX6OSMQfUq4KbkF3au9lhYQ==}
+  source-map@0.7.6:
+    resolution: {integrity: sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ==}
     engines: {node: '>= 12'}
-
-  sourcemap-codec@1.4.8:
-    resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
-    deprecated: Please use @jridgewell/sourcemap-codec instead
 
   stop-iteration-iterator@1.1.0:
     resolution: {integrity: sha512-eLoXW/DHyl62zxY4SCaIgnRhuMr6ri4juEYARS8E6sCEqzKpOiE521Ucofdx+KnDZl5xmvGYaaKCk5FEOxJCoQ==}
@@ -5902,7 +5902,7 @@ snapshots:
 
   magic-string@0.25.9:
     dependencies:
-      sourcemap-codec: 1.4.8
+      sourcemap-codec: '@jridgewell/sourcemap-codec@1.5.5'
 
   magic-string@0.30.21:
     dependencies:
@@ -6288,9 +6288,7 @@ snapshots:
 
   source-map@0.6.1: {}
 
-  source-map@0.8.0: {}
-
-  sourcemap-codec@1.4.8: {}
+  source-map@0.7.6: {}
 
   stop-iteration-iterator@1.1.0:
     dependencies:
@@ -6629,7 +6627,7 @@ snapshots:
       lodash: 4.17.23
       pretty-bytes: 5.6.0
       rollup: 2.79.2
-      source-map: 0.8.0
+      source-map: 0.7.6
       stringify-object: 3.3.0
       strip-comments: 2.0.1
       tempy: 0.6.0

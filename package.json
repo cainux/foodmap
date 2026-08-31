@@ -3,12 +3,6 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
-	"pnpm": {
-		"overrides": {
-			"sourcemap-codec": "npm:@jridgewell/sourcemap-codec@^1.5.0",
-			"source-map@^0.8.0-beta.0": "^0.7.4"
-		}
-	},
 	"scripts": {
 		"dev": "npm run build:restaurants && vite dev",
 		"build": "npm run build:restaurants && vite build",
