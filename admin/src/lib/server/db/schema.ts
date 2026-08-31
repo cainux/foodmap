@@ -15,3 +15,9 @@ export const atprotoOauthState = sqliteTable('atproto_oauth_state', {
 	value: text('value').notNull(),
 	createdAt: integer('created_at').notNull()
 });
+
+export const atprotoOauthSession = sqliteTable('atproto_oauth_session', {
+	key: text('key').primaryKey(),
+	value: text('value').notNull(),
+	createdAt: integer('created_at').notNull()
+});

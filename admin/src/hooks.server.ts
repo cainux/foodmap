@@ -13,7 +13,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		redirect(302, '/auth/login');
 	}
 
-	const client = createOAuthClient(event.platform!.env.DB, event.url.origin);
+	const client = createOAuthClient(
+		event.platform!.env.DB,
+		event.url.origin,
+		event.platform!.env.SESSION_ENCRYPTION_KEY
+	);
 	try {
 		event.locals.session = await client.restore(did);
 	} catch {

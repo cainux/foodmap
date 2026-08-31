@@ -12,6 +12,7 @@ declare global {
 				DB: D1Database;
 				ALLOWED_HANDLES: string;
 				PAGES_DEPLOY_HOOK_URL: string;
+				SESSION_ENCRYPTION_KEY: string;
 			};
 		}
 	}

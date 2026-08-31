@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import type { InternalStateData, StateStore } from '@atproto/oauth-client';
 import type { Session, SessionStore } from '@atproto/oauth-client';
 import { JoseKey } from '@atproto/jwk-jose';
-import { atprotoOauthState } from '../db/schema';
+import { atprotoOauthState, atprotoOauthSession } from '../db/schema';
 import { getDb } from '../db';
 
 /**
@@ -75,22 +75,82 @@ export class D1StateStore implements StateStore {
 	}
 }
 
-/**
- * Signed-in sessions, kept in memory only: the admin re-authenticates via
- * Bluesky if the Worker instance recycles, which is an acceptable trade-off
- * for a single-owner admin area with no offline-write requirement.
- */
-const sessions = new Map<string, Session>();
+const SESSION_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 30;
 
-export class MemorySessionStore implements SessionStore {
+async function importSessionKey(base64Key: string): Promise<CryptoKey> {
+	const raw = Uint8Array.from(atob(base64Key), (c) => c.charCodeAt(0));
+	return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
+}
+
+async function encryptSession(value: Session, base64Key: string): Promise<string> {
+	const key = await importSessionKey(base64Key);
+	const iv = crypto.getRandomValues(new Uint8Array(12));
+	const plaintext = new TextEncoder().encode(serialize(value));
+	const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
+	return JSON.stringify({
+		iv: btoa(String.fromCharCode(...iv)),
+		ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertext)))
+	});
+}
+
+async function decryptSession(stored: string, base64Key: string): Promise<Session> {
+	const { iv, ciphertext } = JSON.parse(stored) as { iv: string; ciphertext: string };
+	const key = await importSessionKey(base64Key);
+	const plaintext = await crypto.subtle.decrypt(
+		{ name: 'AES-GCM', iv: Uint8Array.from(atob(iv), (c) => c.charCodeAt(0)) },
+		key,
+		Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0))
+	);
+	return deserialize<Session>(new TextDecoder().decode(plaintext));
+}
+
+/**
+ * Signed-in sessions, persisted in D1 (encrypted at rest with
+ * SESSION_ENCRYPTION_KEY) so they survive a Worker instance recycling instead
+ * of forcing a re-login every time, mirroring D1StateStore. Rows past
+ * SESSION_MAX_AGE_MS (matching the session cookie's own maxAge) are treated
+ * as absent and cleaned up; a decrypt failure degrades the same way, to a
+ * normal re-login rather than an uncaught error.
+ */
+export class D1SessionStore implements SessionStore {
+	constructor(
+		private d1: D1Database,
+		private encryptionKey: string
+	) {}
+
 	async get(key: string): Promise<Session | undefined> {
-		return sessions.get(key);
+		const db = getDb(this.d1);
+		const row = await db.query.atprotoOauthSession.findFirst({
+			where: eq(atprotoOauthSession.key, key)
+		});
+		if (!row) return undefined;
+		if (Date.now() - row.createdAt > SESSION_MAX_AGE_MS) {
+			await this.del(key);
+			return undefined;
+		}
+		try {
+			return await decryptSession(row.value, this.encryptionKey);
+		} catch {
+			await this.del(key);
+			return undefined;
+		}
 	}
+
 	async set(key: string, value: Session): Promise<void> {
-		sessions.set(key, value);
+		const db = getDb(this.d1);
+		const encrypted = await encryptSession(value, this.encryptionKey);
+		await db
+			.insert(atprotoOauthSession)
+			.values({ key, value: encrypted, createdAt: Date.now() })
+			.onConflictDoUpdate({
+				target: atprotoOauthSession.key,
+				set: { value: encrypted, createdAt: Date.now() }
+			});
 	}
+
 	async del(key: string): Promise<void> {
-		sessions.delete(key);
+		const db = getDb(this.d1);
+		await db.delete(atprotoOauthSession).where(eq(atprotoOauthSession.key, key));
 	}
 }
 

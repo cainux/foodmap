@@ -1,7 +1,8 @@
 import { OAuthClient } from '@atproto/oauth-client';
-import type { Key, RuntimeImplementation } from '@atproto/oauth-client';
+import type { Key, OAuthClientMetadataInput, RuntimeImplementation } from '@atproto/oauth-client';
 import { WebcryptoKey } from '@atproto/jwk-webcrypto';
-import { D1StateStore, MemorySessionStore } from './atproto';
+import { buildAtprotoLoopbackClientMetadata } from '@atproto/oauth-types';
+import { D1StateStore, D1SessionStore } from './atproto';
 
 const DIGEST_ALG: Record<string, string> = {
 	sha256: 'SHA-256',
@@ -22,24 +23,38 @@ const runtimeImplementation: RuntimeImplementation = {
 	}
 };
 
-export function createOAuthClient(d1: D1Database, baseUrl: string) {
+// AT Protocol OAuth requires a real https client_id backed by a public
+// client-metadata.json - except for local development, where it defines a
+// special "loopback client" mode instead (client_id "http://localhost" with
+// redirect_uris on a loopback IP literal, never the "localhost" hostname -
+// see @atproto/oauth-types' oauthLoopbackRedirectURISchema).
+function buildClientMetadata(baseUrl: string): OAuthClientMetadataInput {
+	if (!baseUrl.startsWith('https://')) {
+		return buildAtprotoLoopbackClientMetadata({
+			redirect_uris: [`${baseUrl}/auth/callback`]
+		});
+	}
+	return {
+		client_id: `${baseUrl}/client-metadata.json`,
+		client_name: 'foodmap admin',
+		client_uri: baseUrl,
+		redirect_uris: [`${baseUrl}/auth/callback`],
+		grant_types: ['authorization_code', 'refresh_token'],
+		response_types: ['code'],
+		scope: 'atproto',
+		token_endpoint_auth_method: 'none',
+		application_type: 'web',
+		dpop_bound_access_tokens: true
+	};
+}
+
+export function createOAuthClient(d1: D1Database, baseUrl: string, sessionEncryptionKey: string) {
 	return new OAuthClient({
 		responseMode: 'query',
 		handleResolver: 'https://public.api.bsky.app',
-		clientMetadata: {
-			client_id: `${baseUrl}/client-metadata.json`,
-			client_name: 'foodmap admin',
-			client_uri: baseUrl,
-			redirect_uris: [`${baseUrl}/auth/callback`],
-			grant_types: ['authorization_code', 'refresh_token'],
-			response_types: ['code'],
-			scope: 'atproto',
-			token_endpoint_auth_method: 'none',
-			application_type: 'web',
-			dpop_bound_access_tokens: true
-		},
+		clientMetadata: buildClientMetadata(baseUrl),
 		stateStore: new D1StateStore(d1),
-		sessionStore: new MemorySessionStore(),
+		sessionStore: new D1SessionStore(d1, sessionEncryptionKey),
 		runtimeImplementation
 	});
 }

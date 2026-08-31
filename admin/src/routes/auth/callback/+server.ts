@@ -4,7 +4,7 @@ import { isHandleAllowed } from '$lib/server/auth/atproto';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url, platform, cookies }) => {
-	const client = createOAuthClient(platform!.env.DB, url.origin);
+	const client = createOAuthClient(platform!.env.DB, url.origin, platform!.env.SESSION_ENCRYPTION_KEY);
 
 	const { session } = await client.callback(url.searchParams).catch(() => {
 		error(400, 'Sign-in failed');
