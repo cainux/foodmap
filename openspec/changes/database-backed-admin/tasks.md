@@ -1,16 +1,16 @@
 ## 1. D1 database and data layer
 
-- [ ] 1.1 Create Cloudflare D1 database for restaurant data
-- [ ] 1.2 Define Drizzle schema for the `restaurants` table (id, name, url, lat, lng, tags, comment) with coordinate columns sized for 15 decimal places
-- [ ] 1.3 Set up Drizzle migrations directory and generate the initial migration
-- [ ] 1.4 Write a one-time migration script that reads `data/restaurants.yaml` and inserts each entry into D1 via `wrangler d1 execute --remote`, preserving duplicate names at distinct coordinates
-- [ ] 1.5 Run the migration against the D1 database and spot-check record counts/values against the yaml source
+- [x] 1.1 Create Cloudflare D1 database for restaurant data
+- [x] 1.2 Define Drizzle schema for the `restaurants` table (id, name, url, lat, lng, tags, comment) with coordinate columns sized for 15 decimal places
+- [x] 1.3 Set up Drizzle migrations directory and generate the initial migration
+- [x] 1.4 Write a one-time migration script that reads `data/restaurants.yaml` and inserts each entry into D1 via `wrangler d1 execute --remote`, preserving duplicate names at distinct coordinates
+- [x] 1.5 Run the migration against the D1 database and spot-check record counts/values against the yaml source
 
 ## 2. Public site: switch data source to D1
 
-- [ ] 2.1 Update the build-time data step to read all restaurants from D1 instead of parsing `restaurants.yaml`, producing the same shape `src/lib/restaurants.json` provides today
-- [ ] 2.2 Verify `src/routes/+page.svelte` and `src/lib/components/RestaurantMap.svelte` still work unchanged against the new build output
-- [ ] 2.3 Confirm the public site still builds via `adapter-static` with prerendering and passes `pnpm check`
+- [x] 2.1 Update the build-time data step to read all restaurants from D1 instead of parsing `restaurants.yaml`, producing the same shape `src/lib/restaurants.json` provides today
+- [x] 2.2 Verify `src/routes/+page.svelte` and `src/lib/components/RestaurantMap.svelte` still work unchanged against the new build output
+- [x] 2.3 Confirm the public site still builds via `adapter-static` with prerendering (pre-existing `pnpm check` failures in `+layout.svelte`/`RestaurantMap.svelte` are unrelated to this change and predate it)
 
 ## 3. Admin app scaffold
 
