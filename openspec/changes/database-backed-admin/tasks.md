@@ -14,9 +14,9 @@
 
 ## 3. Admin app scaffold
 
-- [ ] 3.1 Scaffold a new SvelteKit app for `/admin`, using `@sveltejs/adapter-cloudflare`
-- [ ] 3.2 Add its `wrangler.jsonc`: D1 binding (same database as the public site's build step reads); set `ALLOWED_HANDLES` and the Pages Deploy Hook URL as Cloudflare environment variables/secrets (via dashboard or `wrangler secret`), not committed to the repo
-- [ ] 3.3 Wire the admin app's Drizzle client to the shared D1 binding
+- [x] 3.1 Scaffold a new SvelteKit app for `/admin`, using `@sveltejs/adapter-cloudflare`
+- [x] 3.2 Add its `wrangler.jsonc`: D1 binding (same database as the public site's build step reads); set `ALLOWED_HANDLES` and the Pages Deploy Hook URL as Cloudflare environment variables/secrets (via dashboard or `wrangler secret`), not committed to the repo
+- [x] 3.3 Wire the admin app's Drizzle client to the shared D1 binding
 
 ## 4. Bluesky OAuth admin auth
 

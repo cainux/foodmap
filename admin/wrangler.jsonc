@@ -1,0 +1,22 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "foodmap-admin",
+	"compatibility_date": "2026-08-31",
+	"compatibility_flags": ["nodejs_compat"],
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"directory": ".svelte-kit/cloudflare",
+		"binding": "ASSETS"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "foodmap",
+			"database_id": "b44f2593-c37a-4847-a65c-252547f1fb92",
+			"migrations_dir": "drizzle/migrations"
+		}
+	]
+	// ALLOWED_HANDLES, ATPROTO_PRIVATE_KEY, and PAGES_DEPLOY_HOOK_URL are set as
+	// Cloudflare secrets via `wrangler secret put` — never added here, since this
+	// file is committed to a public repository.
+}

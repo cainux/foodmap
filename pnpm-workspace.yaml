@@ -1,2 +1,7 @@
-onlyBuiltDependencies:
-  - esbuild
+packages:
+  - admin
+
+allowBuilds:
+  core-js: false
+  esbuild: true
+  workerd: true
