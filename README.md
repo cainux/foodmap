@@ -1,6 +1,6 @@
 # 🍽️ Food Map
 
-A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is sourced from `data/restaurants.yaml` and rendered as interactive markers using MapLibre GL maps.
+A static website built with SvelteKit that displays restaurants on an interactive map. Restaurant data is stored in Cloudflare D1 and rendered as interactive markers using MapLibre GL maps.
 
 ## Features
 
@@ -39,7 +39,7 @@ pnpm install
 pnpm dev
 ```
 
-The development server automatically generates `src/lib/restaurants.json` from `data/restaurants.yaml` before starting.
+The development server automatically fetches `src/lib/restaurants.json` from Cloudflare D1 before starting. This requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to be available in the environment.
 
 3. Open your browser to `http://localhost:5173`
 
@@ -52,7 +52,7 @@ pnpm build
 ```
 
 The build process automatically:
-1. Parses `data/restaurants.yaml` and generates `src/lib/restaurants.json`
+1. Fetches restaurant data from Cloudflare D1 and generates `src/lib/restaurants.json`
 2. Builds the static site to the `build/` directory
 
 To preview the production build:
@@ -65,20 +65,7 @@ pnpm preview
 
 ## Adding Restaurants
 
-1. Edit `data/restaurants.yaml` following the format:
-   ```yaml
-   - name: Restaurant Name
-     url: https://maps.app.goo.gl/...
-     coordinates: 51.5163842,-0.0693367
-     tags: optional-tag
-   ```
-
-2. Get coordinates by opening the Google Maps link in a browser — the lat/lng appear in the URL (e.g. `@51.5163842,-0.0693367`).
-
-3. Start dev server or build - `restaurants.json` is automatically generated:
-   ```sh
-   pnpm dev   # or pnpm build
-   ```
+Restaurants are added, edited, and deleted through the `admin/` app (Bluesky OAuth-gated), which writes directly to the D1 database. It also has a manual "publish" control that triggers a rebuild/redeploy of this site.
 
 ## Deployment
 

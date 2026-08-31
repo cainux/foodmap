@@ -48,6 +48,6 @@
 
 ## 7. Cleanup and cutover
 
-- [ ] 7.1 Confirm D1 is fully authoritative and the public site builds correctly from it in production
-- [ ] 7.2 Remove `data/restaurants.yaml`, `scripts/parse-restaurants.js`, and the `parse:restaurants` step from `dev`/`build` scripts
-- [ ] 7.3 Update `CLAUDE.md`'s Architecture/Data Flow section to describe the D1-backed flow instead of the yaml pipeline
+- [x] 7.1 Confirm D1 is fully authoritative and the public site builds correctly from it in production
+- [x] 7.2 Remove `data/restaurants.yaml`, `scripts/parse-restaurants.js`, and the `parse:restaurants` step from `dev`/`build` scripts
+- [x] 7.3 Update `CLAUDE.md`'s Architecture/Data Flow section to describe the D1-backed flow instead of the yaml pipeline

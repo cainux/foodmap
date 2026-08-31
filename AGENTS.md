@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FoodMap is a static SvelteKit website that displays restaurants on an interactive MapLibre GL map. It uses static site generation (SSG) with no backend.
+FoodMap is a static SvelteKit website that displays restaurants on an interactive MapLibre GL map. Restaurant data lives in Cloudflare D1; a separate admin app (Bluesky-OAuth-gated) provides CRUD and triggers rebuilds. The public site itself has no backend - it's static site generation (SSG) fed by a D1 snapshot taken at build time.
 
 ## Commands
 
 ```bash
 pnpm install          # Install dependencies
-pnpm dev              # Start dev server (auto-generates restaurants.json)
-pnpm build            # Production build (auto-generates restaurants.json)
+pnpm dev              # Start dev server (fetches restaurants.json from D1)
+pnpm build            # Production build (fetches restaurants.json from D1)
 pnpm preview          # Preview production build
 pnpm check            # TypeScript type checking
 pnpm check:watch      # Type checking in watch mode
@@ -21,25 +21,17 @@ pnpm check:watch      # Type checking in watch mode
 
 ### Data Flow
 ```
-data/restaurants.yaml → scripts/parse-restaurants.js → src/lib/restaurants.json
-      (SSOT)                  (auto-run on dev/build)        (generated, gitignored)
+Cloudflare D1 (foodmap.restaurants) → scripts/build-restaurants-data.js → src/lib/restaurants.json
+              (SSOT)                        (auto-run on dev/build)          (generated, gitignored)
 ```
 
-**Always edit `data/restaurants.yaml`** - never manually edit `restaurants.json`.
+Restaurant data is edited via the admin app (Bluesky OAuth-gated CRUD against D1), which also exposes a manual "publish" control that triggers a rebuild/redeploy of the public site. The public site's build step runs `wrangler d1 execute` to snapshot D1 into `restaurants.json`; it requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to be set (Cloudflare Pages project secrets).
 
 ### Key Files
 - `src/routes/+page.svelte` - Main page with restaurant grid and sorting logic
 - `src/lib/components/RestaurantMap.svelte` - MapLibre GL map with clustering
-- `data/restaurants.yaml` - Source restaurant data (SSOT)
-
-### Restaurant Data Format
-```yaml
-- name: Restaurant Name
-  url: https://maps.app.goo.gl/...
-  coordinates: 51.5163842,-0.0693367    # lat,lng (no spaces)
-  tags: tag1 tag2                        # space-separated (optional)
-  comment: A note about the place        # optional
-```
+- `scripts/build-restaurants-data.js` - Fetches restaurants from D1 at build time
+- `admin/` - Separate SvelteKit app (Bluesky OAuth, CRUD, manual publish) deployed as its own Cloudflare Worker
 
 ## Svelte 5 Runes Syntax
 
