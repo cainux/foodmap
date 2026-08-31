@@ -16,7 +16,7 @@
 			"migrations_dir": "drizzle/migrations"
 		}
 	]
-	// ALLOWED_HANDLES, ATPROTO_PRIVATE_KEY, and PAGES_DEPLOY_HOOK_URL are set as
-	// Cloudflare secrets via `wrangler secret put` — never added here, since this
-	// file is committed to a public repository.
+	// ALLOWED_HANDLES and PAGES_DEPLOY_HOOK_URL are set as Cloudflare secrets via
+	// `wrangler secret put` — never added here, since this file is committed to
+	// a public repository.
 }

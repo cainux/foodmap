@@ -1,0 +1,13 @@
+diff --git a/dist/oauth-client.js b/dist/oauth-client.js
+index fdfac149ec81f5ecdc3f5927a3c36f7ff4bb3082..07780ae5efa390c9c3d13c741e34839ec53a691a 100644
+--- a/dist/oauth-client.js
++++ b/dist/oauth-client.js
+@@ -22,7 +22,7 @@ export class OAuthClient {
+     static async fetchMetadata({ clientId, fetch = globalThis.fetch, signal, }) {
+         signal?.throwIfAborted();
+         const request = new Request(clientId, {
+-            redirect: 'error',
++            redirect: 'manual',
+             signal: signal,
+         });
+         const response = await fetch(request);

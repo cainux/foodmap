@@ -20,12 +20,12 @@
 
 ## 4. Bluesky OAuth admin auth
 
-- [ ] 4.1 Add `@atproto/oauth-client`, `@atproto/oauth-types`, `@atproto/jwk-webcrypto`, `@atproto/jwk-jose` to the admin app
-- [ ] 4.2 Apply the three `workerd` `redirect: 'error'` → `redirect: 'manual'` pnpm patches (`@atproto/oauth-client`, `@atproto-labs/did-resolver`, `@atproto-labs/handle-resolver`), re-diffed against the installed versions
-- [ ] 4.3 Implement a D1-backed OAuth `StateStore` and an in-memory `SessionStore` (`src/lib/server/auth/atproto.ts`), scoped to a flat allow-list with no groups/roles
-- [ ] 4.4 Add the `atprotoOauthState` table to the admin app's D1 schema/migrations
-- [ ] 4.5 Implement the authorize route (initiates sign-in) and callback route (resolves DID/handle, checks against `ALLOWED_HANDLES`, sets session cookie, denies non-allow-listed handles)
-- [ ] 4.6 Add a hook/guard that redirects unauthenticated requests to `/admin/*` into the sign-in flow
+- [x] 4.1 Add `@atproto/oauth-client`, `@atproto/oauth-types`, `@atproto/jwk-webcrypto`, `@atproto/jwk-jose` to the admin app
+- [x] 4.2 Apply the three `workerd` `redirect: 'error'` → `redirect: 'manual'` pnpm patches (`@atproto/oauth-client`, `@atproto-labs/did-resolver`, `@atproto-labs/handle-resolver`), re-diffed against the installed versions
+- [x] 4.3 Implement a D1-backed OAuth `StateStore` and an in-memory `SessionStore` (`src/lib/server/auth/atproto.ts`), scoped to a flat allow-list with no groups/roles
+- [x] 4.4 Add the `atprotoOauthState` table to the admin app's D1 schema/migrations
+- [x] 4.5 Implement the authorize route (initiates sign-in) and callback route (resolves DID/handle, checks against `ALLOWED_HANDLES`, sets session cookie, denies non-allow-listed handles)
+- [x] 4.6 Add a hook/guard that redirects unauthenticated requests into the sign-in flow
 - [ ] 4.7 Verify the full sign-in flow against a real Bluesky account on a deployed preview, both for an allow-listed and a non-allow-listed handle
 
 ## 5. Admin restaurant management UI

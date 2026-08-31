@@ -1,6 +1,6 @@
-import { NodeSavedState, NodeSavedSession } from '@atproto/oauth-client';
-import type { NodeSavedStateStore, NodeSavedSessionStore } from '@atproto/oauth-client';
 import { eq } from 'drizzle-orm';
+import type { InternalStateData, StateStore } from '@atproto/oauth-client';
+import type { Session, SessionStore } from '@atproto/oauth-client';
 import { atprotoOauthState } from '../db/schema';
 import { getDb } from '../db';
 
@@ -8,10 +8,10 @@ import { getDb } from '../db';
  * OAuth authorize->callback state, persisted in D1 so it survives across
  * requests to different Worker instances during the redirect round-trip.
  */
-export class D1StateStore implements NodeSavedStateStore {
+export class D1StateStore implements StateStore {
 	constructor(private d1: D1Database) {}
 
-	async get(key: string): Promise<NodeSavedState | undefined> {
+	async get(key: string): Promise<InternalStateData | undefined> {
 		const db = getDb(this.d1);
 		const row = await db.query.atprotoOauthState.findFirst({
 			where: eq(atprotoOauthState.key, `state:${key}`)
@@ -19,7 +19,7 @@ export class D1StateStore implements NodeSavedStateStore {
 		return row ? JSON.parse(row.value) : undefined;
 	}
 
-	async set(key: string, value: NodeSavedState): Promise<void> {
+	async set(key: string, value: InternalStateData): Promise<void> {
 		const db = getDb(this.d1);
 		await db
 			.insert(atprotoOauthState)
@@ -41,13 +41,13 @@ export class D1StateStore implements NodeSavedStateStore {
  * Bluesky if the Worker instance recycles, which is an acceptable trade-off
  * for a single-owner admin area with no offline-write requirement.
  */
-const sessions = new Map<string, NodeSavedSession>();
+const sessions = new Map<string, Session>();
 
-export class MemorySessionStore implements NodeSavedSessionStore {
-	async get(key: string): Promise<NodeSavedSession | undefined> {
+export class MemorySessionStore implements SessionStore {
+	async get(key: string): Promise<Session | undefined> {
 		return sessions.get(key);
 	}
-	async set(key: string, value: NodeSavedSession): Promise<void> {
+	async set(key: string, value: Session): Promise<void> {
 		sessions.set(key, value);
 	}
 	async del(key: string): Promise<void> {
