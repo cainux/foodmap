@@ -2,6 +2,7 @@
 	import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
 	import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
 	import { calculateDistance } from '$lib/geo';
+	import { PUBLIC_CARTO_API_KEY } from '$env/static/public';
 
 	interface Restaurant {
 		name: string;
@@ -32,7 +33,9 @@
 		sources: {
 			'carto-tiles': {
 				type: 'raster' as const,
-				tiles: ['https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'],
+				tiles: [
+					`https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${PUBLIC_CARTO_API_KEY}`
+				],
 				tileSize: 256,
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 			}
