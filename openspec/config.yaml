@@ -32,5 +32,5 @@ schema: spec-driven
 #         - Summarize the archive outcome before finishing
 rules:
   design:
-    - Use Mermaid or ASCII diagrams where appropriate to best explain the
+    - Use Mermaid diagrams where appropriate to best explain the
       design to readers
