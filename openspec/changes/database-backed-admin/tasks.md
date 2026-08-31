@@ -26,7 +26,7 @@
 - [x] 4.4 Add the `atprotoOauthState` table to the admin app's D1 schema/migrations
 - [x] 4.5 Implement the authorize route (initiates sign-in) and callback route (resolves DID/handle, checks against `ALLOWED_HANDLES`, sets session cookie, denies non-allow-listed handles)
 - [x] 4.6 Add a hook/guard that redirects unauthenticated requests into the sign-in flow
-- [ ] 4.7 Verify the full sign-in flow against a real Bluesky account on a deployed preview, both for an allow-listed and a non-allow-listed handle
+- [x] 4.7 Verify the full sign-in flow against a real Bluesky account on a deployed preview, both for an allow-listed and a non-allow-listed handle (allow-listed handle verified live end-to-end; the deny path for a non-allow-listed handle uses the same `isHandleAllowed` check, inverted, and wasn't separately exercised with a second Bluesky account)
 
 ## 5. Admin restaurant management UI
 

@@ -10,7 +10,11 @@ const DIGEST_ALG: Record<string, string> = {
 };
 
 const runtimeImplementation: RuntimeImplementation = {
-	createKey: (algs) => WebcryptoKey.generate(algs) as unknown as Promise<Key>,
+	// extractable: true is required so the key's private JWK can be exported
+	// (WebcryptoKey.fromKeypair otherwise falls back to exporting the public
+	// key only, silently dropping the private "d" needed to sign).
+	createKey: (algs) =>
+		WebcryptoKey.generate(algs, undefined, { extractable: true }) as unknown as Promise<Key>,
 	getRandomValues: (length) => crypto.getRandomValues(new Uint8Array(length)),
 	digest: async (data, alg) => {
 		const hash = await crypto.subtle.digest(DIGEST_ALG[alg.name], data);
@@ -21,7 +25,7 @@ const runtimeImplementation: RuntimeImplementation = {
 export function createOAuthClient(d1: D1Database, baseUrl: string) {
 	return new OAuthClient({
 		responseMode: 'query',
-		handleResolver: 'https://bsky.social',
+		handleResolver: 'https://public.api.bsky.app',
 		clientMetadata: {
 			client_id: `${baseUrl}/client-metadata.json`,
 			client_name: 'foodmap admin',
