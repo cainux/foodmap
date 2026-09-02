@@ -91,6 +91,7 @@
 	.admin-nav-links {
 		display: none;
 		flex-direction: column;
+		align-items: flex-end;
 		gap: 1rem;
 		margin-top: 1rem;
 	}
@@ -102,6 +103,7 @@
 	.admin-nav-links ul {
 		display: flex;
 		flex-direction: column;
+		align-items: flex-end;
 		gap: 0.5rem;
 		list-style: none;
 		margin: 0;
