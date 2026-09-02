@@ -27,7 +27,7 @@
 </script>
 
 {#if page.url.pathname !== '/auth/login'}
-	<nav class="admin-nav container">
+	<nav class="admin-nav">
 		<div class="admin-nav-bar">
 			<strong>foodmap admin</strong>
 			<button
@@ -75,7 +75,7 @@
 	.admin-nav {
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-block: 1rem;
-		padding-inline-end: 0;
+		padding-inline-start: var(--pico-spacing);
 	}
 
 	.admin-nav-bar {
