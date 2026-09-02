@@ -10,9 +10,9 @@
 
 ## 3. Split add-restaurant onto its own route
 
-- [ ] 3.1 Create `admin/src/routes/restaurants/new/+page.server.ts` with the `load` (restaurants list, for duplicate checking) and `create` action moved from `admin/src/routes/+page.server.ts`
-- [ ] 3.2 Create `admin/src/routes/restaurants/new/+page.svelte` rendering `RestaurantForm` (moved from the home page)
-- [ ] 3.3 Trim `admin/src/routes/+page.svelte` and `+page.server.ts` to search/list only, removing the add-form section and `create` action
+- [x] 3.1 Create `admin/src/routes/restaurants/new/+page.server.ts` with the `load` (restaurants list, for duplicate checking) and `create` action moved from `admin/src/routes/+page.server.ts`
+- [x] 3.2 Create `admin/src/routes/restaurants/new/+page.svelte` rendering `RestaurantForm` (moved from the home page)
+- [x] 3.3 Trim `admin/src/routes/+page.svelte` and `+page.server.ts` to search/list only, removing the add-form section and `create` action
 
 ## 4. Navigation bar
 
