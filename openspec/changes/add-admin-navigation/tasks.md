@@ -1,7 +1,7 @@
 ## 1. Logout
 
-- [ ] 1.1 Add a logout route/action (`POST /auth/logout`) that calls `client.revoke(did)`, deletes the `foodmap_admin_session` cookie, and redirects to `/auth/login`
-- [ ] 1.2 Confirm a logged-out admin hitting any gated page is redirected to login via the existing `hooks.server.ts` check (no change expected, just verify)
+- [x] 1.1 Add a logout route/action (`POST /auth/logout`) that calls `client.revoke(did)`, deletes the `foodmap_admin_session` cookie, and redirects to `/auth/login`
+- [x] 1.2 Confirm a logged-out admin hitting any gated page is redirected to login via the existing `hooks.server.ts` check (no change expected, just verify)
 
 ## 2. Identity for the nav
 
