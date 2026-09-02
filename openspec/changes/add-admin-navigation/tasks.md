@@ -5,8 +5,8 @@
 
 ## 2. Identity for the nav
 
-- [ ] 2.1 Add `admin/src/routes/+layout.server.ts` that resolves the signed-in handle (mirroring `identityResolver.resolve` in `auth/callback/+server.ts`) and returns it to the layout
-- [ ] 2.2 Ensure the layout load is skipped/harmless on `/auth/login` (already a public path in `hooks.server.ts`)
+- [x] 2.1 Add `admin/src/routes/+layout.server.ts` that resolves the signed-in handle (mirroring `identityResolver.resolve` in `auth/callback/+server.ts`) and returns it to the layout
+- [x] 2.2 Ensure the layout load is skipped/harmless on `/auth/login` (already a public path in `hooks.server.ts`)
 
 ## 3. Split add-restaurant onto its own route
 
