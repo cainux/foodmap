@@ -75,6 +75,7 @@
 	.admin-nav {
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-block: 1rem;
+		padding-inline-end: 0;
 	}
 
 	.admin-nav-bar {
