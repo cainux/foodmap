@@ -19,5 +19,3 @@
 		<button type="button" onclick={() => (confirmingDelete = true)}>Delete</button>
 	{/if}
 </form>
-
-<a href="/">Back to list</a>

@@ -22,5 +22,3 @@
 {#if form?.error}
 	<p role="alert">{form.error}</p>
 {/if}
-
-<a href="/">Back to list</a>

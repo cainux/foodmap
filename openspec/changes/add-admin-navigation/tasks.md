@@ -16,17 +16,17 @@
 
 ## 4. Navigation bar
 
-- [ ] 4.1 Build the nav markup in `admin/src/routes/+layout.svelte`: brand/title, links to Restaurants (`/`), Add Restaurant (`/restaurants/new`), and Publish (`/publish`), signed-in handle, and a logout form/button posting to the logout route
-- [ ] 4.2 Mark the active link based on `page.url.pathname`
-- [ ] 4.3 Hide the nav entirely on `/auth/login`
-- [ ] 4.4 Add the hamburger toggle for viewports narrower than `900px`, using a `$state` boolean; try open/close animation approaches in-browser and pick one (native disclosure, CSS transition, or instant toggle) per design.md's Open Questions
-- [ ] 4.5 Close the mobile panel on navigation (e.g. via SvelteKit's `afterNavigate`)
-- [ ] 4.6 Single-row layout at `900px` and above, matching the breakpoint used in `+page.svelte`
+- [x] 4.1 Build the nav markup in `admin/src/routes/+layout.svelte`: brand/title, links to Restaurants (`/`), Add Restaurant (`/restaurants/new`), and Publish (`/publish`), signed-in handle, and a logout form/button posting to the logout route
+- [x] 4.2 Mark the active link based on `page.url.pathname`
+- [x] 4.3 Hide the nav entirely on `/auth/login`
+- [x] 4.4 Add the hamburger toggle for viewports narrower than `900px`, using a `$state` boolean; try open/close animation approaches in-browser and pick one (native disclosure, CSS transition, or instant toggle) per design.md's Open Questions
+- [x] 4.5 Close the mobile panel on navigation (e.g. via SvelteKit's `afterNavigate`)
+- [x] 4.6 Single-row layout at `900px` and above, matching the breakpoint used in `+page.svelte`
 
 ## 5. Cleanup
 
-- [ ] 5.1 Remove the "Back to list" link from `admin/src/routes/publish/+page.svelte`
-- [ ] 5.2 Remove the "Back to list" link from `admin/src/routes/restaurants/[id]/edit/+page.svelte`
+- [x] 5.1 Remove the "Back to list" link from `admin/src/routes/publish/+page.svelte`
+- [x] 5.2 Remove the "Back to list" link from `admin/src/routes/restaurants/[id]/edit/+page.svelte`
 
 ## 6. Verification
 
