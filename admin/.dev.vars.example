@@ -1,0 +1,15 @@
+# Copy to .dev.vars for local development. In production these are Cloudflare
+# secrets (`wrangler secret put <NAME>`), never committed.
+
+# Bluesky handles allowed to sign in, comma-separated. Sign-in fails with a 403
+# for any other account, so this must include your own handle locally.
+ALLOWED_HANDLES=you.bsky.social
+
+# Encrypts stored OAuth sessions. Any base64 32-byte value works locally:
+#   openssl rand -base64 32
+SESSION_ENCRYPTION_KEY=
+
+# Cloudflare Pages deploy hook the publish page POSTs to. Locally this can be
+# any URL you don't mind being hit - or one that just fails, if you aren't
+# testing publishing.
+PAGES_DEPLOY_HOOK_URL=

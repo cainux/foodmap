@@ -33,6 +33,29 @@ Restaurant data is edited via the admin app (Bluesky OAuth-gated CRUD against D1
 - `scripts/build-restaurants-data.js` - Fetches restaurants from D1 at build time
 - `admin/` - Separate SvelteKit app (Bluesky OAuth, CRUD, manual publish) deployed as its own Cloudflare Worker
 
+### Running the admin app locally
+
+```bash
+cd admin
+cp .dev.vars.example .dev.vars    # then fill it in
+pnpm dev
+```
+
+`.dev.vars` (gitignored; see `.dev.vars.example`) supplies what are Cloudflare secrets in production:
+
+- `ALLOWED_HANDLES` - comma-separated Bluesky handles permitted to sign in. **Must include your own handle**, or the OAuth callback rejects you with a 403.
+- `SESSION_ENCRYPTION_KEY` - encrypts stored OAuth sessions; any `openssl rand -base64 32` value works locally.
+- `PAGES_DEPLOY_HOOK_URL` - the deploy hook the publish page POSTs to.
+
+Browse to **`127.0.0.1`, not `localhost`** - AT Protocol's loopback client requires the IP literal, and signing in via `localhost` fails.
+
+The `restaurants` table isn't in `admin/drizzle/migrations` (those cover only the OAuth tables), so a fresh local D1 needs it applied from the root project:
+
+```bash
+cd admin
+npx wrangler d1 execute foodmap --local --file=../drizzle/migrations/0000_yummy_stardust.sql
+```
+
 ## Svelte 5 Runes Syntax
 
 This project uses Svelte 5 with runes - do NOT use Svelte 4 syntax:
