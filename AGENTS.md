@@ -72,3 +72,17 @@ Use the Svelte MCP server for documentation and code validation:
 1. `list-sections` - Discover available Svelte 5/SvelteKit docs (call first)
 2. `get-documentation` - Fetch specific documentation sections
 3. `svelte-autofixer` - Validate Svelte code before finalizing (required before sending code to user)
+
+## Pico CSS Rules
+
+- ALWAYS use Pico CSS v2 as the styling framework. NEVER use Tailwind, Bootstrap, or any other CSS framework.
+- Write semantic HTML. Do NOT add utility classes or BEM-style class names. Pico styles native elements directly.
+- Allowed Pico classes (sparingly): .container, .grid, .group, .secondary, .contrast, .outline, .stack, .card
+- For layout containers, use <main class="container"> or the classless variant where <header>/<main>/<footer> act as containers.
+- Use CSS custom properties (--primary, --primary-hover, --primary-inverse, etc.) for any theming overrides. Do NOT hardcode colors.
+- Dark mode is automatic via prefers-color-scheme. Do NOT add manual dark-mode logic unless explicitly asked.
+- Use <article> for cards, <nav> for navigation, <section> for content blocks, <aside> for sidebars.
+- Forms: use native form elements. Inputs are width:100% by default. Use .grid inside forms for multi-column layouts.
+- Buttons: <button> for actions, <a role="button"> for inline links. Variants: .secondary, .contrast, .outline.
+- For customization beyond Pico's defaults, add a small <style> block or separate CSS file overriding CSS variables — do NOT write new utility classes.
+- Reference: https://picocss.com/docs (v2)
