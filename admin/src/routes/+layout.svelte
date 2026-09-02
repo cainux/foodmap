@@ -77,7 +77,7 @@
 		display: block;
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-block: 1rem;
-		padding-inline-start: var(--pico-spacing);
+		padding-inline: var(--pico-spacing);
 	}
 
 	.admin-nav-bar {
