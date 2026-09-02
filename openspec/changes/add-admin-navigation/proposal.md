@@ -4,12 +4,12 @@ The admin app has no persistent navigation: the only way to reach Publish is a s
 
 ## What Changes
 
-- Add a persistent top navigation bar, rendered in `+layout.svelte` on every authenticated page (not on `/auth/login`), linking Restaurants (`/`) and Publish (`/publish`), with the current page indicated.
+- Add a persistent top navigation bar, rendered in `+layout.svelte` on every authenticated page (not on `/auth/login`), linking Restaurants (`/`), Add Restaurant (`/restaurants/new`), and Publish (`/publish`), with the current page indicated.
+- Move "Add restaurant" off the restaurant list page onto its own route (`/restaurants/new`), since adding a restaurant is usually done without needing the list. The list page becomes search/browse only.
 - Add a logout control to the navigation, showing the signed-in identity and a "Log out" action.
 - Add a logout route/action that clears the `foodmap_admin_session` cookie and revokes the OAuth session (mirroring the existing revoke path in the callback route), since no logout mechanism currently exists.
 - Navigation is mobile-first and responsive: collapses behind a hamburger toggle below the existing `900px` breakpoint (matching the breakpoint already used in `+page.svelte`), single-row above it.
 - Remove the now-redundant inline "Publish changes to the public site" and "Back to list" links once the nav covers that navigation.
-- "Add restaurant" remains inline on the Restaurants page, not a nav destination.
 
 ## Capabilities
 
@@ -18,10 +18,13 @@ The admin app has no persistent navigation: the only way to reach Publish is a s
 
 ### Modified Capabilities
 - `atproto-admin-auth`: adds a requirement for an explicit logout action that clears the session cookie and revokes the OAuth session.
+- `admin-restaurant-management`: moves restaurant creation from the restaurant list page to its own route (`/restaurants/new`).
 
 ## Impact
 
 - `admin/src/routes/+layout.svelte` - add nav markup/logic.
-- `admin/src/routes/+page.svelte`, `admin/src/routes/publish/+page.svelte`, `admin/src/routes/restaurants/[id]/edit/+page.svelte` - remove redundant inline links.
+- `admin/src/routes/+page.svelte`, `+page.server.ts` - drop the create form/action, keep search/list only.
+- New route `admin/src/routes/restaurants/new/+page.svelte`, `+page.server.ts` - holds the create form/action moved from the list page.
+- `admin/src/routes/publish/+page.svelte`, `admin/src/routes/restaurants/[id]/edit/+page.svelte` - remove redundant inline links.
 - New logout route (e.g. `admin/src/routes/auth/logout/+server.ts`) plus a call into `client.revoke` / cookie deletion.
 - No changes to the public site or D1 schema.

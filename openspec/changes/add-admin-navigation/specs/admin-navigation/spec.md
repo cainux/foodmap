@@ -5,15 +5,15 @@ Gives the admin app a persistent, responsive navigation bar so admins can move b
 ## ADDED Requirements
 
 ### Requirement: Persistent navigation on authenticated pages
-The system SHALL render a navigation bar on every authenticated admin page, linking to the Restaurants page and the Publish page.
+The system SHALL render a navigation bar on every authenticated admin page, linking to the Restaurants page, the Add Restaurant page, and the Publish page.
 
 #### Scenario: Navigation present on restaurant list
 - **WHEN** an admin views the restaurant list page
-- **THEN** the navigation bar is visible with links to Restaurants and Publish
+- **THEN** the navigation bar is visible with links to Restaurants, Add Restaurant, and Publish
 
-#### Scenario: Navigation present on edit and publish pages
-- **WHEN** an admin views the restaurant edit page or the publish page
-- **THEN** the navigation bar is visible with links to Restaurants and Publish
+#### Scenario: Navigation present on add, edit, and publish pages
+- **WHEN** an admin views the add-restaurant page, the restaurant edit page, or the publish page
+- **THEN** the navigation bar is visible with links to Restaurants, Add Restaurant, and Publish
 
 #### Scenario: Navigation absent on the login page
 - **WHEN** an unauthenticated visitor views the login page
@@ -25,6 +25,10 @@ The system SHALL visually indicate which navigation link corresponds to the curr
 #### Scenario: Restaurants link indicates current page
 - **WHEN** an admin is on the restaurant list or an edit page
 - **THEN** the Restaurants navigation link is visually marked as active
+
+#### Scenario: Add Restaurant link indicates current page
+- **WHEN** an admin is on the add-restaurant page
+- **THEN** the Add Restaurant navigation link is visually marked as active
 
 #### Scenario: Publish link indicates current page
 - **WHEN** an admin is on the publish page
