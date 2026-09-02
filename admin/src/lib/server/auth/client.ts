@@ -10,12 +10,35 @@ const DIGEST_ALG: Record<string, string> = {
 	sha512: 'SHA-512'
 };
 
-const runtimeImplementation: RuntimeImplementation = {
+const EC_CURVE: Record<string, string> = {
+	ES256: 'P-256',
+	ES384: 'P-384',
+	ES512: 'P-521'
+};
+
+// WebcryptoKey.generate() delegates key generation to "jose", which resolves to
+// its Node build under `vite dev` and returns a KeyObject rather than the
+// CryptoKey that WebcryptoKey requires ("Invalid CryptoKeyPair"). Generating via
+// crypto.subtle directly behaves identically on Node and workerd.
+async function createKey(algs: readonly string[]): Promise<Key> {
+	const alg = algs.find((a) => a in EC_CURVE);
+	if (!alg) {
+		throw new TypeError(`Unsupported algorithms: ${algs.join(', ')}`);
+	}
+
 	// extractable: true is required so the key's private JWK can be exported
 	// (WebcryptoKey.fromKeypair otherwise falls back to exporting the public
 	// key only, silently dropping the private "d" needed to sign).
-	createKey: (algs) =>
-		WebcryptoKey.generate(algs, undefined, { extractable: true }) as unknown as Promise<Key>,
+	const keyPair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: EC_CURVE[alg] }, true, [
+		'sign',
+		'verify'
+	]);
+
+	return WebcryptoKey.fromKeypair(keyPair, crypto.randomUUID()) as unknown as Promise<Key>;
+}
+
+const runtimeImplementation: RuntimeImplementation = {
+	createKey,
 	getRandomValues: (length) => crypto.getRandomValues(new Uint8Array(length)),
 	digest: async (data, alg) => {
 		const hash = await crypto.subtle.digest(DIGEST_ALG[alg.name], data);
