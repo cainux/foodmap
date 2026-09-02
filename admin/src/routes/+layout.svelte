@@ -72,7 +72,9 @@
 		font-weight: bold;
 	}
 
+	/* Pico sets `nav { display: flex }`, which would shrink-wrap the rows below. */
 	.admin-nav {
+		display: block;
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-block: 1rem;
 		padding-inline-start: var(--pico-spacing);
