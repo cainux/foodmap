@@ -30,9 +30,9 @@
 
 ## 6. Verification
 
-- [ ] 6.1 Manually verify nav appears on restaurant list, add-restaurant, edit, and publish pages, and not on login
-- [ ] 6.2 Manually verify active-link indication on each page
+- [x] 6.1 Manually verify nav appears on restaurant list, add-restaurant, edit, and publish pages, and not on login
+- [x] 6.2 Manually verify active-link indication on each page
 - [ ] 6.3 Manually verify hamburger collapse below 900px and single-row layout at/above 900px
 - [ ] 6.4 Manually verify logout clears the session and redirects to login, and that a subsequent visit to `/` redirects back to login
 - [ ] 6.5 Manually verify adding a restaurant from `/restaurants/new` works, including duplicate warning
-- [ ] 6.6 Run `pnpm check` in `admin/`
+- [x] 6.6 Run `pnpm check` in `admin/`
