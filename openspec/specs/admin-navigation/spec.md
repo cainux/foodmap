@@ -1,7 +1,7 @@
 # admin-navigation Specification
 
 ## Purpose
-Gives the admin app a persistent, responsive navigation bar so admins can move between tasks (restaurant management, publishing) and sign out, without relying on ad-hoc inline links scattered across pages.
+Gives the admin app a persistent bottom tab bar so admins can move between tasks (restaurant management, publishing) in a single tap at any viewport width, and sign out, without relying on ad-hoc inline links scattered across pages.
 
 ## Requirements
 
@@ -35,28 +35,51 @@ The system SHALL visually indicate which navigation link corresponds to the curr
 - **WHEN** an admin is on the publish page
 - **THEN** the Publish navigation link is visually marked as active
 
-### Requirement: Responsive, mobile-first layout
-The system SHALL present the navigation as a single row of links on wider viewports and collapse it behind a hamburger toggle on narrower viewports.
+### Requirement: Persistent bottom tab bar
+The system SHALL present navigation as a persistent tab bar fixed to the bottom of the
+viewport on every authenticated page, with one tab per primary destination — Restaurants, Add
+Restaurant, and Publish — all directly reachable without first opening a menu.
 
-#### Scenario: Collapsed navigation on a narrow viewport
-- **WHEN** an admin views any authenticated page on a viewport narrower than the app's tablet breakpoint
-- **THEN** the navigation links are hidden behind a hamburger toggle control
-
-#### Scenario: Expanding collapsed navigation
-- **WHEN** an admin taps the hamburger toggle on a narrow viewport
-- **THEN** the navigation links become visible
-
-#### Scenario: Single-row navigation on a wide viewport
-- **WHEN** an admin views any authenticated page on a viewport at or above the app's tablet breakpoint
-- **THEN** the navigation links are shown in a single row without a hamburger toggle
-
-### Requirement: Signed-in identity and logout in navigation
-The system SHALL display the signed-in admin's identity and a logout control within the navigation bar.
-
-#### Scenario: Identity shown in navigation
+#### Scenario: Every destination reachable in one action
 - **WHEN** an admin views any authenticated page
-- **THEN** the navigation bar shows the signed-in admin's identity and a "Log out" control
+- **THEN** the Restaurants, Add Restaurant, and Publish destinations are each visible in the tab bar and reachable with a single activation
 
-#### Scenario: Logging out from navigation
-- **WHEN** an admin activates the "Log out" control
+#### Scenario: Tab bar remains fixed while scrolling
+- **WHEN** an admin scrolls the content of any authenticated page
+- **THEN** the tab bar remains fixed at the bottom of the viewport and does not scroll out of view
+
+#### Scenario: No menu required at any viewport width
+- **WHEN** an admin views any authenticated page at any viewport width
+- **THEN** no menu toggle is presented and no navigation destination is concealed behind one
+
+### Requirement: Publish tab indicates pending changes
+The system SHALL show an indicator on the Publish tab whenever restaurant data has been
+changed since the last successful publish, so that unpublished work is visible from every
+screen.
+
+#### Scenario: Indicator shown when changes are pending
+- **WHEN** restaurant data has been created, edited, or deleted since the last successful publish
+- **THEN** the Publish tab displays a pending-changes indicator
+
+#### Scenario: Indicator cleared after publishing
+- **WHEN** a publish has succeeded and no restaurant data has changed since
+- **THEN** the Publish tab displays no pending-changes indicator
+
+### Requirement: Logout is available without occupying layout space
+The system SHALL provide a logout control in the persistent header as a compact,
+labelled control, without displaying the signed-in admin's identity. The admin app
+permits a single signed-in account at a time, so showing which account is signed in
+conveys nothing the admin does not already know, and the vertical space is more
+valuable on a phone.
+
+#### Scenario: Logout reachable from any authenticated page
+- **WHEN** an admin views any authenticated page
+- **THEN** a logout control is present in the persistent header and is reachable without opening a menu
+
+#### Scenario: Logging out ends the session
+- **WHEN** an admin activates the logout control
 - **THEN** the admin's session ends and they are returned to the login page
+
+#### Scenario: Identity is not displayed
+- **WHEN** an admin views any authenticated page
+- **THEN** the signed-in account's handle is not displayed in the navigation, header, or any other persistent chrome
