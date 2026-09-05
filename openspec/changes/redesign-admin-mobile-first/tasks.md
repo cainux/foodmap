@@ -35,7 +35,7 @@
 - [x] 4.5 Replace the inline delete confirmation with a `<dialog>` that takes focus, with cancel as the dominant option and dismissal leaving the record intact
 - [x] 4.6 Add `use:enhance` with a pending state to the publish and sign-in actions
 - [x] 4.7 On failure, re-enable controls and preserve entered values on every form
-- [ ] 4.8 Verify each form still submits and reports its outcome with client-side scripting disabled, including a server-rendered open dialog
+- [x] 4.8 Verify each form still submits and reports its outcome with client-side scripting disabled, including a server-rendered open dialog
 
 ## 5. Restaurant form
 
