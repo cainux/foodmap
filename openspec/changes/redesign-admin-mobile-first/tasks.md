@@ -75,7 +75,7 @@
 ## 9. Verification and documentation
 
 - [x] 9.1 Run `pnpm check` in `admin/` with no new errors
-- [ ] 9.2 Walk every screen at a phone viewport: add, edit, delete, search, publish, sign out
+- [x] 9.2 Walk every screen at a phone viewport: add, edit, delete, search, publish, sign out
 - [x] 9.3 Confirm no file under the repo-root `src/` changed and the public site still builds
 - [x] 9.4 Verify an existing restaurant with all fields populated still saves unchanged
 - [x] 9.5 Add the now-true structural facts (bottom tab bar, header title, manifest, publish timestamps) to `AGENTS.md` when archiving
