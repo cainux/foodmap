@@ -1,6 +1,7 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for coding agents working in this repository. `CLAUDE.md` is a symlink to
+this file, so edit it here only.
 
 ## Project Overview
 
@@ -49,18 +50,38 @@ pnpm dev
 
 Browse to **`127.0.0.1`, not `localhost`** - AT Protocol's loopback client requires the IP literal, and signing in via `localhost` fails.
 
-The `restaurants` table isn't in `admin/drizzle/migrations` (those cover only the OAuth tables), so a fresh local D1 needs it applied from the root project:
+`admin/drizzle/migrations` owns the tables the admin alone reads and writes - the OAuth
+tables and `publish_state`. The `restaurants` table is not among them, so a fresh local D1
+needs it applied from the root project first, then the admin's own migrations:
 
 ```bash
 cd admin
 npx wrangler d1 execute foodmap --local --file=../drizzle/migrations/0000_yummy_stardust.sql
+npx wrangler d1 migrations apply foodmap --local
 ```
+
+A fresh local `restaurants` table is empty - the real records live in remote D1. To work
+against realistic data, seed it from the public site's generated `src/lib/restaurants.json`.
 
 ## Admin App
 
 The admin is used primarily on a phone. There is one layout at all widths - no
 desktop-specific navigation, no responsive breakpoints. Desktop shows the same
 phone-shaped column, centred.
+
+### Shell
+
+- Navigation is a fixed bottom tab bar - Restaurants, Add, Publish - present at every width.
+  There is no hamburger, no menu-open state, and no breakpoint. Every primary destination is
+  reachable in one tap.
+- `admin/src/routes/+layout.svelte` carries a persistent header with the current screen's
+  title. Pages do NOT render their own `<h1>`; the login page is the exception, since it has
+  no header.
+- The signed-in handle is never displayed. The app permits one account, so it would spend
+  persistent vertical space stating something invariant. Logout is an icon control in the
+  header.
+- The Publish tab shows a pending-changes indicator whenever data has been mutated since the
+  last successful publish.
 
 ### Forms
 
@@ -73,10 +94,29 @@ phone-shaped column, centred.
 ### Data
 
 - All restaurant writes go through `admin/src/lib/server/db/queries.ts`. That module owns the "data last mutated" timestamp - bump it there, never at call sites, so a new write path cannot forget it.
+- Publish state is two timestamps in the single-row `publish_state` table: `last_mutated_at`
+  and `last_published_at`. Pending means the former is later than the latter; a null
+  `last_published_at` means never published. Do NOT replace this with an `updated_at` column
+  on `restaurants` - a deleted row leaves no timestamp behind, so deleting the only
+  recently-changed restaurant would report "up to date" while the public site still showed it.
+- The publish timestamp is stamped when the deploy hook accepts the trigger, not when the
+  build reads D1. That makes a late edit a harmless false positive ("pending" when it is
+  already live) rather than a false negative. A failed trigger leaves it untouched.
+- An accepted deploy hook means Cloudflare accepted the request, NOT that the build
+  succeeded. Never word the confirmation as though the site has rebuilt. The returned
+  deployment id is stored for tracing but never interpreted.
+
+### Search
+
+- The restaurant list loads every record and filters by name in the browser as the admin
+  types. Search does not match tags, and there is no `q` search param.
 
 ### PWA
 
 - The admin is installable (`display: standalone`) but must NOT cache application data offline. It is auth-gated and write-heavy, so a stale cache is a correctness risk, not a feature. No workbox/runtime caching - unlike the public site.
+- The manifest is hand-authored at `admin/static/manifest.webmanifest`. Do NOT pull in
+  `@vite-pwa/sveltekit` as the public site does - it exists to generate a service worker,
+  which is the one thing the admin must not have.
 
 ## Svelte 5 Runes Syntax
 
@@ -132,5 +172,12 @@ Use the Svelte MCP server for documentation and code validation:
 - For customization beyond Pico's defaults, add a small <style> block or separate CSS file overriding CSS variables — do NOT write new utility classes.
 - Button prominence must express intent, not markup. Pico sets `width: 100%` on `button[type=submit]` only, so submit buttons always render full-width — never let that decide hierarchy. Destructive actions use `--pico-del-color`; the safe choice (Cancel/dismiss) stays the visually dominant default.
 - `role="alert"` is for errors only. It is an ARIA live region — do NOT use it for advisory notices, inline hints, or confirmation questions. Advisories use plain text or `<small>`; confirmations use `<dialog>`.
-- Use native `<dialog>` for modals. Pico v2 styles `dialog > article` including `header`/`footer` — write no custom modal CSS.
+- Use native `<dialog>` for modals. Pico v2 styles `dialog > article` including `header`/`footer` — write no custom modal CSS beyond laying out the footer.
+- Pico gives `button` a `margin-bottom` that `a[role="button"]` does not get. Put the two side
+  by side in a flex row and the button sits higher. Zero the margin rather than nudging with
+  positioning.
+- A `<form>` acting as a flex item is a different box from the control inside it, so
+  `align-items: center` centres the form, not the button. Give such a form `display: flex`.
+- Pico sets `list-style` on `ul li`, so resetting it on the `ul` does nothing — a direct rule
+  beats an inherited value. Reset on the `li`.
 - Reference: https://picocss.com/docs (v2)
