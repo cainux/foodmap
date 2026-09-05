@@ -56,6 +56,28 @@ cd admin
 npx wrangler d1 execute foodmap --local --file=../drizzle/migrations/0000_yummy_stardust.sql
 ```
 
+## Admin App
+
+The admin is used primarily on a phone. There is one layout at all widths - no
+desktop-specific navigation, no responsive breakpoints. Desktop shows the same
+phone-shaped column, centred.
+
+### Forms
+
+- All form actions use `use:enhance` with a pending state: disable submit buttons while in flight to prevent double submission, then show explicit success feedback. Never leave a successful write silent.
+- `name`, `url`, and coordinates are all required. Coordinates must parse before submit - never save `null` lat/lng, since the public build drops any restaurant without coordinates.
+- Coordinate parsing lives only in `admin/src/lib/geo.ts`. Do NOT re-inline the regex in route handlers.
+- Preserve full coordinate precision. Do NOT round or reformat lat/lng.
+- Tag inputs offer existing tags for reuse. The vocabulary is small and closed; near-synonyms fragment it.
+
+### Data
+
+- All restaurant writes go through `admin/src/lib/server/db/queries.ts`. That module owns the "data last mutated" timestamp - bump it there, never at call sites, so a new write path cannot forget it.
+
+### PWA
+
+- The admin is installable (`display: standalone`) but must NOT cache application data offline. It is auth-gated and write-heavy, so a stale cache is a correctness risk, not a feature. No workbox/runtime caching - unlike the public site.
+
 ## Svelte 5 Runes Syntax
 
 This project uses Svelte 5 with runes - do NOT use Svelte 4 syntax:
@@ -87,7 +109,7 @@ The map uses `svelte-maplibre-gl` components with GeoJSON clustering:
 - Uses Pico CSS for base styling (class-light, semantic HTML)
 - Use Pico CSS variables: `var(--pico-border-radius)`, `var(--pico-primary)`, etc.
 - Scoped styles in component `<style>` blocks
-- Global styles only in `src/routes/+layout.svelte`
+- Global styles only in the app's root layout - `src/routes/+layout.svelte` for the public site, `admin/src/routes/+layout.svelte` for the admin
 
 ### Svelte MCP Server
 
@@ -108,4 +130,7 @@ Use the Svelte MCP server for documentation and code validation:
 - Forms: use native form elements. Inputs are width:100% by default. Use .grid inside forms for multi-column layouts.
 - Buttons: <button> for actions, <a role="button"> for inline links. Variants: .secondary, .contrast, .outline.
 - For customization beyond Pico's defaults, add a small <style> block or separate CSS file overriding CSS variables — do NOT write new utility classes.
+- Button prominence must express intent, not markup. Pico sets `width: 100%` on `button[type=submit]` only, so submit buttons always render full-width — never let that decide hierarchy. Destructive actions use `--pico-del-color`; the safe choice (Cancel/dismiss) stays the visually dominant default.
+- `role="alert"` is for errors only. It is an ARIA live region — do NOT use it for advisory notices, inline hints, or confirmation questions. Advisories use plain text or `<small>`; confirmations use `<dialog>`.
+- Use native `<dialog>` for modals. Pico v2 styles `dialog > article` including `header`/`footer` — write no custom modal CSS.
 - Reference: https://picocss.com/docs (v2)
