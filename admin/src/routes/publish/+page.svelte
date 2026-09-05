@@ -15,7 +15,9 @@
 
 	function when(at: number | null) {
 		if (at === null) return 'never';
-		return new Date(at).toLocaleString();
+		// ISO 8601 in UTC. The trailing Z states the zone, so a timestamp read on a
+		// phone in one place and a dashboard in another cannot be misread.
+		return new Date(at).toISOString().replace(/\.\d{3}Z$/, 'Z');
 	}
 
 	const publish: SubmitFunction = () => {

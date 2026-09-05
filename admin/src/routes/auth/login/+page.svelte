@@ -20,7 +20,18 @@
 <form method="POST" use:enhance={signIn}>
 	<label>
 		Bluesky handle
-		<input name="handle" type="text" placeholder="you.bsky.social" required />
+		<!-- svelte-ignore a11y_autofocus -->
+		<input
+			name="handle"
+			type="text"
+			placeholder="you.bsky.social"
+			required
+			autofocus
+			autocomplete="username"
+			autocapitalize="none"
+			autocorrect="off"
+			spellcheck="false"
+		/>
 	</label>
 	<button type="submit" disabled={signingIn} aria-busy={signingIn}>
 		{signingIn ? 'Signing in…' : 'Sign in'}
