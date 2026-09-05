@@ -92,7 +92,15 @@
 		gap: var(--pico-spacing);
 	}
 
+	/* The form, not the button, is the footer's flex item. Pico gives a `button` a
+	   bottom margin that an `a[role=button]` never gets, so the form ends up taller
+	   than the button it wraps and centring lifts Delete above Keep. */
 	dialog footer form {
+		display: flex;
+		margin: 0;
+	}
+
+	dialog footer form button {
 		margin: 0;
 	}
 </style>
