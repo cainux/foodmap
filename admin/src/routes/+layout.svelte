@@ -33,7 +33,7 @@
 	<header class="app-bar">
 		<h1>{title}</h1>
 		<form method="POST" action="/auth/logout">
-			<button type="submit" class="secondary outline">Log out</button>
+			<button type="submit" class="logout" aria-label="Log out" title="Log out">🚪</button>
 		</form>
 	</header>
 {/if}
@@ -92,14 +92,23 @@
 		line-height: 1.2;
 	}
 
+	/* Flex, so the button is the form's full height and the two boxes centre on the
+	   same line rather than being offset by inline leading. */
 	.app-bar form {
+		display: flex;
 		margin: 0;
 	}
 
-	.app-bar button {
+	/* Icon-only, and stripped of Pico's button box so it optically centres against
+	   the title rather than sitting in a taller bordered chip. */
+	.app-bar .logout {
 		width: auto;
-		padding: 0.25rem 0.75rem;
-		font-size: 0.8125rem;
+		margin: 0;
+		padding: 0;
+		border: none;
+		background: none;
+		font-size: 1.25rem;
+		line-height: 1.2;
 	}
 
 	.container {

@@ -61,6 +61,9 @@
 	}
 
 	li {
+		/* Pico sets `list-style` on `ul li` directly, which beats an inherited
+		   `list-style: none` from the `ul`. */
+		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
