@@ -63,6 +63,24 @@ npx wrangler d1 migrations apply foodmap --local
 A fresh local `restaurants` table is empty - the real records live in remote D1. To work
 against realistic data, seed it from the public site's generated `src/lib/restaurants.json`.
 
+### Deploying the admin
+
+```bash
+cd admin
+npx wrangler d1 migrations apply foodmap --remote    # migrations FIRST
+pnpm run deploy                                      # `run` is required
+```
+
+Apply migrations before deploying, never after. The layout's server load reads
+`publish_state` on every authenticated page, so a worker deployed ahead of its migration
+fails the whole admin rather than degrading.
+
+Use `pnpm run deploy`, not `pnpm deploy` - the latter is pnpm's own workspace-deploy
+command and shadows the script, failing with `ERR_PNPM_NOTHING_TO_DEPLOY`.
+
+The admin deploys as its own Worker at `foodmap-admin.cainux.workers.dev`, independently
+of the public Pages site. Deploying it does not rebuild or affect the public site.
+
 ## Admin App
 
 The admin is used primarily on a phone. There is one layout at all widths - no
