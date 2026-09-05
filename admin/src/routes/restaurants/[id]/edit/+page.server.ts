@@ -1,5 +1,11 @@
 import { error, fail, redirect } from '@sveltejs/kit';
-import { deleteRestaurant, getRestaurant, listRestaurants, updateRestaurant } from '$lib/server/db/queries';
+import {
+	deleteRestaurant,
+	getRestaurant,
+	listRestaurants,
+	updateRestaurant
+} from '$lib/server/db/queries';
+import { collectTags, readRestaurantInput } from '$lib/server/restaurantInput';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ platform, params }) => {
@@ -13,41 +19,25 @@ export const load: PageServerLoad = async ({ platform, params }) => {
 
 	if (!restaurant) error(404, 'Restaurant not found');
 
-	return { restaurant, all };
+	return { restaurant, all, tags: collectTags(all) };
 };
-
-function parseCoordinates(input: string): { lat: number | null; lng: number | null } {
-	const match = input.trim().match(/^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/);
-	if (!match) return { lat: null, lng: null };
-	return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
-}
 
 export const actions: Actions = {
 	update: async ({ request, platform, params }) => {
 		const id = Number(params.id);
-		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const url = String(data.get('url') ?? '').trim();
-		const coordinates = String(data.get('coordinates') ?? '');
-		const tags = String(data.get('tags') ?? '').trim();
-		const comment = String(data.get('comment') ?? '').trim();
+		const input = readRestaurantInput(await request.formData());
 
-		if (!name || !url) {
-			return fail(400, { formError: 'Name and URL are required' });
+		if (!input.ok) {
+			return fail(400, {
+				formError: input.formError,
+				field: input.field,
+				values: input.values
+			});
 		}
 
-		const { lat, lng } = parseCoordinates(coordinates);
+		await updateRestaurant(platform!.env.DB, id, input.record);
 
-		await updateRestaurant(platform!.env.DB, id, {
-			name,
-			url,
-			lat,
-			lng,
-			tags,
-			comment: comment || null
-		});
-
-		redirect(303, '/');
+		return { saved: input.record.name };
 	},
 
 	delete: async ({ platform, params }) => {

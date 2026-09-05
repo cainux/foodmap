@@ -1,18 +1,15 @@
-import { createOAuthClient } from '$lib/server/auth/client';
+import { getPublishState } from '$lib/server/db/queries';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals, platform, url }) => {
+export const load: LayoutServerLoad = async ({ locals, platform }) => {
 	if (!locals.session) {
-		return { handle: null };
+		return { signedIn: false, publishPending: false };
 	}
 
-	const client = createOAuthClient(
-		platform!.env.DB,
-		url.origin,
-		platform!.env.SESSION_ENCRYPTION_KEY
-	);
-	const identity = await client.identityResolver.resolve(locals.session.did);
-	const handle = identity.handle !== 'handle.invalid' ? identity.handle : null;
+	const state = await getPublishState(platform!.env.DB);
+	const publishPending =
+		state.lastMutatedAt !== null &&
+		(state.lastPublishedAt === null || state.lastMutatedAt > state.lastPublishedAt);
 
-	return { handle };
+	return { signedIn: true, publishPending };
 };

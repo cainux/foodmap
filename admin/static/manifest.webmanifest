@@ -1,0 +1,19 @@
+{
+	"name": "foodmap admin",
+	"short_name": "foodmap admin",
+	"description": "Edit the FoodMap restaurant list and publish the public site",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"theme_color": "#37474f",
+	"orientation": "any",
+	"icons": [
+		{
+			"src": "/icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	]
+}
