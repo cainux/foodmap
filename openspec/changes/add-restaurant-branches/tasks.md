@@ -49,23 +49,23 @@
 
 ## 6. Public site rendering
 
-- [ ] 6.1 Add `branch?: string` to the local `Restaurant` interface in
+- [x] 6.1 Add `branch?: string` to the local `Restaurant` interface in
       `src/lib/components/Sidebar.svelte` and render it as a sub-label next to the name in
       the card header. Style it as secondary to the name — the brand stays dominant.
-- [ ] 6.2 Add `branch?: string` to the local `Restaurant` interface in
+- [x] 6.2 Add `branch?: string` to the local `Restaurant` interface in
       `src/lib/components/RestaurantMap.svelte` and include the branch in the GeoJSON feature
       `properties`.
-- [ ] 6.3 Use the branch in the map popup, so the two Ippudo pins no longer open identical
+- [x] 6.3 Use the branch in the map popup, so the two Ippudo pins no longer open identical
       popups. Handle the absent case without rendering a stray separator.
-- [ ] 6.4 Leave the search filter in `src/routes/+page.svelte` matching name and tags only.
+- [x] 6.4 Leave the search filter in `src/routes/+page.svelte` matching name and tags only.
 
 ## 7. Verify
 
-- [ ] 7.1 Run `pnpm check` at the root and in `admin/` — all three `Restaurant` type
+- [x] 7.1 Run `pnpm check` at the root and in `admin/` — all three `Restaurant` type
       declarations must be in step.
-- [ ] 7.2 Add a branch to one record locally, rebuild, and confirm it appears in the sidebar
+- [x] 7.2 Add a branch to one record locally, rebuild, and confirm it appears in the sidebar
       card and the map popup, and that unbranched records render unchanged.
-- [ ] 7.3 Confirm a record saved with an empty branch is stored as null rather than an empty
+- [x] 7.3 Confirm a record saved with an empty branch is stored as null rather than an empty
       string, and renders with no trailing separator anywhere.
 
 ## 8. Deploy

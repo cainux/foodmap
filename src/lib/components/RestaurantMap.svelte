@@ -6,6 +6,7 @@
 
 	interface Restaurant {
 		name: string;
+		branch?: string;
 		url: string;
 		coordinates: { lat: number; lng: number } | null;
 		tags?: string[];
@@ -72,6 +73,7 @@
 				type: 'Feature' as const,
 				properties: {
 					name: restaurant.name,
+					branch: restaurant.branch ?? null,
 					url: restaurant.url,
 					id: `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`
 				},
@@ -372,7 +374,11 @@
 					closeButton={false}
 					onclose={() => selectedRestaurant = null}
 				>
-					<strong>{selectedRestaurant.name}</strong><br>
+					<strong>{selectedRestaurant.name}</strong>
+					{#if selectedRestaurant.branch}
+						<span class="branch">{selectedRestaurant.branch}</span>
+					{/if}
+					<br>
 					{#if selectedRestaurant.tags && selectedRestaurant.tags.length > 0}
 						<div class="tags">
 							{#each selectedRestaurant.tags as tag (tag)}
@@ -479,6 +485,11 @@
 	:global(.maplibregl-popup-content strong) {
 		font-size: 1.3em;
 		color: var(--pico-primary);
+	}
+
+	:global(.maplibregl-popup-content .branch) {
+		font-size: 0.9em;
+		color: var(--pico-muted-color);
 	}
 
 	:global(.maplibregl-popup-content .tags) {

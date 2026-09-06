@@ -4,6 +4,7 @@
 
 	interface Restaurant {
 		name: string;
+		branch?: string;
 		url: string;
 		coordinates: { lat: number; lng: number } | null;
 		tags?: string[];
@@ -107,7 +108,10 @@
 				animate:flip={{ duration: 300 }}
 			>
 				<div class="card-header">
-					<h3>{restaurant.name}</h3>
+					<h3>
+						{restaurant.name}
+						{#if restaurant.branch}<span class="branch">{restaurant.branch}</span>{/if}
+					</h3>
 					{#if userLocation}
 						<span class="distance">{distanceLabel(restaurant.coordinates!)}</span>
 					{/if}
@@ -204,6 +208,12 @@
 	.restaurant-card h3 {
 		margin: 0;
 		font-size: 1.05rem;
+	}
+
+	.branch {
+		font-size: 0.8rem;
+		font-weight: normal;
+		color: var(--pico-muted-color);
 	}
 
 	.distance {
