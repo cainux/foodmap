@@ -1,13 +1,13 @@
 ## 1. Confirm the files are dead before deleting them
 
-- [ ] 1.1 Confirm `node scripts/migrate-restaurants-to-d1.js` still fails with
+- [x] 1.1 Confirm `node scripts/migrate-restaurants-to-d1.js` still fails with
       `ENOENT ... data/restaurants.yaml`, and that `data/` does not exist.
-- [ ] 1.2 Confirm `grep -rn "yaml" src/ scripts/ admin/src/` shows
+- [x] 1.2 Confirm `grep -rn "yaml" src/ scripts/ admin/src/` shows
       `scripts/migrate-restaurants-to-d1.js` as the only importer of the `yaml` package.
-- [ ] 1.3 Confirm nothing references the seed file:
+- [x] 1.3 Confirm nothing references the seed file:
       `grep -rn "seed-from-yaml" . --exclude-dir=node_modules --exclude-dir=.git`
       should match only the script that generates it and this change's own artifacts.
-- [ ] 1.4 Confirm the history is recoverable before removing its generated form:
+- [x] 1.4 Confirm the history is recoverable before removing its generated form:
       `git show ca99408^:data/restaurants.yaml` must return 57 entries.
 
 ## 2. Delete
