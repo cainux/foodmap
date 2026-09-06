@@ -41,10 +41,10 @@
 
 ## 5. Public site data
 
-- [ ] 5.1 In `scripts/build-restaurants-data.js`, add `branch` to the mapped output using the
+- [x] 5.1 In `scripts/build-restaurants-data.js`, add `branch` to the mapped output using the
       same conditional-spread form as `comment`, so the key is omitted entirely when there is
       no branch.
-- [ ] 5.2 Run `pnpm build:restaurants` and confirm `src/lib/restaurants.json` carries
+- [x] 5.2 Run `pnpm build:restaurants` and confirm `src/lib/restaurants.json` carries
       `branch` for branched records and omits the key otherwise.
 
 ## 6. Public site rendering

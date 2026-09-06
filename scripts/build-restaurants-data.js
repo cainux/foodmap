@@ -17,6 +17,7 @@ const rows = result[0]?.results ?? [];
 
 const restaurants = rows.map((row) => ({
 	name: row.name,
+	...(row.branch && { branch: row.branch }),
 	url: row.url,
 	coordinates: row.lat !== null && row.lng !== null ? { lat: row.lat, lng: row.lng } : null,
 	tags: row.tags ? row.tags.split(/\s+/).filter(Boolean) : [],
