@@ -1,6 +1,6 @@
 ## Purpose
 
-Stores restaurant records in a Cloudflare D1 database as the single source of truth, replacing the git-committed `restaurants.yaml` file, and exposes them to the public site's build process.
+Stores restaurant records in a Cloudflare D1 database as the single source of truth, and exposes them to the public site's build process.
 
 ## Requirements
 
@@ -23,8 +23,8 @@ coordinates, and URL are required; tags and comment are optional.
 - **THEN** the record is not saved
 
 ### Requirement: Restaurant records are queryable for the public build
-The system SHALL allow reading all restaurant records in a form the public site's build process can consume to generate the static restaurant listing, equivalent to what `restaurants.yaml` provided today.
+The system SHALL allow reading all restaurant records in a form the public site's build process can consume to generate the static restaurant listing.
 
 #### Scenario: Build reads current data
 - **WHEN** the public site is built
-- **THEN** the build process reads all current restaurant records from the database instead of parsing a yaml file
+- **THEN** the build process reads all current restaurant records from the database
