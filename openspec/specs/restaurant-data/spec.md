@@ -28,10 +28,3 @@ The system SHALL allow reading all restaurant records in a form the public site'
 #### Scenario: Build reads current data
 - **WHEN** the public site is built
 - **THEN** the build process reads all current restaurant records from the database instead of parsing a yaml file
-
-### Requirement: One-time migration from yaml
-The system SHALL provide a way to migrate all existing restaurants from `data/restaurants.yaml` into the database, preserving name, url, coordinates, tags, and comment for every entry, including duplicate names at different coordinates.
-
-#### Scenario: Migration preserves duplicate names
-- **WHEN** the yaml source contains two entries both named "Pizza Union" at different coordinates
-- **THEN** the migration creates two distinct database records, one per coordinate pair
