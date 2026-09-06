@@ -31,14 +31,14 @@
 
 ## 4. Apply to remote
 
-- [ ] 4.1 Record the current remote row count:
+- [x] 4.1 Record the current remote row count:
       `npx wrangler d1 execute foodmap --remote --command "SELECT COUNT(*) FROM restaurants"`.
       Expected: 59.
-- [ ] 4.2 From `admin/`, run `npx wrangler d1 migrations apply foodmap --remote`. Confirm
+- [x] 4.2 From `admin/`, run `npx wrangler d1 migrations apply foodmap --remote`. Confirm
       `0003_adopt_restaurants.sql` is reported applied.
-- [ ] 4.3 Confirm `SELECT id, name FROM d1_migrations ORDER BY id` now lists four rows, and
+- [x] 4.3 Confirm `SELECT id, name FROM d1_migrations ORDER BY id` now lists four rows, and
       that the `restaurants` row count is unchanged from 4.1.
-- [ ] 4.4 Load the deployed admin and confirm the restaurant list still renders. No admin
+- [x] 4.4 Load the deployed admin and confirm the restaurant list still renders. No admin
       deploy is needed — this change alters no column and no query.
 
 ## 5. Update the documentation
