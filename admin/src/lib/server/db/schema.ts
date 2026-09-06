@@ -3,6 +3,7 @@ import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 export const restaurants = sqliteTable('restaurants', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
+	branch: text('branch'),
 	url: text('url').notNull(),
 	lat: real('lat'),
 	lng: real('lng'),

@@ -1,12 +1,12 @@
 ## 1. Database
 
-- [ ] 1.1 Confirm `consolidate-d1-schema` has landed and been applied to remote — this
+- [x] 1.1 Confirm `consolidate-d1-schema` has landed and been applied to remote — this
       change's migration has no tracked home without it.
-- [ ] 1.2 Create `admin/drizzle/migrations/0004_add_branch.sql` containing
+- [x] 1.2 Create `admin/drizzle/migrations/0004_add_branch.sql` containing
       `ALTER TABLE restaurants ADD COLUMN branch TEXT;`. No data statements, no backfill.
-- [ ] 1.3 Add `branch: text('branch')` to the `restaurants` table in
+- [x] 1.3 Add `branch: text('branch')` to the `restaurants` table in
       `admin/src/lib/server/db/schema.ts`. Nullable — do not add `.notNull()` or a default.
-- [ ] 1.4 Apply the migration to a local D1 and confirm the column exists and existing rows
+- [x] 1.4 Apply the migration to a local D1 and confirm the column exists and existing rows
       read back with a null branch.
 
 ## 2. Admin data layer
