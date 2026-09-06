@@ -70,8 +70,8 @@
 
 ## 8. Deploy
 
-- [ ] 8.1 Apply the migration to remote — `npx wrangler d1 migrations apply foodmap --remote`
+- [x] 8.1 Apply the migration to remote — `npx wrangler d1 migrations apply foodmap --remote`
       from `admin/` — BEFORE deploying the worker. The layout's server load runs on every
       authenticated page, so a worker selecting a missing column fails the whole admin.
-- [ ] 8.2 Deploy the admin with `pnpm run deploy` from `admin/`. Note `run` is required.
-- [ ] 8.3 Publish the public site so `restaurants.json` regenerates with the new field.
+- [x] 8.2 Deploy the admin with `pnpm run deploy` from `admin/`. Note `run` is required.
+- [x] 8.3 Publish the public site so `restaurants.json` regenerates with the new field.
