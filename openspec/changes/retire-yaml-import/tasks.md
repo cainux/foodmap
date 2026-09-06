@@ -20,9 +20,9 @@
 
 ## 3. Verify
 
-- [ ] 3.1 Run `pnpm check` at the root.
-- [ ] 3.2 Run `pnpm build` at the root and confirm it still fetches from D1 and writes
+- [x] 3.1 Run `pnpm check` at the root.
+- [x] 3.2 Run `pnpm build` at the root and confirm it still fetches from D1 and writes
       `src/lib/restaurants.json` — `scripts/build-restaurants-data.js` is unrelated to the
       deleted pipeline, and this proves it.
-- [ ] 3.3 Confirm no deploy, migration, or publish is needed: this change touches no
+- [x] 3.3 Confirm no deploy, migration, or publish is needed: this change touches no
       database, no worker, and no public-site content.
