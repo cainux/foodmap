@@ -11,7 +11,7 @@ const PUBLISH_STATE_ID = 1;
 
 export async function listRestaurants(d1: D1Database): Promise<Restaurant[]> {
 	const db = getDb(d1);
-	return db.select().from(restaurants).orderBy(restaurants.name).all();
+	return db.select().from(restaurants).orderBy(restaurants.name, restaurants.branch).all();
 }
 
 export async function getRestaurant(d1: D1Database, id: number): Promise<Restaurant | undefined> {

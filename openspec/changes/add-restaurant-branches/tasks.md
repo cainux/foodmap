@@ -11,10 +11,10 @@
 
 ## 2. Admin data layer
 
-- [ ] 2.1 In `admin/src/lib/server/db/queries.ts`, change `listRestaurants` to order by
+- [x] 2.1 In `admin/src/lib/server/db/queries.ts`, change `listRestaurants` to order by
       `restaurants.name` then `restaurants.branch`. `NewRestaurant` and `Restaurant` pick
       the column up from `$inferInsert`/`$inferSelect` and need no edit.
-- [ ] 2.2 In `admin/src/lib/server/restaurantInput.ts`, add `branch` to
+- [x] 2.2 In `admin/src/lib/server/restaurantInput.ts`, add `branch` to
       `RestaurantFormValues`, read and trim it from the `FormData` alongside the other
       fields, and map an empty string to `null` in the returned `record` — matching how
       `comment` is already handled. Do not add it to `RestaurantInputField`: branch is never

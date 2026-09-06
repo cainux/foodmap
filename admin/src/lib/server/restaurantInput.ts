@@ -4,6 +4,7 @@ import type { NewRestaurant } from './db/queries';
 /** The raw form values, echoed back on failure so nothing typed is lost. */
 export type RestaurantFormValues = {
 	name: string;
+	branch: string;
 	url: string;
 	coordinates: string;
 	tags: string;
@@ -29,6 +30,7 @@ export type RestaurantInput =
 export function readRestaurantInput(data: FormData): RestaurantInput {
 	const values: RestaurantFormValues = {
 		name: String(data.get('name') ?? '').trim(),
+		branch: String(data.get('branch') ?? '').trim(),
 		url: String(data.get('url') ?? '').trim(),
 		coordinates: String(data.get('coordinates') ?? '').trim(),
 		tags: String(data.get('tags') ?? '').trim(),
@@ -57,6 +59,7 @@ export function readRestaurantInput(data: FormData): RestaurantInput {
 		values,
 		record: {
 			name: values.name,
+			branch: values.branch || null,
 			url: values.url,
 			lat: coordinates.value.lat,
 			lng: coordinates.value.lng,
