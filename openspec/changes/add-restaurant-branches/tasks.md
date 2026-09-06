@@ -22,22 +22,22 @@
 
 ## 3. Admin form
 
-- [ ] 3.1 In `admin/src/lib/components/RestaurantForm.svelte`, add `branch` to the `start`
+- [x] 3.1 In `admin/src/lib/components/RestaurantForm.svelte`, add `branch` to the `start`
       snapshot and a `let branch = $state(start.branch)` alongside the existing fields.
-- [ ] 3.2 Add an optional Branch text input immediately below the Name input. No `required`
+- [x] 3.2 Add an optional Branch text input immediately below the Name input. No `required`
       attribute and no `aria-invalid` binding. Label it so its purpose is clear on a phone —
       it names one location of a restaurant that has several.
-- [ ] 3.3 Confirm the field round-trips on validation failure: submit the form with an
+- [x] 3.3 Confirm the field round-trips on validation failure: submit the form with an
       invalid coordinate value and check the typed branch is echoed back rather than lost.
 
 ## 4. Admin list
 
-- [ ] 4.1 In `admin/src/routes/+page.svelte`, render each row as `<name> — <branch>` using an
+- [x] 4.1 In `admin/src/routes/+page.svelte`, render each row as `<name> — <branch>` using an
       em dash when a branch is set, and the name alone when it is not — no trailing
       separator, no empty branch.
-- [ ] 4.2 Leave the search filter matching names only. Verify a query matching a branch label
+- [x] 4.2 Leave the search filter matching names only. Verify a query matching a branch label
       but not a name returns no results.
-- [ ] 4.3 Verify two records sharing a name appear consecutively, ordered by branch.
+- [x] 4.3 Verify two records sharing a name appear consecutively, ordered by branch.
 
 ## 5. Public site data
 

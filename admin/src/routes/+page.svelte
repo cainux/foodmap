@@ -5,6 +5,12 @@
 
 	let query = $state('');
 
+	// Composed in one expression: Svelte trims whitespace at a block boundary, so
+	// a separator written as template text loses the space before the em dash.
+	function label(restaurant: { name: string; branch: string | null }) {
+		return restaurant.branch ? `${restaurant.name} — ${restaurant.branch}` : restaurant.name;
+	}
+
 	let matches = $derived.by(() => {
 		const q = query.trim().toLowerCase();
 		if (!q) return data.restaurants;
@@ -30,7 +36,7 @@
 			<li>
 				<a href="/restaurants/{restaurant.id}/edit">
 					<article>
-						<strong>{restaurant.name}</strong>
+						<strong>{label(restaurant)}</strong>
 						{#if restaurant.tags}<small>{restaurant.tags}</small>{/if}
 					</article>
 				</a>

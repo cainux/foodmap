@@ -32,6 +32,7 @@
 		() =>
 			submitted ?? {
 				name: restaurant?.name ?? '',
+				branch: restaurant?.branch ?? '',
 				url: restaurant?.url ?? '',
 				coordinates: restaurant ? `${restaurant.lat},${restaurant.lng}` : '',
 				tags: restaurant?.tags ?? '',
@@ -41,6 +42,7 @@
 	const editingId = untrack(() => restaurant?.id);
 
 	let name = $state(start.name);
+	let branch = $state(start.branch);
 	let url = $state(start.url);
 	let coordinates = $state(start.coordinates);
 	let tags = $state(start.tags);
@@ -125,6 +127,20 @@
 			aria-invalid={invalidField === 'name' ? 'true' : undefined}
 		/>
 	</label>
+
+	<label>
+		Branch (optional)
+		<input
+			name="branch"
+			type="text"
+			bind:value={branch}
+			placeholder="Soho"
+			aria-describedby="branch-help"
+		/>
+	</label>
+	<p id="branch-help" class="field-message">
+		<small>Which location, when a restaurant has more than one.</small>
+	</p>
 
 	<label>
 		URL
