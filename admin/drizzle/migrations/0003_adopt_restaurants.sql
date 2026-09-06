@@ -1,4 +1,4 @@
-CREATE TABLE `restaurants` (
+CREATE TABLE IF NOT EXISTS `restaurants` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`url` text NOT NULL,

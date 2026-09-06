@@ -50,15 +50,21 @@ pnpm dev
 
 Browse to **`127.0.0.1`, not `localhost`** - AT Protocol's loopback client requires the IP literal, and signing in via `localhost` fails.
 
-`admin/drizzle/migrations` owns the tables the admin alone reads and writes - the OAuth
-tables and `publish_state`. The `restaurants` table is not among them, so a fresh local D1
-needs it applied from the root project first, then the admin's own migrations:
+`admin/drizzle/migrations` owns all D1 schema, `restaurants` included. The admin holds the
+only runtime D1 binding and the only drizzle usage; the public build reaches D1 through a
+single raw `wrangler d1 execute --command` call in `scripts/build-restaurants-data.js`,
+which imports no schema. So a fresh local D1 needs one command:
 
 ```bash
 cd admin
-npx wrangler d1 execute foodmap --local --file=../drizzle/migrations/0000_yummy_stardust.sql
 npx wrangler d1 migrations apply foodmap --local
 ```
+
+Migration filenames are tracked by name in the `d1_migrations` table. Once a migration has
+been applied anywhere, NEVER rename or renumber it - wrangler would see a new file and try
+to apply it again. Add new migrations with the next number; never reorder existing ones to
+match history. `0003_adopt_restaurants.sql` is the standing example: `restaurants` predates
+the admin's three tables but sorts after them, because their filenames could not be moved.
 
 A fresh local `restaurants` table is empty - the real records live in remote D1. To work
 against realistic data, seed it from the public site's generated `src/lib/restaurants.json`.
