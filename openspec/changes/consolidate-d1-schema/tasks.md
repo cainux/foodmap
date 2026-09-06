@@ -26,7 +26,7 @@
 - [x] 3.1 Create a fresh local D1 and run `npx wrangler d1 migrations apply foodmap --local`
       from `admin/` as the only setup command. Confirm all four tables — `restaurants`,
       `atproto_oauth_state`, `atproto_oauth_session`, `publish_state` — are created.
-- [ ] 3.2 Confirm the admin runs against that fresh local database: `pnpm dev` in `admin/`,
+- [x] 3.2 Confirm the admin runs against that fresh local database: `pnpm dev` in `admin/`,
       sign in at `127.0.0.1`, and load the restaurant list.
 
 ## 4. Apply to remote
