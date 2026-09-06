@@ -12,10 +12,10 @@
 
 ## 2. Delete
 
-- [ ] 2.1 Delete `scripts/migrate-restaurants-to-d1.js`.
-- [ ] 2.2 Delete `drizzle/seed-from-yaml.sql`. Confirm `drizzle/` is then empty and remove
+- [x] 2.1 Delete `scripts/migrate-restaurants-to-d1.js`.
+- [x] 2.2 Delete `drizzle/seed-from-yaml.sql`. Confirm `drizzle/` is then empty and remove
       the directory — `consolidate-d1-schema` removed everything else in it.
-- [ ] 2.3 Remove `yaml` from the root `package.json` `devDependencies` and run
+- [x] 2.3 Remove `yaml` from the root `package.json` `devDependencies` and run
       `pnpm install` to update the lockfile.
 
 ## 3. Verify
