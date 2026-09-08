@@ -28,11 +28,11 @@ Blocks the label layer: a missing glyph stack fails as invisible text, not an er
 
 Each item maps to a scenario in `specs/public-map/spec.md`.
 
-- [ ] 4.1 A restaurant with no close neighbours shows its name when drawn individually
-- [ ] 4.2 A cluster shows its count and no restaurant name
-- [ ] 4.3 At one zoom, a dense area shows fewer names than a sparse area — the zoom alone does not decide
-- [ ] 4.4 Where two names would overlap, at most one draws and **both dots remain visible**
-- [ ] 4.5 A name suppressed by crowding appears after zooming further in
-- [ ] 4.6 At z16, confirm Xi'an Biang Biang / Yeye's Noodle & Dumpling and Little Green / Deun Deun Korean Restaurant each resolve to two placed labels via variable anchoring, or degrade to one label plus a bare dot
-- [ ] 4.7 Confirm the five duplicate-name brands render two identical labels — expected, documented in the proposal, not a regression
-- [ ] 4.8 Run `pnpm check` and confirm no new type errors
+- [x] 4.1 A restaurant with no close neighbours shows its name when drawn individually
+- [x] 4.2 A cluster shows its count and no restaurant name
+- [x] 4.3 At one zoom, a dense area shows fewer names than a sparse area — the zoom alone does not decide
+- [x] 4.4 Where two names would overlap, at most one draws and **both dots remain visible**
+- [x] 4.5 A name suppressed by crowding appears after zooming further in
+- [x] 4.6 At z16, confirm Xi'an Biang Biang / Yeye's Noodle & Dumpling and Little Green / Deun Deun Korean Restaurant each resolve to two placed labels via variable anchoring, or degrade to one label plus a bare dot
+- [x] 4.7 Confirm the five duplicate-name brands render two identical labels — expected, documented in the proposal, not a regression
+- [x] 4.8 Run `pnpm check` and confirm no new type errors
