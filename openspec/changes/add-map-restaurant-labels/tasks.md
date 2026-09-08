@@ -7,14 +7,14 @@ Blocks the label layer: a missing glyph stack fails as invisible text, not an er
 
 ## 2. Add the label layer
 
-- [ ] 2.1 Add a `restaurant-label` symbol layer over the `restaurants` source, filtered with `['!', ['has', 'point_count']]` to match `unclustered-point`
-- [ ] 2.2 Add it **after** `unclustered-point` so labels draw above the dots
-- [ ] 2.3 Set `text-field` to the name only — do not include `branch`
-- [ ] 2.4 Set `text-variable-anchor: ['top', 'bottom']` with `text-radial-offset` (not `text-offset`, which is ignored when variable anchor is set) and `text-justify: 'auto'`
-- [ ] 2.5 Set `text-halo-color` and `text-halo-width` so names stay legible over the raster basemap's baked-in labels
-- [ ] 2.6 Do **not** set `minzoom` on this layer — appearance is governed by clustering state and collision, per design Decision 1
-- [ ] 2.7 Leave `text-allow-overlap` at its default (false) so crowded labels thin themselves
-- [ ] 2.8 Do not modify `maxZoom` (`:109`, `:362`), `clusterMaxZoom` or `clusterRadius` (`:114`, `:115`), or the `flyTo` zoom in `navigateToRestaurant` (`:266`) — see design Decision 2
+- [x] 2.1 Add a `restaurant-label` symbol layer over the `restaurants` source, filtered with `['!', ['has', 'point_count']]` to match `unclustered-point`
+- [x] 2.2 Add it **after** `unclustered-point` so labels draw above the dots
+- [x] 2.3 Set `text-field` to the name only — do not include `branch`
+- [x] 2.4 Set `text-variable-anchor: ['top', 'bottom']` with `text-radial-offset` (not `text-offset`, which is ignored when variable anchor is set) and `text-justify: 'auto'`
+- [x] 2.5 Set `text-halo-color` and `text-halo-width` so names stay legible over the raster basemap's baked-in labels
+- [x] 2.6 Do **not** set `minzoom` on this layer — appearance is governed by clustering state and collision, per design Decision 1
+- [x] 2.7 Leave `text-allow-overlap` at its default (false) so crowded labels thin themselves
+- [x] 2.8 Do not modify `maxZoom` (`:109`, `:362`), `clusterMaxZoom` or `clusterRadius` (`:114`, `:115`), or the `flyTo` zoom in `navigateToRestaurant` (`:266`) — see design Decision 2
 
 ## 3. Make labels interactive
 
