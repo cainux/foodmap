@@ -175,6 +175,32 @@
 			}
 		});
 
+		// Add restaurant name labels over the unclustered dots. No `minzoom`:
+		// a point that has escaped its cluster already has room, and MapLibre's
+		// text collision decides which of those names actually fit.
+		mapInstance.addLayer({
+			id: 'restaurant-label',
+			type: 'symbol',
+			source: 'restaurants',
+			filter: ['!', ['has', 'point_count']],
+			layout: {
+				'text-field': ['get', 'name'],
+				'text-font': ['Noto Sans Regular'],
+				'text-size': 12,
+				// `text-offset` is ignored when `text-variable-anchor` is set.
+				'text-variable-anchor': ['top', 'bottom'],
+				'text-radial-offset': 1,
+				'text-justify': 'auto'
+			},
+			paint: {
+				'text-color': '#1a1a1a',
+				// The basemap is raster, so its street labels cannot take part in
+				// collision. The halo is what keeps names legible over them.
+				'text-halo-color': '#ffffff',
+				'text-halo-width': 1.5
+			}
+		});
+
 		// Add click handler for clusters
 		mapInstance.on('click', 'clusters', async (e) => {
 			if (!e.features || e.features.length === 0) return;
@@ -195,8 +221,8 @@
 			}
 		});
 
-		// Add click handler for unclustered points
-		mapInstance.on('click', 'unclustered-point', (e) => {
+		// Add click handler for unclustered points and their labels
+		mapInstance.on('click', ['unclustered-point', 'restaurant-label'], (e) => {
 			if (!e.features || e.features.length === 0) return;
 			const feature = e.features[0];
 			const { name, url } = feature.properties as { name: string; url: string };
@@ -213,10 +239,10 @@
 		mapInstance.on('mouseleave', 'clusters', () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
-		mapInstance.on('mouseenter', 'unclustered-point', () => {
+		mapInstance.on('mouseenter', ['unclustered-point', 'restaurant-label'], () => {
 			mapInstance.getCanvas().style.cursor = 'pointer';
 		});
-		mapInstance.on('mouseleave', 'unclustered-point', () => {
+		mapInstance.on('mouseleave', ['unclustered-point', 'restaurant-label'], () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
 
