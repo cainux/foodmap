@@ -18,9 +18,9 @@ Blocks the label layer: a missing glyph stack fails as invisible text, not an er
 
 ## 3. Make labels interactive
 
-- [ ] 3.1 Widen the `click` registration at `:199` from `'unclustered-point'` to `['unclustered-point', 'restaurant-label']`; the handler body needs no change
-- [ ] 3.2 Widen the `mouseenter` registration at `:216` to the same array
-- [ ] 3.3 Widen the `mouseleave` registration at `:219` to the same array
+- [x] 3.1 Widen the `click` registration at `:199` from `'unclustered-point'` to `['unclustered-point', 'restaurant-label']`; the handler body needs no change
+- [x] 3.2 Widen the `mouseenter` registration at `:216` to the same array
+- [x] 3.3 Widen the `mouseleave` registration at `:219` to the same array
 - [ ] 3.4 Verify clicking a label opens the same popup as clicking its dot
 - [ ] 3.5 Verify the cursor becomes a pointer over a label on desktop
 

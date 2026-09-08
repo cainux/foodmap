@@ -221,8 +221,8 @@
 			}
 		});
 
-		// Add click handler for unclustered points
-		mapInstance.on('click', 'unclustered-point', (e) => {
+		// Add click handler for unclustered points and their labels
+		mapInstance.on('click', ['unclustered-point', 'restaurant-label'], (e) => {
 			if (!e.features || e.features.length === 0) return;
 			const feature = e.features[0];
 			const { name, url } = feature.properties as { name: string; url: string };
@@ -239,10 +239,10 @@
 		mapInstance.on('mouseleave', 'clusters', () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
-		mapInstance.on('mouseenter', 'unclustered-point', () => {
+		mapInstance.on('mouseenter', ['unclustered-point', 'restaurant-label'], () => {
 			mapInstance.getCanvas().style.cursor = 'pointer';
 		});
-		mapInstance.on('mouseleave', 'unclustered-point', () => {
+		mapInstance.on('mouseleave', ['unclustered-point', 'restaurant-label'], () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
 
