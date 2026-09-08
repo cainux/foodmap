@@ -2,8 +2,8 @@
 
 Blocks the label layer: a missing glyph stack fails as invisible text, not an error.
 
-- [ ] 1.1 Confirm `Noto Sans Regular` resolves from the configured `glyphs` endpoint (it already serves the `cluster-count` layer)
-- [ ] 1.2 If any weight other than Regular is wanted, fetch it from `demotiles.maplibre.org` and confirm it exists before using it; otherwise use Regular
+- [x] 1.1 Confirm `Noto Sans Regular` resolves from the configured `glyphs` endpoint (it already serves the `cluster-count` layer)
+- [x] 1.2 If any weight other than Regular is wanted, fetch it from `demotiles.maplibre.org` and confirm it exists before using it; otherwise use Regular
 
 ## 2. Add the label layer
 
