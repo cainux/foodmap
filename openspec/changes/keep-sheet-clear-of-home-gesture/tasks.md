@@ -8,13 +8,13 @@
 
 ## 2. Lift the handle clear of the gesture strip
 
-- [ ] 2.1 Add the inset to the collapsed transform so the sheet reveals `28px + inset`
+- [x] 2.1 Add the inset to the collapsed transform so the sheet reveals `28px + inset`
       instead of `28px`
-- [ ] 2.2 Add the inert strip below `.grab-handle-area`, inside the sheet and outside the
+- [x] 2.2 Add the inert strip below `.grab-handle-area`, inside the sheet and outside the
       handle area, so it inherits neither the pointer handlers nor `touch-action: none`
-- [ ] 2.3 Verify the sheet's background still reaches the bottom of the screen with no map
+- [x] 2.3 Verify the sheet's background still reaches the bottom of the screen with no map
       visible beneath it
-- [ ] 2.4 Check the drag maths still resolves: `onPointerMove` computes `collapsedOffset`
+- [x] 2.4 Check the drag maths still resolves: `onPointerMove` computes `collapsedOffset`
       from `sidebarHeight - 28`, which must track the new peek or the sheet will jump on
       first drag
 

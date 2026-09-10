@@ -26,6 +26,8 @@
 	} = $props();
 
 	let sidebarEl: HTMLElement | undefined = $state();
+	let grabHandleAreaEl: HTMLElement | undefined = $state();
+	let gestureStripEl: HTMLElement | undefined = $state();
 	let dragStartY = 0;
 	let dragging = false;
 
@@ -37,18 +39,29 @@
 		sidebarEl.style.transition = 'none';
 	}
 
+	/**
+	 * How much of the sheet the collapsed state reveals: the grab handle plus the inert
+	 * gesture strip beneath it. Measured rather than hardcoded so it tracks the CSS
+	 * `--gesture-inset`, which is an `env()` expression the browser resolves - a stale
+	 * constant here would make the sheet jump on the first drag.
+	 */
+	function collapsedPeek(): number {
+		return (grabHandleAreaEl?.offsetHeight ?? 0) + (gestureStripEl?.offsetHeight ?? 0);
+	}
+
 	function onPointerMove(e: PointerEvent) {
 		if (!dragging || !sidebarEl) return;
 		const deltaY = e.clientY - dragStartY;
 		const sidebarHeight = sidebarEl.offsetHeight;
-		const collapsedOffset = sidebarHeight - 28;
+		const peek = collapsedPeek();
+		const collapsedOffset = sidebarHeight - peek;
 
 		if (open) {
 			const clamped = Math.max(0, Math.min(deltaY, collapsedOffset));
 			sidebarEl.style.transform = `translateY(${clamped}px)`;
 		} else {
 			const clamped = Math.max(-collapsedOffset, Math.min(deltaY, 0));
-			sidebarEl.style.transform = `translateY(calc(100% - 28px + ${clamped}px))`;
+			sidebarEl.style.transform = `translateY(calc(100% - ${peek}px + ${clamped}px))`;
 		}
 	}
 
@@ -86,6 +99,7 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="grab-handle-area"
+		bind:this={grabHandleAreaEl}
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
@@ -97,6 +111,9 @@
 	>
 		<div class="grab-handle"></div>
 	</div>
+	<!-- Inert clearance for the OS home gesture: outside .grab-handle-area, so it carries
+	     neither the pointer handlers nor touch-action: none. -->
+	<div class="gesture-strip" bind:this={gestureStripEl}></div>
 	<div class="sidebar-scroll">
 		{#each restaurants as restaurant (restaurant.url)}
 			<div
@@ -150,6 +167,10 @@
 	}
 
 	.grab-handle {
+		display: none;
+	}
+
+	.gesture-strip {
 		display: none;
 	}
 
@@ -266,8 +287,9 @@
 			max-width: none;
 			height: 70dvh;
 			border-radius: 16px 16px 0 0;
-			/* Collapsed: show only the grab handle peeking at the bottom */
-			transform: translateY(calc(100% - 28px));
+			/* Collapsed: reveal the grab handle plus the inert strip below it, so the
+			   handle sits above the OS gesture strip */
+			transform: translateY(calc(100% - 28px - var(--gesture-inset)));
 		}
 
 		.sidebar.open {
@@ -292,6 +314,12 @@
 			height: 4px;
 			border-radius: 2px;
 			background: var(--pico-muted-border-color);
+		}
+
+		.gesture-strip {
+			display: block;
+			flex-shrink: 0;
+			height: var(--gesture-inset);
 		}
 
 		.sidebar-scroll {
