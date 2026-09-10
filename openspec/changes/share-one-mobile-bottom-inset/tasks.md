@@ -33,8 +33,8 @@
 
 ## 5. Verify
 
-- [ ] 5.1 `pnpm check` passes
-- [ ] 5.2 Desktop at >768px is unchanged
+- [x] 5.1 `pnpm check` passes
+- [x] 5.2 Desktop at >768px is unchanged
 - [ ] 5.3 On a phone: pressing and dragging across the handle paints no selection and no
       blue line
 - [ ] 5.4 On a phone: the location button clears the collapsed sheet
