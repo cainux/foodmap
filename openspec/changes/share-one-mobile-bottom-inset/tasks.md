@@ -19,9 +19,9 @@
 
 ## 3. Lift the location button clear
 
-- [ ] 3.1 Replace `.location-button`'s `bottom: 2.5rem` in `RestaurantMap.svelte` with the
+- [x] 3.1 Replace `.location-button`'s `bottom: 2.5rem` in `RestaurantMap.svelte` with the
       collapsed peek plus a gap, expressed against `--mobile-bottom-inset`
-- [ ] 3.2 Confirm the button clears the collapsed sheet with visible space, and does not
+- [x] 3.2 Confirm the button clears the collapsed sheet with visible space, and does not
       move when the list opens
 
 ## 4. Stop the handle behaving like text
