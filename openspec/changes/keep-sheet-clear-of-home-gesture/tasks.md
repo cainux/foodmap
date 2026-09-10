@@ -20,9 +20,9 @@
 
 ## 3. Make a stolen gesture revert
 
-- [ ] 3.1 Give `onpointercancel` its own handler that clears `dragging`, restores the
+- [x] 3.1 Give `onpointercancel` its own handler that clears `dragging`, restores the
       transition, and clears the inline transform without toggling
-- [ ] 3.2 Leave `onpointerup` committing as it does today, including the tap-to-toggle
+- [x] 3.2 Leave `onpointerup` committing as it does today, including the tap-to-toggle
       branch at `Math.abs(deltaY) < 10`
 
 ## 4. Clear the open list's content

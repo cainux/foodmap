@@ -81,6 +81,18 @@
 		}
 	}
 
+	/**
+	 * `pointercancel` means the OS took the gesture away - it was never released to
+	 * authorise a toggle. Undo the drag and let the sheet animate back to whichever
+	 * state `open` still holds.
+	 */
+	function onPointerCancel() {
+		if (!dragging || !sidebarEl) return;
+		dragging = false;
+		sidebarEl.style.transition = '';
+		sidebarEl.style.transform = '';
+	}
+
 	function distanceLabel(coords: { lat: number; lng: number }): string {
 		if (!userLocation) return '';
 		const km = calculateDistance(userLocation.lat, userLocation.lng, coords.lat, coords.lng);
@@ -103,7 +115,7 @@
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
-		onpointercancel={onPointerUp}
+		onpointercancel={onPointerCancel}
 		role="button"
 		tabindex="0"
 		aria-label={open ? 'Collapse panel' : 'Expand panel'}
