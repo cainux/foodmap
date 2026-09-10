@@ -42,8 +42,10 @@
 	/**
 	 * How much of the sheet the collapsed state reveals: the grab handle plus the inert
 	 * gesture strip beneath it. Measured rather than hardcoded so it tracks the CSS
-	 * `--gesture-inset`, which is an `env()` expression the browser resolves - a stale
-	 * constant here would make the sheet jump on the first drag.
+	 * `--mobile-bottom-inset`, which is an `env()` expression the browser resolves - a
+	 * stale constant here would make the sheet jump on the first drag. The strip keeps a
+	 * rendered box in both states (it only leaves the flex flow when the sheet is open),
+	 * so this reports the collapsed peek whether the sheet is open or not.
 	 */
 	function collapsedPeek(): number {
 		return (grabHandleAreaEl?.offsetHeight ?? 0) + (gestureStripEl?.offsetHeight ?? 0);
@@ -288,10 +290,6 @@
 	/* Mobile: bottom sheet */
 	@media (max-width: 768px) {
 		.sidebar {
-			/* Clearance for the OS swipe-up home gesture strip. env() only reports a real
-			   value under viewport-fit=cover, which this site deliberately does not set
-			   (design.md - Decision 1), so the 28px floor carries the fix today. */
-			--gesture-inset: max(env(safe-area-inset-bottom), 28px);
 			top: auto;
 			bottom: 0;
 			left: 0;
@@ -301,7 +299,7 @@
 			border-radius: 16px 16px 0 0;
 			/* Collapsed: reveal the grab handle plus the inert strip below it, so the
 			   handle sits above the OS gesture strip */
-			transform: translateY(calc(100% - 28px - var(--gesture-inset)));
+			transform: translateY(calc(100% - 28px - var(--mobile-bottom-inset)));
 		}
 
 		.sidebar.open {
@@ -331,13 +329,13 @@
 		.gesture-strip {
 			display: block;
 			flex-shrink: 0;
-			height: var(--gesture-inset);
+			height: var(--mobile-bottom-inset);
 		}
 
 		.sidebar-scroll {
 			padding-top: 0.5rem;
 			/* Keep the last card - itself a tap target - out of the gesture strip */
-			padding-bottom: var(--gesture-inset);
+			padding-bottom: var(--mobile-bottom-inset);
 		}
 	}
 </style>

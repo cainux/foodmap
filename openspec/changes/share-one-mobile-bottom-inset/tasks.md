@@ -1,11 +1,11 @@
 ## 1. Move the inset to one declaration
 
-- [ ] 1.1 Declare `--mobile-bottom-inset` on `:root` in `src/routes/+layout.svelte`, `0px`
+- [x] 1.1 Declare `--mobile-bottom-inset` on `:root` in `src/routes/+layout.svelte`, `0px`
       by default and `max(env(safe-area-inset-bottom), 28px)` inside `max-width: 768px`
-- [ ] 1.2 Remove `--gesture-inset` from `.sidebar` in `Sidebar.svelte` and point the
+- [x] 1.2 Remove `--gesture-inset` from `.sidebar` in `Sidebar.svelte` and point the
       collapsed transform, the strip's height and the list's `padding-bottom` at the new
       shared token
-- [ ] 1.3 Confirm the desktop `0px` value leaves the >768px panel exactly as it is
+- [x] 1.3 Confirm the desktop `0px` value leaves the >768px panel exactly as it is
 
 ## 2. Close the gap in the open sheet
 
