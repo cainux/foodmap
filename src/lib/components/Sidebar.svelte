@@ -316,6 +316,22 @@
 			touch-action: none;
 			background: transparent;
 			border: none;
+			/* The handle carries no text, so a selection offers nothing and the browser's
+			   attempt to provide one reads as an artefact - a blue band under the finger.
+			   The strip needs it too: the range starts on the handle and extends into the
+			   empty strip below, so suppressing only the handle would leave the line. */
+			user-select: none;
+			-webkit-user-select: none;
+			-webkit-tap-highlight-color: transparent;
+		}
+
+		/* :focus-visible, not :focus - user-select does not affect focus, and the handle is
+		   a role="button" with tabindex="0" that must stay keyboard-operable and visibly
+		   focused. :focus would put the ring back on every tap, which is what we just
+		   removed. */
+		.grab-handle-area:focus-visible {
+			outline: 2px solid var(--pico-primary);
+			outline-offset: -2px;
 		}
 
 		.grab-handle {
@@ -330,6 +346,9 @@
 			display: block;
 			flex-shrink: 0;
 			height: var(--mobile-bottom-inset);
+			user-select: none;
+			-webkit-user-select: none;
+			-webkit-tap-highlight-color: transparent;
 		}
 
 		/* Open, the handle is nowhere near the bottom edge, so the strip has no clearance

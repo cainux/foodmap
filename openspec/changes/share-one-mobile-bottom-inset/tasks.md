@@ -26,9 +26,9 @@
 
 ## 4. Stop the handle behaving like text
 
-- [ ] 4.1 Add `user-select: none` and `-webkit-tap-highlight-color: transparent` to
+- [x] 4.1 Add `user-select: none` and `-webkit-tap-highlight-color: transparent` to
       `.grab-handle-area` and `.gesture-strip`
-- [ ] 4.2 Add a `:focus-visible` outline to `.grab-handle-area` so keyboard focus stays
+- [x] 4.2 Add a `:focus-visible` outline to `.grab-handle-area` so keyboard focus stays
       visible — `:focus-visible`, not `:focus`, so a tap does not draw a ring
 
 ## 5. Verify
