@@ -1,9 +1,9 @@
 ## 1. Establish the inset
 
-- [ ] 1.1 Define the gesture-clearance inset once in `Sidebar.svelte` as a custom property
+- [x] 1.1 Define the gesture-clearance inset once in `Sidebar.svelte` as a custom property
       set to `max(env(safe-area-inset-bottom), 28px)`, scoped to the mobile breakpoint so
       the desktop slide-in panel is unaffected
-- [ ] 1.2 Confirm `src/app.html` is left untouched — `viewport-fit=cover` is deliberately
+- [x] 1.2 Confirm `src/app.html` is left untouched — `viewport-fit=cover` is deliberately
       not adopted (design.md — Decision 1)
 
 ## 2. Lift the handle clear of the gesture strip

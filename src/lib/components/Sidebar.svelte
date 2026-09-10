@@ -255,6 +255,10 @@
 	/* Mobile: bottom sheet */
 	@media (max-width: 768px) {
 		.sidebar {
+			/* Clearance for the OS swipe-up home gesture strip. env() only reports a real
+			   value under viewport-fit=cover, which this site deliberately does not set
+			   (design.md - Decision 1), so the 28px floor carries the fix today. */
+			--gesture-inset: max(env(safe-area-inset-bottom), 28px);
 			top: auto;
 			bottom: 0;
 			left: 0;
