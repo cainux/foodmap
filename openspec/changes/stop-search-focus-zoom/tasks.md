@@ -1,8 +1,8 @@
 ## 1. Remove the trigger
 
-- [ ] 1.1 Change `font-size` from `0.95rem` to `1rem` in the
+- [x] 1.1 Change `font-size` from `0.95rem` to `1rem` in the
       `.search-box input[type='search']` rule in `src/routes/+page.svelte`
-- [ ] 1.2 Confirm the search field still fits its pill at 16px — it sits in a flex row
+- [x] 1.2 Confirm the search field still fits its pill at 16px — it sits in a flex row
       beside a 36px button inside a `calc(100vw - 2rem)` container on mobile, so check the
       placeholder is not truncated on a narrow phone
 
