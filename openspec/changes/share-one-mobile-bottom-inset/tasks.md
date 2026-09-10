@@ -35,10 +35,16 @@
 
 - [x] 5.1 `pnpm check` passes
 - [x] 5.2 Desktop at >768px is unchanged
-- [ ] 5.3 On a phone: pressing and dragging across the handle paints no selection and no
+- [x] 5.3 On a phone: pressing and dragging across the handle paints no selection and no
       blue line
-- [ ] 5.4 On a phone: the location button clears the collapsed sheet
-- [ ] 5.5 On a phone, re-check the previous change's behaviour — the collapsed handle
+- [x] 5.4 On a phone: the location button clears the collapsed sheet
+- [x] 5.5 On a phone, re-check the previous change's behaviour — the collapsed handle
       still clears the home gesture, and dragging an open sheet closed still lands
       correctly (Decision 2 changes how the peek is measured)
-- [ ] 5.6 Tapping the handle, dragging it open, and dragging it closed all still work
+- [x] 5.6 Tapping the handle, dragging it open, and dragging it closed all still work
+
+5.3-5.6 verified on a physical phone with the site installed to the home screen: the gap
+under the handle in the open sheet is back to what it was, the location button clears the
+collapsed sheet and stays put when the list opens, the handle paints no selection, and
+both the drag and the home-gesture behaviour from keep-sheet-clear-of-home-gesture still
+hold under the changed peek measurement.
