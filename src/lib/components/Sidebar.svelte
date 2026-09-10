@@ -332,6 +332,20 @@
 			height: var(--mobile-bottom-inset);
 		}
 
+		/* Open, the handle is nowhere near the bottom edge, so the strip has no clearance
+		   to provide and would only push the first card down. It leaves the flex column
+		   rather than the DOM: collapsedPeek() measures it, and while the sheet is open
+		   that measurement must still report the *collapsed* peek or dragging the sheet
+		   closed clamps short by the inset. `display: none` would measure 0; an absolute
+		   box still reports its height. It sits over the list's own padding-bottom, which
+		   is empty by construction, and has no background and no handlers. */
+		.sidebar.open .gesture-strip {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+
 		.sidebar-scroll {
 			padding-top: 0.5rem;
 			/* Keep the last card - itself a tap target - out of the gesture strip */

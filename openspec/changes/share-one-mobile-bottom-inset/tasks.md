@@ -9,12 +9,12 @@
 
 ## 2. Close the gap in the open sheet
 
-- [ ] 2.1 Give `.gesture-strip` `position: absolute; bottom: 0` when the sheet is open, so
+- [x] 2.1 Give `.gesture-strip` `position: absolute; bottom: 0` when the sheet is open, so
       it leaves the flex column without leaving the DOM (design.md — Decision 2)
-- [ ] 2.2 Verify `collapsedPeek()` still reports the collapsed peek while the sheet is
+- [x] 2.2 Verify `collapsedPeek()` still reports the collapsed peek while the sheet is
       open — the strip must keep a measurable `offsetHeight` in both states, or dragging
       an open sheet closed will clamp short by the inset
-- [ ] 2.3 Check the space between the handle and the first card matches what it was before
+- [x] 2.3 Check the space between the handle and the first card matches what it was before
       `keep-sheet-clear-of-home-gesture`
 
 ## 3. Lift the location button clear
