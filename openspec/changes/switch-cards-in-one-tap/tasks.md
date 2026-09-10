@@ -6,15 +6,15 @@
 
 ## 2. Own dismissal explicitly
 
-- [ ] 2.1 Name the restaurant-layer set once in the component and use it both for the
+- [x] 2.1 Name the restaurant-layer set once in the component and use it both for the
       existing layer click registration and for the new dismissal handler, so the two
       cannot drift
-- [ ] 2.2 Add a map-level `click` handler that hit-tests the tap point with
+- [x] 2.2 Add a map-level `click` handler that hit-tests the tap point with
       `queryRenderedFeatures` and clears `selectedRestaurant` only when the tap landed on
       neither `unclustered-point` nor `restaurant-label`
-- [ ] 2.3 Leave `clusters` out of the suppressing set, so a group tap dismisses the card
+- [x] 2.3 Leave `clusters` out of the suppressing set, so a group tap dismisses the card
       while the existing cluster handler expands it (design.md — Decision 3)
-- [ ] 2.4 Verify the handler is order-independent — it must behave the same whether it is
+- [x] 2.4 Verify the handler is order-independent — it must behave the same whether it is
       registered before or after the layer handlers
 
 ## 3. Verify

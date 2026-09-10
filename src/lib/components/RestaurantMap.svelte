@@ -27,6 +27,12 @@
 	let userLocation = $state<{ lng: number; lat: number } | null>(null);
 	let selectedRestaurant = $state<Restaurant | null>(null);
 
+	// The layers a tap can land on to select a restaurant. Named once so the click
+	// registration, the hover cursor and the dismissal hit-test cannot drift apart:
+	// a layer in one but not the other would make taps on it dismiss the open card.
+	// `clusters` is deliberately absent - see the dismissal handler in handleMapLoad.
+	const RESTAURANT_LAYERS = ['unclustered-point', 'restaurant-label'];
+
 	// CartoCDN Voyager style
 	const mapStyle = {
 		version: 8 as const,
@@ -222,13 +228,30 @@
 		});
 
 		// Add click handler for unclustered points and their labels
-		mapInstance.on('click', ['unclustered-point', 'restaurant-label'], (e) => {
+		mapInstance.on('click', RESTAURANT_LAYERS, (e) => {
 			if (!e.features || e.features.length === 0) return;
 			const feature = e.features[0];
 			const { name, url } = feature.properties as { name: string; url: string };
 			const restaurant = restaurants.find(r => r.name === name && r.url === url);
 			if (restaurant) {
 				selectedRestaurant = restaurant;
+			}
+		});
+
+		// Dismissal, replacing the popup's `closeOnClick`. It decides by hit-testing
+		// the tap point rather than by running before the layer handlers: relying on
+		// registration order is what caused a tap on a second restaurant to select it
+		// and then immediately clear it. Whichever order this runs in, it clears only
+		// when the tap hit no restaurant layer, and the layer handler selects only when
+		// it did - so neither can undo the other.
+		//
+		// `clusters` is not in the suppressing set, so tapping a group dismisses the
+		// card while the cluster handler expands it: expanding moves the view under the
+		// visitor, and the card would otherwise describe something off screen.
+		mapInstance.on('click', (e) => {
+			const hits = mapInstance.queryRenderedFeatures(e.point, { layers: RESTAURANT_LAYERS });
+			if (hits.length === 0) {
+				selectedRestaurant = null;
 			}
 		});
 
@@ -239,10 +262,10 @@
 		mapInstance.on('mouseleave', 'clusters', () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
-		mapInstance.on('mouseenter', ['unclustered-point', 'restaurant-label'], () => {
+		mapInstance.on('mouseenter', RESTAURANT_LAYERS, () => {
 			mapInstance.getCanvas().style.cursor = 'pointer';
 		});
-		mapInstance.on('mouseleave', ['unclustered-point', 'restaurant-label'], () => {
+		mapInstance.on('mouseleave', RESTAURANT_LAYERS, () => {
 			mapInstance.getCanvas().style.cursor = '';
 		});
 
