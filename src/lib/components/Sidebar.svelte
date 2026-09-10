@@ -336,6 +336,8 @@
 
 		.sidebar-scroll {
 			padding-top: 0.5rem;
+			/* Keep the last card - itself a tap target - out of the gesture strip */
+			padding-bottom: var(--gesture-inset);
 		}
 	}
 </style>

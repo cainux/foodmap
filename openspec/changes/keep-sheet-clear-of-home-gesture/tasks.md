@@ -27,7 +27,7 @@
 
 ## 4. Clear the open list's content
 
-- [ ] 4.1 Add the inset to `.sidebar-scroll`'s `padding-bottom` so the last restaurant card
+- [x] 4.1 Add the inset to `.sidebar-scroll`'s `padding-bottom` so the last restaurant card
       sits above the gesture strip when the list is open
 
 ## 5. Verify
