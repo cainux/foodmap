@@ -42,8 +42,10 @@
 	/**
 	 * How much of the sheet the collapsed state reveals: the grab handle plus the inert
 	 * gesture strip beneath it. Measured rather than hardcoded so it tracks the CSS
-	 * `--gesture-inset`, which is an `env()` expression the browser resolves - a stale
-	 * constant here would make the sheet jump on the first drag.
+	 * `--mobile-bottom-inset`, which is an `env()` expression the browser resolves - a
+	 * stale constant here would make the sheet jump on the first drag. The strip keeps a
+	 * rendered box in both states (it only leaves the flex flow when the sheet is open),
+	 * so this reports the collapsed peek whether the sheet is open or not.
 	 */
 	function collapsedPeek(): number {
 		return (grabHandleAreaEl?.offsetHeight ?? 0) + (gestureStripEl?.offsetHeight ?? 0);
@@ -288,10 +290,6 @@
 	/* Mobile: bottom sheet */
 	@media (max-width: 768px) {
 		.sidebar {
-			/* Clearance for the OS swipe-up home gesture strip. env() only reports a real
-			   value under viewport-fit=cover, which this site deliberately does not set
-			   (design.md - Decision 1), so the 28px floor carries the fix today. */
-			--gesture-inset: max(env(safe-area-inset-bottom), 28px);
 			top: auto;
 			bottom: 0;
 			left: 0;
@@ -301,7 +299,7 @@
 			border-radius: 16px 16px 0 0;
 			/* Collapsed: reveal the grab handle plus the inert strip below it, so the
 			   handle sits above the OS gesture strip */
-			transform: translateY(calc(100% - 28px - var(--gesture-inset)));
+			transform: translateY(calc(100% - 28px - var(--mobile-bottom-inset)));
 		}
 
 		.sidebar.open {
@@ -318,6 +316,22 @@
 			touch-action: none;
 			background: transparent;
 			border: none;
+			/* The handle carries no text, so a selection offers nothing and the browser's
+			   attempt to provide one reads as an artefact - a blue band under the finger.
+			   The strip needs it too: the range starts on the handle and extends into the
+			   empty strip below, so suppressing only the handle would leave the line. */
+			user-select: none;
+			-webkit-user-select: none;
+			-webkit-tap-highlight-color: transparent;
+		}
+
+		/* :focus-visible, not :focus - user-select does not affect focus, and the handle is
+		   a role="button" with tabindex="0" that must stay keyboard-operable and visibly
+		   focused. :focus would put the ring back on every tap, which is what we just
+		   removed. */
+		.grab-handle-area:focus-visible {
+			outline: 2px solid var(--pico-primary);
+			outline-offset: -2px;
 		}
 
 		.grab-handle {
@@ -331,13 +345,30 @@
 		.gesture-strip {
 			display: block;
 			flex-shrink: 0;
-			height: var(--gesture-inset);
+			height: var(--mobile-bottom-inset);
+			user-select: none;
+			-webkit-user-select: none;
+			-webkit-tap-highlight-color: transparent;
+		}
+
+		/* Open, the handle is nowhere near the bottom edge, so the strip has no clearance
+		   to provide and would only push the first card down. It leaves the flex column
+		   rather than the DOM: collapsedPeek() measures it, and while the sheet is open
+		   that measurement must still report the *collapsed* peek or dragging the sheet
+		   closed clamps short by the inset. `display: none` would measure 0; an absolute
+		   box still reports its height. It sits over the list's own padding-bottom, which
+		   is empty by construction, and has no background and no handlers. */
+		.sidebar.open .gesture-strip {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
 		}
 
 		.sidebar-scroll {
 			padding-top: 0.5rem;
 			/* Keep the last card - itself a tap target - out of the gesture strip */
-			padding-bottom: var(--gesture-inset);
+			padding-bottom: var(--mobile-bottom-inset);
 		}
 	}
 </style>

@@ -494,7 +494,12 @@
 	.location-button {
 		position: absolute;
 		z-index: 30;
-		bottom: 2.5rem;
+		/* Clear the collapsed sheet: its peek is the 28px grab handle plus the shared
+		   bottom inset, and 12px of gap above that. Expressed against the inset rather
+		   than as a literal so growing the clearance moves the button with the sheet -
+		   the hand-tuned 2.5rem this replaces did not. The inset is 0px above 768px, so
+		   this still computes to the 2.5rem desktop has always had. */
+		bottom: calc(28px + var(--mobile-bottom-inset) + 12px);
 		right: 1rem;
 		display: flex;
 		align-items: center;
