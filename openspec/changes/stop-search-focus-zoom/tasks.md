@@ -14,8 +14,8 @@
 
 ## 3. Verify
 
-- [ ] 3.1 `pnpm check` passes
+- [x] 3.1 `pnpm check` passes
 - [ ] 3.2 On a phone with the site installed to the home screen: tapping into the search
       field leaves the page at the same zoom
-- [ ] 3.3 Typing a query still filters both the map markers and the list, and still opens
+- [x] 3.3 Typing a query still filters both the map markers and the list, and still opens
       the sidebar on focus
