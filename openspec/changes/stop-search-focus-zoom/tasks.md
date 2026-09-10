@@ -16,6 +16,7 @@
 
 - [x] 3.1 `pnpm check` passes
 - [ ] 3.2 On a phone with the site installed to the home screen: tapping into the search
-      field leaves the page at the same zoom
+      field leaves the page at the same zoom — NEEDS A PHYSICAL PHONE, not verifiable by
+      an agent; left for a human to confirm
 - [x] 3.3 Typing a query still filters both the map markers and the list, and still opens
       the sidebar on focus
