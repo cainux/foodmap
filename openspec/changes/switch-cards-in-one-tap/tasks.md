@@ -1,7 +1,7 @@
 ## 1. Stop the popup closing its own opening tap
 
-- [ ] 1.1 Pass `closeOnClick={false}` to the `Popup` in `RestaurantMap.svelte`
-- [ ] 1.2 Confirm `onclose` is still wired, so any other close path clears
+- [x] 1.1 Pass `closeOnClick={false}` to the `Popup` in `RestaurantMap.svelte`
+- [x] 1.2 Confirm `onclose` is still wired, so any other close path clears
       `selectedRestaurant`
 
 ## 2. Own dismissal explicitly

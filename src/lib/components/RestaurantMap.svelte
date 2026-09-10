@@ -393,12 +393,18 @@
 				<Marker lnglat={userLocation} />
 			{/if}
 
+			<!--
+				`closeOnClick` is off: it registers its own map click listener when the popup
+				opens, so it always runs after the layer handlers and would undo the very tap
+				that selected a new restaurant. Dismissal is owned by `handleMapClick`.
+			-->
 			{#if selectedRestaurant && selectedRestaurant.coordinates}
 				<Popup
 					lnglat={[selectedRestaurant.coordinates.lng, selectedRestaurant.coordinates.lat]}
 					open={true}
 					closeButton={false}
-					onclose={() => selectedRestaurant = null}
+					closeOnClick={false}
+					onclose={() => (selectedRestaurant = null)}
 				>
 					<strong>{selectedRestaurant.name}</strong>
 					{#if selectedRestaurant.branch}
