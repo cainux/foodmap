@@ -8,8 +8,8 @@
 
 ## 2. Confirm nothing else is below the threshold
 
-- [ ] 2.1 Verify the search field is still the only form control on the public site
-- [ ] 2.2 Confirm `src/app.html` is unchanged — no `maximum-scale` or `user-scalable`
+- [x] 2.1 Verify the search field is still the only form control on the public site
+- [x] 2.2 Confirm `src/app.html` is unchanged — no `maximum-scale` or `user-scalable`
       is added (proposal.md — What Changes)
 
 ## 3. Verify
