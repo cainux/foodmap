@@ -174,7 +174,7 @@
 		border: none;
 		background: transparent;
 		box-shadow: none;
-		font-size: 0.95rem;
+		font-size: 1rem;
 		--pico-form-element-focus-color: transparent;
 	}
 
