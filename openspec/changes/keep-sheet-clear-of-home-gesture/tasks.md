@@ -32,12 +32,16 @@
 
 ## 5. Verify
 
-- [ ] 5.1 `pnpm check` passes
+- [x] 5.1 `pnpm check` passes
 - [ ] 5.2 On a phone with the site installed to the home screen: swipe up from the bottom
       edge with the list collapsed — the list stays collapsed, and is still collapsed on
       returning to the app
-- [ ] 5.3 Tapping and dragging the handle still open and close the list
-- [ ] 5.4 With the list open and scrolled to the end, the final card is fully visible and
+- [x] 5.3 Tapping and dragging the handle still open and close the list
+- [x] 5.4 With the list open and scrolled to the end, the final card is fully visible and
       tappable
-- [ ] 5.5 Desktop at >768px is unchanged — the panel still slides in from the left with no
+- [x] 5.5 Desktop at >768px is unchanged — the panel still slides in from the left with no
       stray bottom padding
+
+5.3, 5.4 and 5.5 were verified in a desktop browser at a 390x844 viewport and at 1280px.
+5.2 is left unchecked: it needs the site installed to the home screen on a real phone, as
+the OS gesture strip does not exist in a desktop browser or in device emulation.
