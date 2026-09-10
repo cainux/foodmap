@@ -26,6 +26,8 @@
 	} = $props();
 
 	let sidebarEl: HTMLElement | undefined = $state();
+	let grabHandleAreaEl: HTMLElement | undefined = $state();
+	let gestureStripEl: HTMLElement | undefined = $state();
 	let dragStartY = 0;
 	let dragging = false;
 
@@ -37,18 +39,29 @@
 		sidebarEl.style.transition = 'none';
 	}
 
+	/**
+	 * How much of the sheet the collapsed state reveals: the grab handle plus the inert
+	 * gesture strip beneath it. Measured rather than hardcoded so it tracks the CSS
+	 * `--gesture-inset`, which is an `env()` expression the browser resolves - a stale
+	 * constant here would make the sheet jump on the first drag.
+	 */
+	function collapsedPeek(): number {
+		return (grabHandleAreaEl?.offsetHeight ?? 0) + (gestureStripEl?.offsetHeight ?? 0);
+	}
+
 	function onPointerMove(e: PointerEvent) {
 		if (!dragging || !sidebarEl) return;
 		const deltaY = e.clientY - dragStartY;
 		const sidebarHeight = sidebarEl.offsetHeight;
-		const collapsedOffset = sidebarHeight - 28;
+		const peek = collapsedPeek();
+		const collapsedOffset = sidebarHeight - peek;
 
 		if (open) {
 			const clamped = Math.max(0, Math.min(deltaY, collapsedOffset));
 			sidebarEl.style.transform = `translateY(${clamped}px)`;
 		} else {
 			const clamped = Math.max(-collapsedOffset, Math.min(deltaY, 0));
-			sidebarEl.style.transform = `translateY(calc(100% - 28px + ${clamped}px))`;
+			sidebarEl.style.transform = `translateY(calc(100% - ${peek}px + ${clamped}px))`;
 		}
 	}
 
@@ -66,6 +79,18 @@
 		} else if (!open && deltaY < -10) {
 			onToggle();
 		}
+	}
+
+	/**
+	 * `pointercancel` means the OS took the gesture away - it was never released to
+	 * authorise a toggle. Undo the drag and let the sheet animate back to whichever
+	 * state `open` still holds.
+	 */
+	function onPointerCancel() {
+		if (!dragging || !sidebarEl) return;
+		dragging = false;
+		sidebarEl.style.transition = '';
+		sidebarEl.style.transform = '';
 	}
 
 	function distanceLabel(coords: { lat: number; lng: number }): string {
@@ -86,10 +111,11 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="grab-handle-area"
+		bind:this={grabHandleAreaEl}
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
-		onpointercancel={onPointerUp}
+		onpointercancel={onPointerCancel}
 		role="button"
 		tabindex="0"
 		aria-label={open ? 'Collapse panel' : 'Expand panel'}
@@ -97,6 +123,9 @@
 	>
 		<div class="grab-handle"></div>
 	</div>
+	<!-- Inert clearance for the OS home gesture: outside .grab-handle-area, so it carries
+	     neither the pointer handlers nor touch-action: none. -->
+	<div class="gesture-strip" bind:this={gestureStripEl}></div>
 	<div class="sidebar-scroll">
 		{#each restaurants as restaurant (restaurant.url)}
 			<div
@@ -150,6 +179,10 @@
 	}
 
 	.grab-handle {
+		display: none;
+	}
+
+	.gesture-strip {
 		display: none;
 	}
 
@@ -255,6 +288,10 @@
 	/* Mobile: bottom sheet */
 	@media (max-width: 768px) {
 		.sidebar {
+			/* Clearance for the OS swipe-up home gesture strip. env() only reports a real
+			   value under viewport-fit=cover, which this site deliberately does not set
+			   (design.md - Decision 1), so the 28px floor carries the fix today. */
+			--gesture-inset: max(env(safe-area-inset-bottom), 28px);
 			top: auto;
 			bottom: 0;
 			left: 0;
@@ -262,8 +299,9 @@
 			max-width: none;
 			height: 70dvh;
 			border-radius: 16px 16px 0 0;
-			/* Collapsed: show only the grab handle peeking at the bottom */
-			transform: translateY(calc(100% - 28px));
+			/* Collapsed: reveal the grab handle plus the inert strip below it, so the
+			   handle sits above the OS gesture strip */
+			transform: translateY(calc(100% - 28px - var(--gesture-inset)));
 		}
 
 		.sidebar.open {
@@ -290,8 +328,16 @@
 			background: var(--pico-muted-border-color);
 		}
 
+		.gesture-strip {
+			display: block;
+			flex-shrink: 0;
+			height: var(--gesture-inset);
+		}
+
 		.sidebar-scroll {
 			padding-top: 0.5rem;
+			/* Keep the last card - itself a tap target - out of the gesture strip */
+			padding-bottom: var(--gesture-inset);
 		}
 	}
 </style>
