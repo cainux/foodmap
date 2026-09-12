@@ -13,6 +13,7 @@ A static website built with SvelteKit that displays restaurants on an interactiv
 - 🎨 Clean, minimal styling with Pico CSS
 - 📱 Responsive design with mobile-optimized interactions
 - ⚡ Static site generation for fast loading
+- 📲 Installable PWA that caches map tiles for offline use
 - 🔗 Restaurant list with clickable cards that navigate the map
 - 📤 Social media preview metadata for sharing
 
@@ -34,14 +35,21 @@ A static website built with SvelteKit that displays restaurants on an interactiv
 pnpm install
 ```
 
-2. Start the development server:
+2. Set up environment variables:
+```sh
+cp .env.example .env
+```
+
+`PUBLIC_CARTO_API_KEY` is the CARTO key used for the basemap raster tiles.
+
+The dev and build steps also fetch `src/lib/restaurants.json` from Cloudflare D1 via `wrangler`, which needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the environment. In CI these are Cloudflare Pages project secrets.
+
+3. Start the development server:
 ```sh
 pnpm dev
 ```
 
-The development server automatically fetches `src/lib/restaurants.json` from Cloudflare D1 before starting. This requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to be available in the environment.
-
-3. Open your browser to `http://localhost:5173`
+4. Open your browser to `http://localhost:5173`
 
 ## Building
 
@@ -69,9 +77,11 @@ Restaurants are added, edited, and deleted through the `admin/` app (Bluesky OAu
 
 ## Deployment
 
-The static site in the `build/` directory can be deployed to any static hosting service:
-- GitHub Pages
-- Netlify
-- Vercel
-- Cloudflare Pages
-- Or any static web host
+The site is deployed to **Cloudflare Pages**, and the stack is Cloudflare-specific end to end:
+
+- Restaurant data is the `restaurants` table in **Cloudflare D1**, the single source of truth.
+- The build runs `wrangler d1 execute --remote` to snapshot D1 into `src/lib/restaurants.json`, so it needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` set as Pages project secrets.
+- The `admin/` app deploys separately as its own **Cloudflare Worker**, holds the only runtime D1 binding, and owns the schema migrations.
+- Publishing is a Pages deploy hook that the admin POSTs to, which rebuilds and redeploys this site.
+
+The `build/` output is plain static files, but a different host would still need the D1 snapshot step to run somewhere with Cloudflare credentials.
