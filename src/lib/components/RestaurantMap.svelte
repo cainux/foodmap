@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
 	import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
-	import { calculateDistance } from '$lib/geo';
-	import { env } from '$env/dynamic/public';
+	import { calculateDistance } from '#lib/geo.js';
+	import { PUBLIC_CARTO_API_KEY } from '$app/env/public';
 
 	interface Restaurant {
 		name: string;
@@ -41,7 +41,7 @@
 			'carto-tiles': {
 				type: 'raster' as const,
 				tiles: [
-					`https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${env.PUBLIC_CARTO_API_KEY}`
+					`https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${PUBLIC_CARTO_API_KEY}`
 				],
 				tileSize: 256,
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -60,13 +60,9 @@
 
 	// Calculate center of all restaurants
 	const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
-	const avgLat =
-		validRestaurants.reduce((sum, r) => sum + r.coordinates!.lat, 0) /
-		validRestaurants.length;
-	const avgLng =
-		validRestaurants.reduce((sum, r) => sum + r.coordinates!.lng, 0) /
-		validRestaurants.length;
 
+	const avgLat = validRestaurants.reduce((sum, r) => sum + (r.coordinates!).lat, 0) / validRestaurants.length;
+	const avgLng = validRestaurants.reduce((sum, r) => sum + (r.coordinates!).lng, 0) / validRestaurants.length;
 	const initialCenter: LngLatLike = [avgLng, avgLat];
 
 	// Create GeoJSON feature collection for restaurant markers.
@@ -76,18 +72,18 @@
 		features: restaurants
 			.filter((r) => r.coordinates !== null)
 			.map((restaurant) => ({
-				type: 'Feature' as const,
-				properties: {
-					name: restaurant.name,
-					branch: restaurant.branch ?? null,
-					url: restaurant.url,
-					id: `${restaurant.coordinates!.lat},${restaurant.coordinates!.lng}`
-				},
-				geometry: {
-					type: 'Point' as const,
-					coordinates: [restaurant.coordinates!.lng, restaurant.coordinates!.lat]
-				}
-			}))
+			type: 'Feature' as const,
+			properties: {
+				name: restaurant.name,
+				branch: restaurant.branch ?? null,
+				url: restaurant.url,
+				id: `${(restaurant.coordinates!).lat},${(restaurant.coordinates!).lng}`
+			},
+			geometry: {
+				type: 'Point' as const,
+				coordinates: [(restaurant.coordinates!).lng, (restaurant.coordinates!).lat]
+			}
+		}))
 	});
 
 	// Check if geolocation is available
@@ -219,7 +215,7 @@
 				if (feature.geometry.type === 'Point') {
 					mapInstance.easeTo({
 						center: feature.geometry.coordinates as [number, number],
-						zoom: zoom
+						zoom
 					});
 				}
 			} catch (err) {
@@ -232,7 +228,7 @@
 			if (!e.features || e.features.length === 0) return;
 			const feature = e.features[0];
 			const { name, url } = feature.properties as { name: string; url: string };
-			const restaurant = restaurants.find(r => r.name === name && r.url === url);
+			const restaurant = restaurants.find((r) => r.name === name && r.url === url);
 			if (restaurant) {
 				selectedRestaurant = restaurant;
 			}
@@ -271,12 +267,21 @@
 
 		// Fit bounds to show all markers
 		if (validRestaurants.length > 0) {
-			const bounds = validRestaurants.reduce((bounds, restaurant) => {
-				return bounds.extend([restaurant.coordinates!.lng, restaurant.coordinates!.lat]);
-			}, new maplibregl.LngLatBounds(
-				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat],
-				[validRestaurants[0].coordinates!.lng, validRestaurants[0].coordinates!.lat]
-			));
+			const bounds = validRestaurants.reduce(
+				(bounds, restaurant) => {
+					return bounds.extend([(restaurant.coordinates!).lng, (restaurant.coordinates!).lat]);
+				},
+				new maplibregl.LngLatBounds(
+					[
+						(validRestaurants[0].coordinates!).lng,
+						(validRestaurants[0].coordinates!).lat
+					],
+					[
+						(validRestaurants[0].coordinates!).lng,
+						(validRestaurants[0].coordinates!).lat
+					]
+				)
+			);
 
 			mapInstance.fitBounds(bounds, { padding: 50 });
 		}
@@ -317,9 +322,7 @@
 			});
 
 			// Find the restaurant data for the popup
-			const restaurant = restaurants.find(
-				r => r.coordinates && r.coordinates.lat === coords.lat && r.coordinates.lng === coords.lng
-			);
+			const restaurant = restaurants.find((r) => r.coordinates && r.coordinates.lat === coords.lat && r.coordinates.lng === coords.lng);
 
 			if (restaurant) {
 				// Open popup after animation
@@ -346,16 +349,12 @@
 				onLocationUpdate({ lat: latitude, lng: longitude });
 
 				// Find nearest restaurant
-				const validRestaurants = restaurants.filter(r => r.coordinates !== null);
+				const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
 				if (validRestaurants.length > 0 && map) {
 					// Calculate distances and find nearest
-					const restaurantsWithDistance = validRestaurants.map(r => {
-						const distance = calculateDistance(
-							latitude,
-							longitude,
-							r.coordinates!.lat,
-							r.coordinates!.lng
-						);
+					const restaurantsWithDistance = validRestaurants.map((r) => {
+						const distance = calculateDistance(latitude, longitude, (r.coordinates!).lat, (r.coordinates!).lng);
+
 						return { restaurant: r, distance };
 					});
 
@@ -364,11 +363,12 @@
 					const nearestRestaurant = restaurantsWithDistance[0].restaurant;
 
 					// Fit map bounds to show both user location and nearest restaurant
-					const bounds = new maplibregl.LngLatBounds(
-						[longitude, latitude],
-						[longitude, latitude]
-					);
-					bounds.extend([nearestRestaurant.coordinates!.lng, nearestRestaurant.coordinates!.lat]);
+					const bounds = new maplibregl.LngLatBounds([longitude, latitude], [longitude, latitude]);
+
+					bounds.extend([
+						(nearestRestaurant.coordinates!).lng,
+						(nearestRestaurant.coordinates!).lat
+					]);
 
 					map.fitBounds(bounds, {
 						padding: { top: 80, bottom: 80, left: 80, right: 80 },
@@ -427,13 +427,13 @@
 					open={true}
 					closeButton={false}
 					closeOnClick={false}
-					onclose={() => (selectedRestaurant = null)}
+					onclose={() => selectedRestaurant = null}
 				>
 					<strong>{selectedRestaurant.name}</strong>
 					{#if selectedRestaurant.branch}
 						<span class="branch">{selectedRestaurant.branch}</span>
 					{/if}
-					<br>
+					<br />
 					{#if selectedRestaurant.tags && selectedRestaurant.tags.length > 0}
 						<div class="tags">
 							{#each selectedRestaurant.tags as tag (tag)}
@@ -460,12 +460,22 @@
 			aria-label={isLocating ? 'Locating…' : 'Find my location'}
 			title="Find my location"
 		>
-			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-				<circle cx="12" cy="12" r="3.5" />
-				<line x1="12" y1="2" x2="12" y2="5" />
-				<line x1="12" y1="19" x2="12" y2="22" />
-				<line x1="2" y1="12" x2="5" y2="12" />
-				<line x1="19" y1="12" x2="22" y2="12" />
+			<svg
+				width="22"
+				height="22"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<circle cx="12" cy="12" r="3.5"></circle>
+				<line x1="12" y1="2" x2="12" y2="5"></line>
+				<line x1="12" y1="19" x2="12" y2="22"></line>
+				<line x1="2" y1="12" x2="5" y2="12"></line>
+				<line x1="19" y1="12" x2="22" y2="12"></line>
 			</svg>
 		</button>
 	{/if}

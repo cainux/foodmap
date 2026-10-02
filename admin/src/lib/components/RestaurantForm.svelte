@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { enhance } from '$app/forms';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import { enhance, type SubmitFunction } from '$app/forms';
 	import { calculateDistance, coordinateError, parseCoordinates } from '$lib/geo';
 	import type { Restaurant } from '$lib/server/db/queries';
 	import type { RestaurantFormValues, RestaurantInputField } from '$lib/server/restaurantInput';
@@ -31,16 +30,15 @@
 	const start = untrack(
 		() =>
 			submitted ?? {
-				name: restaurant?.name ?? '',
-				branch: restaurant?.branch ?? '',
-				url: restaurant?.url ?? '',
-				coordinates: restaurant ? `${restaurant.lat},${restaurant.lng}` : '',
-				tags: restaurant?.tags ?? '',
-				comment: restaurant?.comment ?? ''
-			}
-	);
-	const editingId = untrack(() => restaurant?.id);
+		name: restaurant?.name ?? '',
+		branch: restaurant?.branch ?? '',
+		url: restaurant?.url ?? '',
+		coordinates: restaurant ? `${restaurant.lat},${restaurant.lng}` : '',
+		tags: restaurant?.tags ?? '',
+		comment: restaurant?.comment ?? ''
+	});
 
+	const editingId = untrack(() => restaurant?.id);
 	let name = $state(start.name);
 	let branch = $state(start.branch);
 	let url = $state(start.url);
@@ -115,7 +113,7 @@
 	method="POST"
 	action={restaurant ? '?/update' : '?/create'}
 	use:enhance={submit}
-	{onsubmit}
+	onsubmit={onsubmit}
 >
 	<label>
 		Name
@@ -159,7 +157,7 @@
 			name="coordinates"
 			type="text"
 			bind:value={coordinates}
-			onblur={() => (coordinatesTouched = true)}
+			onblur={() => coordinatesTouched = true}
 			placeholder="51.5163842,-0.0693367"
 			required
 			aria-invalid={showCoordinatesError ? 'true' : undefined}

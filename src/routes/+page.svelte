@@ -1,8 +1,8 @@
 <script lang="ts">
-	import RestaurantMap from '$lib/components/RestaurantMap.svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
-	import restaurantsData from '$lib/restaurants.json';
-	import { calculateDistance } from '$lib/geo';
+	import RestaurantMap from '#lib/components/RestaurantMap.svelte';
+	import Sidebar from '#lib/components/Sidebar.svelte';
+	import restaurantsData from '#lib/restaurants.json';
+	import { calculateDistance } from '#lib/geo.js';
 
 	let sidebarOpen = $state(
 		typeof window !== 'undefined' && window.matchMedia('(min-width: 769px)').matches

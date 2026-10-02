@@ -1,10 +1,25 @@
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
 	plugins: [
-		sveltekit(),
+		sveltekit({
+			// Consult https://svelte.dev/docs/kit/integrations
+			// for more information about preprocessors
+			preprocess: vitePreprocess(),
+
+			adapter: adapter({
+				pages: 'build',
+				assets: 'build',
+				fallback: undefined,
+				precompress: false,
+				strict: true
+			})
+		}),
+
 		SvelteKitPWA({
 			srcDir: './src',
 			mode: 'production',
@@ -41,7 +56,7 @@ export default defineConfig({
 							cacheName: 'osm-tiles',
 							expiration: {
 								maxEntries: 500,
-								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+								maxAgeSeconds: 60 * 60 * 24 * 30 /* 30 days */
 							},
 							cacheableResponse: {
 								statuses: [0, 200]
@@ -71,7 +86,7 @@ export default defineConfig({
 							cacheName: 'maplibre-fonts',
 							expiration: {
 								maxEntries: 50,
-								maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+								maxAgeSeconds: 60 * 60 * 24 * 365 /* 1 year */
 							}
 						}
 					}
