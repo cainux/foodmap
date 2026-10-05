@@ -1,7 +1,6 @@
-# AGENTS.md
+# CLAUDE.md
 
-Guidance for coding agents working in this repository. `CLAUDE.md` is a symlink to
-this file, so edit it here only.
+Guidance for coding agents working in this repository.
 
 ## Project Overview
 
