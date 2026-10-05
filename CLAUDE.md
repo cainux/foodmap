@@ -160,6 +160,24 @@ let doubled = $derived(count * 2);
 $effect(() => { /* side effects */ });
 ```
 
+## SvelteKit 3
+
+Both apps are on SvelteKit 3:
+
+- There is no `svelte.config.js`. Kit and adapter options go in the `sveltekit({...})` call in
+  each app's `vite.config.ts`.
+- Import library code via `#lib/...` (a `package.json` subpath import), not `$lib`. Name the
+  `.js` extension for TS modules: `#lib/geo.js`.
+- Public env vars are declared in `src/env.ts` and read from `$app/env/public`, not
+  `$env/dynamic/public`.
+- Admin bindings and secrets come from `import { env } from 'cloudflare:workers'`, typed on
+  `Cloudflare.Env` in `admin/src/app.d.ts`. Do NOT use `event.platform` - adapter-cloudflare 8
+  never populates it, in dev or deployed.
+- `@vite-pwa/sveltekit` predates SvelteKit 3 and never fires its own service-worker step. The
+  public site's `vite.config.ts` generates `sw.js` from a `buildApp` hook instead. Keep that
+  plugin, and the PWA plugin's `outDir` and `kit.base`, until upstream supports SvelteKit 3.
+  Check `build/sw.js` exists after any change to that config.
+
 ## Map Implementation
 
 The map uses `svelte-maplibre-gl` components with GeoJSON clustering:
