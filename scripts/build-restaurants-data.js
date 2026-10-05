@@ -7,8 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const raw = execFileSync(
-	'npx',
-	['wrangler', 'd1', 'execute', 'foodmap', '--remote', '--json', '--command', 'SELECT * FROM restaurants'],
+	'pnpm',
+	['exec', 'wrangler', 'd1', 'execute', 'foodmap', '--remote', '--json', '--command', 'SELECT * FROM restaurants'],
 	{ encoding: 'utf-8' }
 );
 
