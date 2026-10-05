@@ -1,8 +1,34 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import type { VitePluginPWAAPI } from 'vite-plugin-pwa';
+
+/**
+ * @vite-pwa/sveltekit generates the service worker in `closeBundle` of what it
+ * assumes is SvelteKit's separate SSR build (`build.ssr`). SvelteKit 3 builds
+ * every environment under one config, so that never fires and no `sw.js` is
+ * emitted. Generate it from a `buildApp` hook instead: those run after SvelteKit
+ * has built and prerendered, and before the adapter copies the output. The
+ * plugin's `outDir` must point at the client output for the same reason.
+ */
+function pwaServiceWorker(): Plugin {
+	return {
+		name: 'foodmap:pwa-service-worker',
+		apply: 'build',
+		buildApp: {
+			async handler(builder) {
+				const api = builder.config.plugins.find((p) => p.name === 'vite-plugin-pwa')?.api as
+					| VitePluginPWAAPI
+					| undefined;
+				if (!api || api.disabled) return;
+
+				await api.generateSW();
+			}
+		}
+	};
+}
 
 export default defineConfig({
 	plugins: [
@@ -22,9 +48,12 @@ export default defineConfig({
 
 		SvelteKitPWA({
 			srcDir: './src',
+			outDir: '.svelte-kit/output/client',
 			mode: 'production',
 			scope: '/',
 			base: '/',
+			// SvelteKit 3 sets Vite's base to './', which the plugin would otherwise inherit
+			kit: { base: '/' },
 			selfDestroying: false,
 			manifest: {
 				name: 'FoodMap - Interactive Restaurant Map',
@@ -98,6 +127,7 @@ export default defineConfig({
 				type: 'module',
 				navigateFallback: '/'
 			}
-		})
+		}),
+		pwaServiceWorker()
 	]
 });
