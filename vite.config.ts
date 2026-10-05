@@ -85,7 +85,7 @@ export default defineConfig({
 							cacheName: 'osm-tiles',
 							expiration: {
 								maxEntries: 500,
-								maxAgeSeconds: 60 * 60 * 24 * 30 /* 30 days */
+								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
 							},
 							cacheableResponse: {
 								statuses: [0, 200]
@@ -115,7 +115,7 @@ export default defineConfig({
 							cacheName: 'maplibre-fonts',
 							expiration: {
 								maxEntries: 50,
-								maxAgeSeconds: 60 * 60 * 24 * 365 /* 1 year */
+								maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
 							}
 						}
 					}
