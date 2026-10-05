@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
 	import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
 	import { calculateDistance } from '#lib/geo.js';
@@ -58,8 +59,10 @@
 		]
 	};
 
-	// Calculate center of all restaurants
-	const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
+	// The opening view frames every restaurant as first loaded. `restaurants` is the
+	// search-filtered list and changes as the user types, but the initial centre and
+	// the fit-bounds on load must not follow it, so read it once.
+	const validRestaurants = untrack(() => restaurants.filter((r) => r.coordinates !== null));
 	const avgLat =
 		validRestaurants.reduce((sum, r) => sum + r.coordinates!.lat, 0) /
 		validRestaurants.length;
