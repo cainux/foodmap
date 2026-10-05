@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { calculateDistance, coordinateError, parseCoordinates } from '$lib/geo';
-	import type { Restaurant } from '$lib/server/db/queries';
-	import type { RestaurantFormValues, RestaurantInputField } from '$lib/server/restaurantInput';
+	import { calculateDistance, coordinateError, parseCoordinates } from '#lib/geo.js';
+	import type { Restaurant } from '#lib/server/db/queries.js';
+	import type { RestaurantFormValues, RestaurantInputField } from '#lib/server/restaurantInput.js';
 
 	type Props = {
 		restaurant?: Restaurant;

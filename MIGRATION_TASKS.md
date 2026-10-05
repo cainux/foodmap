@@ -32,8 +32,8 @@ Determine whether each action resolves to another page and confirm navigation is
 
 #### Files to review
 
-- [ ] `admin/src/lib/components/RestaurantForm.svelte`
-- [ ] `admin/src/routes/restaurants/[id]/edit/+page.svelte`
+- [x] `admin/src/lib/components/RestaurantForm.svelte`
+- [x] `admin/src/routes/restaurants/[id]/edit/+page.svelte`
 
 ### CORS for static assets in development is handled by Vite
 
@@ -61,8 +61,8 @@ Use `Response.json(...)` and `new Response(text)` instead.
 
 #### Files to review
 
-- [ ] `admin/src/routes/client-metadata.json/+server.ts`
-- [ ] `admin/src/routes/publish/+page.server.ts`
+- [x] `admin/src/routes/client-metadata.json/+server.ts`
+- [x] `admin/src/routes/publish/+page.server.ts`
 
 ## Final verification
 

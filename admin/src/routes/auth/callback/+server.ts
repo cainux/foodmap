@@ -1,10 +1,11 @@
+import { env } from 'cloudflare:workers';
 import { error, redirect } from '@sveltejs/kit';
-import { createOAuthClient } from '$lib/server/auth/client';
-import { isHandleAllowed } from '$lib/server/auth/atproto';
+import { createOAuthClient } from '#lib/server/auth/client.js';
+import { isHandleAllowed } from '#lib/server/auth/atproto.js';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ url, platform, cookies }) => {
-	const client = createOAuthClient(platform!.env.DB, url.origin, platform!.env.SESSION_ENCRYPTION_KEY);
+export const GET: RequestHandler = async ({ url, cookies }) => {
+	const client = createOAuthClient(env.DB, url.origin, env.SESSION_ENCRYPTION_KEY);
 
 	const { session } = await client.callback(url.searchParams).catch(() => {
 		error(400, 'Sign-in failed');
@@ -12,7 +13,7 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 
 	const identity = await client.identityResolver.resolve(session.did);
 	const handle = identity.handle !== 'handle.invalid' ? identity.handle : null;
-	if (!handle || !isHandleAllowed(handle, platform!.env)) {
+	if (!handle || !isHandleAllowed(handle, env)) {
 		await client.revoke(session.did).catch(() => {});
 		error(403, 'This Bluesky account is not authorized to access foodmap admin');
 	}

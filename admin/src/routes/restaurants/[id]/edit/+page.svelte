@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import { page } from '$app/state';
-	import RestaurantForm from '$lib/components/RestaurantForm.svelte';
+	import RestaurantForm from '#lib/components/RestaurantForm.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

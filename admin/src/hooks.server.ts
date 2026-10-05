@@ -1,6 +1,7 @@
+import { env } from 'cloudflare:workers';
 import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit/hooks';
-import { createOAuthClient } from '$lib/server/auth/client';
+import { createOAuthClient } from '#lib/server/auth/client.js';
 
 const PUBLIC_PATHS = ['/auth/login', '/auth/callback', '/client-metadata.json'];
 
@@ -14,8 +15,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		redirect(302, '/auth/login');
 	}
 
-	const client = createOAuthClient((event.platform!).env.DB, event.url.origin, (event.platform!).env.SESSION_ENCRYPTION_KEY);
-
+	const client = createOAuthClient(env.DB, event.url.origin, env.SESSION_ENCRYPTION_KEY);
 	try {
 		event.locals.session = await client.restore(did);
 	} catch {

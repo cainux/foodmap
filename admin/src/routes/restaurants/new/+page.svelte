@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RestaurantForm from '$lib/components/RestaurantForm.svelte';
+	import RestaurantForm from '#lib/components/RestaurantForm.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

@@ -1,11 +1,12 @@
+import { env } from 'cloudflare:workers';
 import { redirect } from '@sveltejs/kit';
-import { createOAuthClient } from '$lib/server/auth/client';
+import { createOAuthClient } from '#lib/server/auth/client.js';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ cookies, platform, url }) => {
+export const POST: RequestHandler = async ({ cookies, url }) => {
 	const did = cookies.get('foodmap_admin_session');
 	if (did) {
-		const client = createOAuthClient(platform!.env.DB, url.origin, platform!.env.SESSION_ENCRYPTION_KEY);
+		const client = createOAuthClient(env.DB, url.origin, env.SESSION_ENCRYPTION_KEY);
 		await client.revoke(did).catch(() => {});
 	}
 

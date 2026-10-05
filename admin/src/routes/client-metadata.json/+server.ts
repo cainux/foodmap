@@ -1,9 +1,8 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = ({ url }) => {
 	const baseUrl = url.origin;
-	return json({
+	return Response.json({
 		client_id: `${baseUrl}/client-metadata.json`,
 		client_name: 'foodmap admin',
 		client_uri: baseUrl,

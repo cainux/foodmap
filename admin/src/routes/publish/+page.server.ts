@@ -1,9 +1,10 @@
+import { env } from 'cloudflare:workers';
 import { fail } from '@sveltejs/kit';
-import { getPublishState, recordPublish } from '$lib/server/db/queries';
+import { getPublishState, recordPublish } from '#lib/server/db/queries.js';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ platform }) => {
-	const state = await getPublishState(platform!.env.DB);
+export const load: PageServerLoad = async () => {
+	const state = await getPublishState(env.DB);
 	return {
 		lastMutatedAt: state.lastMutatedAt,
 		lastPublishedAt: state.lastPublishedAt
@@ -28,8 +29,8 @@ async function readDeploymentId(res: Response): Promise<string | null> {
 }
 
 export const actions: Actions = {
-	default: async ({ platform }) => {
-		const hookUrl = platform!.env.PAGES_DEPLOY_HOOK_URL;
+	default: async () => {
+		const hookUrl = env.PAGES_DEPLOY_HOOK_URL;
 
 		const triggeredAt = Date.now();
 		const res = await fetch(hookUrl, { method: 'POST' }).catch(() => null);
@@ -40,7 +41,7 @@ export const actions: Actions = {
 			});
 		}
 
-		await recordPublish(platform!.env.DB, await readDeploymentId(res), triggeredAt);
+		await recordPublish(env.DB, await readDeploymentId(res), triggeredAt);
 
 		return { requested: true };
 	}
