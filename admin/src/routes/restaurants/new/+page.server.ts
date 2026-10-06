@@ -1,15 +1,16 @@
+import { env } from 'cloudflare:workers';
 import { fail } from '@sveltejs/kit';
-import { createRestaurant, listRestaurants } from '$lib/server/db/queries';
-import { collectTags, readRestaurantInput } from '$lib/server/restaurantInput';
+import { createRestaurant, listRestaurants } from '#lib/server/db/queries.js';
+import { collectTags, readRestaurantInput } from '#lib/server/restaurantInput.js';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ platform }) => {
-	const all = await listRestaurants(platform!.env.DB);
+export const load: PageServerLoad = async () => {
+	const all = await listRestaurants(env.DB);
 	return { all, tags: collectTags(all) };
 };
 
 export const actions: Actions = {
-	create: async ({ request, platform }) => {
+	create: async ({ request }) => {
 		const input = readRestaurantInput(await request.formData());
 
 		if (!input.ok) {
@@ -20,7 +21,7 @@ export const actions: Actions = {
 			});
 		}
 
-		await createRestaurant(platform!.env.DB, input.record);
+		await createRestaurant(env.DB, input.record);
 
 		return { created: input.record.name };
 	}

@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { MapLibre, Marker, Popup } from 'svelte-maplibre-gl';
 	import maplibregl, { type Map, type LngLatLike } from 'maplibre-gl';
-	import { calculateDistance } from '$lib/geo';
-	import { env } from '$env/dynamic/public';
+	import { calculateDistance } from '#lib/geo.js';
+	import { PUBLIC_CARTO_API_KEY } from '$app/env/public';
 
 	interface Restaurant {
 		name: string;
@@ -41,7 +42,7 @@
 			'carto-tiles': {
 				type: 'raster' as const,
 				tiles: [
-					`https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${env.PUBLIC_CARTO_API_KEY}`
+					`https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${PUBLIC_CARTO_API_KEY}`
 				],
 				tileSize: 256,
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -58,8 +59,10 @@
 		]
 	};
 
-	// Calculate center of all restaurants
-	const validRestaurants = restaurants.filter((r) => r.coordinates !== null);
+	// The opening view frames every restaurant as first loaded. `restaurants` is the
+	// search-filtered list and changes as the user types, but the initial centre and
+	// the fit-bounds on load must not follow it, so read it once.
+	const validRestaurants = untrack(() => restaurants.filter((r) => r.coordinates !== null));
 	const avgLat =
 		validRestaurants.reduce((sum, r) => sum + r.coordinates!.lat, 0) /
 		validRestaurants.length;

@@ -1,4 +1,4 @@
-import { coordinateError, parseCoordinates } from '$lib/geo';
+import { coordinateError, parseCoordinates } from '#lib/geo.js';
 import type { NewRestaurant } from './db/queries';
 
 /** The raw form values, echoed back on failure so nothing typed is lost. */

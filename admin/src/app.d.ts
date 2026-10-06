@@ -7,13 +7,15 @@ declare global {
 		interface Locals {
 			session: OAuthSession;
 		}
-		interface Platform {
-			env: {
-				DB: D1Database;
-				ALLOWED_HANDLES: string;
-				PAGES_DEPLOY_HOOK_URL: string;
-				SESSION_ENCRYPTION_KEY: string;
-			};
+	}
+
+	// Bindings and secrets, read via `import { env } from 'cloudflare:workers'`.
+	namespace Cloudflare {
+		interface Env {
+			DB: D1Database;
+			ALLOWED_HANDLES: string;
+			PAGES_DEPLOY_HOOK_URL: string;
+			SESSION_ENCRYPTION_KEY: string;
 		}
 	}
 }

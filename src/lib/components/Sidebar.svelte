@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
-	import { calculateDistance } from '$lib/geo';
+	import { calculateDistance } from '#lib/geo.js';
 
 	interface Restaurant {
 		name: string;
