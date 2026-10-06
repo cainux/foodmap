@@ -18,6 +18,8 @@ export const actions: Actions = {
 			return fail(400, { error: 'Could not start sign-in for that handle' });
 		}
 
-		redirect(302, authorizeUrl.toString());
+		// The authorization server is wherever the handle's account is hosted, so it
+		// cannot be allowlisted up front.
+		redirect(302, authorizeUrl.toString(), { external: true });
 	}
 };
