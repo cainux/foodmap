@@ -136,10 +136,11 @@ phone-shaped column, centred.
 
 ### PWA
 
-- The admin is installable (`display: standalone`) but must NOT cache application data offline. It is auth-gated and write-heavy, so a stale cache is a correctness risk, not a feature. No workbox/runtime caching - unlike the public site.
-- The manifest is hand-authored at `admin/static/manifest.webmanifest`. Do NOT pull in
-  `@vite-pwa/sveltekit` as the public site does - it exists to generate a service worker,
-  which is the one thing the admin must not have.
+- The admin is installable (`display: standalone`) but must NOT cache application data offline. It is auth-gated and write-heavy, so a stale cache is a correctness risk, not a feature. No workbox/runtime caching.
+- Neither app ships a service worker. Each hand-authors its manifest in `static/`
+  (`admin/static/manifest.webmanifest`, `static/manifest.webmanifest`). Do NOT pull in
+  `@vite-pwa/sveltekit` - it exists to generate a service worker. The public site's
+  restaurant data is bundled into its JS, so a cached copy would outlive a publish.
 
 ## Svelte 5 Runes Syntax
 
@@ -172,10 +173,6 @@ Both apps are on SvelteKit 3:
 - Admin bindings and secrets come from `import { env } from 'cloudflare:workers'`, typed on
   `Cloudflare.Env` in `admin/src/app.d.ts`. Do NOT use `event.platform` - adapter-cloudflare 8
   never populates it, in dev or deployed.
-- `@vite-pwa/sveltekit` predates SvelteKit 3 and never fires its own service-worker step. The
-  public site's `vite.config.ts` generates `sw.js` from a `buildApp` hook instead. Keep that
-  plugin, and the PWA plugin's `outDir` and `kit.base`, until upstream supports SvelteKit 3.
-  Check `build/sw.js` exists after any change to that config.
 
 ## Map Implementation
 
