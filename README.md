@@ -13,19 +13,19 @@ A static website built with SvelteKit that displays restaurants on an interactiv
 - 🎨 Clean, minimal styling with Pico CSS
 - 📱 Responsive design with mobile-optimized interactions
 - ⚡ Static site generation for fast loading
-- 📲 Installable PWA that caches map tiles for offline use
+- 📲 Installable as a home-screen app
 - 🔗 Restaurant list with clickable cards that navigate the map
 - 📤 Social media preview metadata for sharing
 
 ## Tech Stack
 
-- **SvelteKit 2.50.1** - Full-stack framework with static adapter
-- **Svelte 5.49.1** - Reactive UI components (using latest runes API)
-- **MapLibre GL 4.7.1** - Interactive WebGL-based mapping library
+- **SvelteKit** - Full-stack framework with static adapter
+- **Svelte** - Reactive UI components (using latest runes API)
+- **MapLibre GL** - Interactive WebGL-based mapping library
 - **svelte-maplibre-gl** - Svelte components for MapLibre GL integration
-- **Pico CSS 2.1.1** - Minimal styling framework
-- **TypeScript 5.9.3** - Type safety
-- **Vite 7.3.1** - Build tool and dev server
+- **Pico CSS** - Minimal styling framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
 - **pnpm** - Fast, disk-efficient package manager
 
 ## Getting Started
