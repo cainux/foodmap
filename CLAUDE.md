@@ -28,7 +28,7 @@ Cloudflare D1 (foodmap.restaurants) → scripts/build-restaurants-data.js → sr
 Restaurant data is edited via the admin app (Bluesky OAuth-gated CRUD against D1), which also exposes a manual "publish" control that triggers a rebuild/redeploy of the public site. The public site's build step runs `wrangler d1 execute` to snapshot D1 into `restaurants.json`; it requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to be set (Cloudflare Pages project secrets).
 
 ### Key Files
-- `src/routes/+page.svelte` - Main page with restaurant grid and sorting logic
+- `src/routes/+page.svelte` - Main page: the map plus a sidebar list filtered by name/tag and sorted by distance
 - `src/lib/components/RestaurantMap.svelte` - MapLibre GL map with clustering
 - `scripts/build-restaurants-data.js` - Fetches restaurants from D1 at build time
 - `admin/` - Separate SvelteKit app (Bluesky OAuth, CRUD, manual publish) deployed as its own Cloudflare Worker
@@ -177,10 +177,14 @@ Both apps are on SvelteKit 3:
 ## Map Implementation
 
 The map uses `svelte-maplibre-gl` components with GeoJSON clustering:
-- Three layers: `clusters`, `cluster-count`, `unclustered-point`
+- Four layers: `clusters`, `cluster-count`, `unclustered-point`, `restaurant-label`
 - Clustering enabled via GeoJSON source (`cluster: true`)
 - Prerendering is enabled in `+layout.ts` (`export const prerender = true`)
 - All layer setup happens in `handleMapLoad` after the map `load` event
+- Glyphs are self-hosted under `static/fonts/`, not fetched from a third party. The glyph URL
+  must be absolute (MapLibre resolves it in a worker), and a text layer may only request the
+  `Noto Sans Regular` fontstack, the one shipped. Any other fontstack, or a character outside
+  the shipped ranges, needs glyphs regenerated - see `static/fonts/README.md`.
 
 ## Styling
 
