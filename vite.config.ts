@@ -18,5 +18,10 @@ export default defineConfig({
 				strict: true
 			})
 		})
-	]
+	],
+	build: {
+		// The page chunk is ~830 kB, nearly all MapLibre, and the map is the page, so there is
+		// nothing to defer. Warn if it grows well past that.
+		chunkSizeWarningLimit: 900
+	}
 });
