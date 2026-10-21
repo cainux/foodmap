@@ -22,4 +22,4 @@
 - [x] 4.1 `pnpm check` passes
 - [x] 4.2 `pnpm build` succeeds, and `build/` contains `manifest.webmanifest` but no `sw.js`, `registerSW.js` or `workbox-*.js`
 - [x] 4.3 `pnpm preview`: the page head links `/manifest.webmanifest`, DevTools → Application → Manifest shows it as installable with no errors, and no service worker is registered
-- [ ] 4.4 After merging, publish from the admin and confirm the live site serves `/manifest.webmanifest`, returns 404 for `/sw.js`, and still offers to install
+- [x] 4.4 After merging, publish from the admin and confirm the live site serves `/manifest.webmanifest`, serves no service worker script at `/sw.js` (Pages answers unknown paths with `index.html`, not a 404), registers no service worker, and still offers to install
