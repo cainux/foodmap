@@ -37,7 +37,10 @@
 	// CartoCDN Voyager style
 	const mapStyle = {
 		version: 8 as const,
-		glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+		// Self-hosted (see static/fonts/README.md). Must be absolute: MapLibre resolves glyph
+		// URLs in a worker, where a relative URL does not resolve against the page. The origin
+		// is empty during prerender, which is fine - the map only draws in the browser.
+		glyphs: `${typeof location === 'undefined' ? '' : location.origin}/fonts/{fontstack}/{range}.pbf`,
 		sources: {
 			'carto-tiles': {
 				type: 'raster' as const,

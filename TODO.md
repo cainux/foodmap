@@ -3,11 +3,6 @@
 Loose ends found while removing the public site's service worker (October 2026).
 Most valuable first.
 
-- [ ] **Stop depending on the MapLibre demo glyph server.**
-      `RestaurantMap.svelte` loads glyphs from `demotiles.maplibre.org`, a demo host with no
-      uptime promise. If it goes down, restaurant name labels disappear from the map.
-      Self-host the glyph PBFs under `static/` or move to a production glyph provider.
-
 - [ ] **Find out why a build once crashed in the D1 fetch step.**
       One `pnpm build` died in `scripts/build-restaurants-data.js` (the `wrangler d1 execute`
       step) with no clear error, then three identical runs passed. A repeat on Pages would
